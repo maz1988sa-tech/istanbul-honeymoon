@@ -1332,7 +1332,7 @@ function applySwap(dt,on){ var s=$('.slot[data-dt="'+dt+'"]'); if(!s||!PLACES[dt
   markSlot(dt);}
 function fetchPhotos(q,box){ box.innerHTML='<div class="gph"></div><div class="gph"></div><div class="gph"></div>';
   function show(urls){ if(!urls||!urls.length){box.style.display="none";return;} box.style.display="";
-    box.innerHTML=urls.slice(0,6).map(function(u){return '<img loading="lazy" src="'+u+'" alt="">'}).join("");}
+    box.innerHTML=urls.slice(0,6).map(function(u){return '<img decoding="async" src="'+u+'" alt="">'}).join("");}
   if(pmCache[q])return show(pmCache[q]);
   try{ fetch("https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch="+encodeURIComponent("filetype:bitmap "+q)+"&gsrlimit=9&gsrnamespace=6&prop=imageinfo&iiprop=url&iiurlwidth=640")
     .then(function(r){return r.json()}).then(function(j){
