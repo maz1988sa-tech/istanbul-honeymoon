@@ -340,6 +340,40 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 .pm-scroll{overflow-y:auto;padding-right:4px}
 @media(max-width:600px){.pm-gal{grid-template-columns:repeat(2,1fr)}.pm-gal img,.pm-gal .gph{height:96px}}
 body.modal-open{overflow:hidden}
+/* ══ MOBILE: first screen = full trip interface, then page-by-page snap ══ */
+#fold{display:contents}
+@media (max-width:740px){
+  html{scroll-snap-type:y mandatory;scroll-padding-top:130px}
+  #fold{display:flex;flex-direction:column;min-height:calc(100svh - 50px)}
+  #fold,#tcard,#glance,#days,article.day,#food,#tiktok,#book,#budget,#info{scroll-snap-align:start;scroll-snap-stop:always}
+  header.hero{display:flex;flex-direction:column;flex:1;justify-content:space-between;padding:8px 0 0}
+  .hero .path{display:none}
+  .hero .kicker{font-size:9px;letter-spacing:.3em}
+  .hero h1{font-size:clamp(40px,11.5vw,52px)}
+  .hero .scr{font-size:clamp(26px,7.5vw,34px);margin-top:-4px}
+  .hero .couple{font-size:11.5px;letter-spacing:.22em;margin-top:4px}
+  .hero .arh{font-size:14.5px;margin-top:5px}
+  .hr-heart{margin:9px auto 3px}
+  .hero .tag{font-size:9.5px;letter-spacing:.24em}
+  .infogrid{gap:8px;padding:0 14px 4px;margin-top:6px}
+  .icard{padding:9px 11px}
+  .icard .lb{font-size:8.5px;letter-spacing:.16em}
+  .icard .lb .arl{font-size:10px}
+  .icard .vl{font-size:13.5px;margin-top:3px;padding-top:5px;line-height:1.35}
+  .icard .vl small{font-size:10px;line-height:1.35}
+  #tracker{top:50px}
+  .band .wrap{grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 12px 58px}
+  #savebtn{right:12px;bottom:12px;width:46px;height:46px;padding:0;gap:0;justify-content:center;font-size:0;border-radius:50%}
+  #savebtn .arl{display:none}
+  #savebtn svg{width:17px;height:17px}
+  #topbtn{right:12px;bottom:68px}
+  .bitem{padding:9px 3px;gap:3px;border-radius:10px}
+  .bitem svg{width:16px;height:16px}
+  .bitem .n{font-size:17px}
+  .bitem .l{font-size:7.5px;letter-spacing:.1em}
+  .bitem .l .arl{font-size:9.5px;margin-top:1px}
+  #food table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
 @media print{nav,#tracker,#savebtn,#topbtn,#toast{display:none}.day{break-inside:avoid;box-shadow:none}body{background:#fff}}
 </style>
 </head>
@@ -374,6 +408,7 @@ body.modal-open{overflow:hidden}
 <a href="#glance">Overview · نظرة</a><a href="#days">Days · الأيام</a><a href="#food">Food · المطاعم</a><a href="#tiktok">TikTok ✦</a><a href="#book">Bookings · الحجوزات</a><a href="#budget">Budget · الميزانية</a><a href="#info">Essentials · معلومات</a>
 </div></nav>
 
+<div id="fold">
 <header class="hero">
 <svg class="stamp" viewBox="0 0 120 120"><circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="60" cy="60" r="43" fill="none" stroke="currentColor" stroke-width="1"/><path id="stc" d="M60 22a38 38 0 1 1-.01 0" fill="none"/><text font-size="10.5" letter-spacing="2.5" fill="currentColor" font-family="Jost"><textPath href="#stc">PLAN · ORGANIZE · ENJOY · RUH ⇄ IST ·</textPath></text><g stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"><path d="M47 66l6-9 8 4 9-13"/><path d="M66 48h4v4"/></g><text x="60" y="83" text-anchor="middle" font-size="9" letter-spacing="2" fill="currentColor" font-family="Jost">2026</text></svg>
 <div class="stamp2"><div class="ph"><svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 20h18M5 20v-6c0-3.5 3-5.5 7-5.5s7 2 7 5.5V20M12 8.5V6m0 0c.9-.7 1.3-1.5 1.3-2.2C13.3 3 12 2.2 12 2.2s-1.3.8-1.3 1.6c0 .7.4 1.5 1.3 2.2zM3 20V10.5M21 20V10.5"/></svg></div><div class="cap2">Mohand &amp; Eman</div></div>
@@ -401,6 +436,7 @@ body.modal-open{overflow:hidden}
 <div class="bitem"><svg><use href="#i-food"/></svg><div><div class="n" id="st-food">–</div><div class="l">Food &amp; Cafés<span class="arl">مطاعم ومقاهي</span></div></div></div>
 <div class="bitem"><svg><use href="#i-star"/></svg><div><div class="n" id="st-must">–</div><div class="l">Must-sees<span class="arl">فعالية مهمة</span></div></div></div>
 </div></div>
+</div>
 
 <div id="tracker"><div class="wrap">
 <svg class="tl-ico"><use href="#i-cal"/></svg>
