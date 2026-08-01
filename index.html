@@ -153,6 +153,33 @@ a.act .arl{font-family:var(--ar);text-transform:none;letter-spacing:0;font-size:
 .mynotes summary{cursor:pointer;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:8px 14px}
 .mynotes summary .arl{font-family:var(--ar);letter-spacing:0;text-transform:none;font-size:12.5px}
 .mynotes textarea{width:100%;border:none;background:transparent;font-family:var(--sans);font-size:13.5px;color:var(--ink);padding:2px 14px 12px;min-height:64px;resize:vertical;outline:none}
+/* ══ DAY COLLAPSE + DONE ══ */
+.day-head{padding-right:190px}
+.dayctl{position:absolute;top:20px;right:20px;display:flex;gap:8px;align-items:center}
+.cbtn{width:34px;height:34px;border-radius:50%;border:1px solid var(--line2);background:#fff;color:var(--soft);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.cbtn svg{width:16px;height:16px;transition:transform .2s}
+.cbtn:hover{border-color:var(--olive);color:var(--olive-deep)}
+.day.collapsed .cbtn.chev svg{transform:rotate(180deg)}
+.dayck-w{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line2);border-radius:99px;padding:7px 13px;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--soft);text-transform:uppercase}
+.dayck-w:hover{border-color:var(--olive)}
+.dayck-w input{width:15px;height:15px;accent-color:var(--olive);cursor:pointer;margin:0}
+.dayck-w .arl{font-family:var(--ar);letter-spacing:0;font-size:12.5px;text-transform:none}
+.day.collapsed .day-body{display:none}
+.day.collapsed .day-head{border-bottom:none;padding-bottom:16px;background:none}
+.day.collapsed .autochips,.day.collapsed .chips{display:none}
+.day.collapsed .day-head h3{font-size:19px;margin:2px 0 0}
+.day.collapsed .dnum{font-size:20px}
+.day.collapsed{margin:10px 0}
+.day.dday-done{border-color:#b9c0a0;background:#fafaf1}
+.day.dday-done .day-head h3{color:#7a7c58}
+.donechip{display:none;font-size:10px;font-weight:700;background:var(--olive);color:#fff;border-radius:99px;padding:3px 10px;letter-spacing:.08em}
+.day.dday-done .donechip{display:inline-block}
+.daytools{display:flex;gap:8px;justify-content:center;align-items:center;margin:2px 0 8px;flex-wrap:wrap}
+.toolbtn{border:1px solid var(--line2);background:var(--page);color:var(--soft);border-radius:99px;padding:7px 16px;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.1em;cursor:pointer;text-transform:uppercase}
+.toolbtn .arl{font-family:var(--ar);letter-spacing:0;text-transform:none;font-size:12.5px}
+.toolbtn:hover{background:var(--olive);color:#fff;border-color:var(--olive)}
+#dayprog{font-size:12.5px;color:var(--olive-deep);font-weight:600}
+@media(max-width:640px){.day-head{padding-right:26px}.dayctl{position:static;margin-top:12px;justify-content:flex-end}}
 /* ══ TABLES / CHECKLIST / BUDGET / ESSENTIALS ══ */
 table{width:100%;border-collapse:collapse;background:var(--page);box-shadow:var(--shadow);font-size:13px;margin:16px 0;border:1px solid var(--line)}
 th{background:var(--band);color:#fff;text-align:left;padding:10px 12px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
@@ -289,6 +316,11 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 
 <section id="days"><div class="wrap">
 <h2 class="sec"><span class="cap">Daily</span><span class="scr2">Itinerary</span><span class="arh2">البرنامج اليومي</span></h2>
+<div class="daytools">
+<button id="collapseAll" class="toolbtn" type="button">Collapse all <span class="arl">| طي الكل</span></button>
+<button id="expandAll" class="toolbtn" type="button">Expand all <span class="arl">| فتح الكل</span></button>
+<span id="dayprog"></span>
+</div>
 <!-- ═══ DAY 1 ═══ -->
 <article class="day" id="d1" data-day="2026-09-20">
 <div class="day-head">
@@ -973,7 +1005,7 @@ try{EMB=JSON.parse($("#savestate").textContent||"{}")||{};}catch(e){EMB={}}
 try{if(store){var lraw=store.getItem(KEY);if(lraw)LS=JSON.parse(lraw);}}catch(e){LS=null}
 /* newer wins: embedded file-state vs this browser's memory */
 var state=(LS&&((LS.ts||0)>=(EMB.ts||0)))?LS:EMB;
-state=state||{};state.checks=state.checks||{};state.notes=state.notes||{};state.budget=state.budget||{};state.savedAt=state.savedAt||null;
+state=state||{};state.checks=state.checks||{};state.notes=state.notes||{};state.budget=state.budget||{};state.savedAt=state.savedAt||null;state.dayDone=state.dayDone||{};state.dayCollapsed=state.dayCollapsed||{};
 $$("input[data-ck]").forEach(function(b){b.checked=!!state.checks[b.dataset.ck];});
 $$("textarea[data-note]").forEach(function(t){if(state.notes[t.dataset.note])t.value=state.notes[t.dataset.note];});
 $$("input[data-b]").forEach(function(i){if(state.budget[i.dataset.b]!=null)i.value=state.budget[i.dataset.b];});
@@ -999,6 +1031,30 @@ $$("article.day").forEach(function(day){
   box.innerHTML=html;
 });
 $("#st-act").textContent=totals.act; $("#st-food").textContent=totals.food+totals.cafe; $("#st-must").textContent=mustTotal;
+/* ── per-day collapse + done controls (injected, idempotent) ── */
+$$("article.day").forEach(function(d){
+  if($(".dayctl",d))return;
+  var head=$(".day-head",d), id=d.id;
+  var ctl=document.createElement("div"); ctl.className="dayctl";
+  ctl.innerHTML='<span class="donechip">DONE · تم</span>'+
+    '<label class="dayck-w"><input type="checkbox" data-dayck="'+id+'">Done <span class="arl">خلصنا</span></label>'+
+    '<button class="cbtn chev" type="button" title="Collapse / طي وفتح اليوم"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>';
+  head.appendChild(ctl);
+  var ck=ctl.querySelector("input");
+  if(state.dayDone[id]){d.classList.add("dday-done");ck.checked=true;}
+  if(state.dayCollapsed[id]||state.dayDone[id]){d.classList.add("collapsed");}
+  ck.addEventListener("change",function(){
+    d.classList.toggle("dday-done",ck.checked);
+    d.classList.toggle("collapsed",ck.checked);
+    dayprog(); autosave();
+  });
+  ctl.querySelector(".cbtn").addEventListener("click",function(){ d.classList.toggle("collapsed"); autosave(); });
+});
+function dayprog(){var done=$$("article.day.dday-done").length;
+  $("#dayprog").innerHTML=done?('<svg width="13" height="13" viewBox="0 0 24 24" fill="#84855f" style="vertical-align:-2px"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg> '+done+" / 11 days done · أنجزتما "+done+" من ١١ يوماً"):"";}
+$("#collapseAll").addEventListener("click",function(){$$("article.day").forEach(function(d){d.classList.add("collapsed")});autosave();});
+$("#expandAll").addEventListener("click",function(){$$("article.day").forEach(function(d){d.classList.remove("collapsed")});autosave();});
+dayprog();
 /* ── timeline rail ── */
 var rail=$("#rail");
 for(var d=0;d<11;d++){var el=document.createElement("div");el.className="dot";el.textContent=20+d;el.dataset.date="2026-09-"+(20+d);rail.appendChild(el);}
@@ -1032,7 +1088,7 @@ function tick(){
     }else{big.innerHTML="Day "+dayN+" in Istanbul <span class='arl'>· اليوم "+dayN+" في اسطنبول</span>";}
     sub.innerHTML=next?("Next · التالي: "+fmtT(istWall(next.t))+" — "+$(".ttl",next.el).childNodes[0].textContent.trim()):"Last item of the trip — safe travels · آخر بند في الرحلة";
     go.style.display="inline-block";
-    go.onclick=function(){var target=cur?cur.el:(next?next.el:null);if(target)target.scrollIntoView({behavior:"smooth",block:"center"});};
+    go.onclick=function(){var target=cur?cur.el:(next?next.el:null);if(target){var card=target.closest("article.day");if(card)card.classList.remove("collapsed");target.scrollIntoView({behavior:"smooth",block:"center"});}};
   }else{
     big.innerHTML="Trip complete <span class='arl'>· انتهت الرحلة — ذكريات سعيدة ✦</span>";
     sub.innerHTML="Keep this file — the notes and budget are your memory of it. <span class='arl'>احتفظا بالملف، ففيه ملاحظاتكما وذكرياتكما.</span>";
@@ -1055,6 +1111,8 @@ function collect(){var st={checks:{},notes:{},budget:{},savedAt:null};
   $$("input[data-ck]").forEach(function(b){st.checks[b.dataset.ck]=b.checked;});
   $$("textarea[data-note]").forEach(function(t){if(t.value)st.notes[t.dataset.note]=t.value;});
   $$("input[data-b]").forEach(function(i){if(i.value!=="")st.budget[i.dataset.b]=i.value;});
+  st.dayDone={};st.dayCollapsed={};
+  $$("article.day").forEach(function(d){ if(d.classList.contains("dday-done"))st.dayDone[d.id]=true; if(d.classList.contains("collapsed"))st.dayCollapsed[d.id]=true; });
   var n=istWall(new Date());st.savedAt=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0")+" "+fmtT(n)+" (Istanbul time)";
   st.ts=Date.now();
   return st;}
@@ -1064,6 +1122,7 @@ $("#savebtn").addEventListener("click",function(){
     var st=collect();
     var doc=document.documentElement.cloneNode(true);
     var holder=doc.querySelector("#savestate"); holder.textContent=JSON.stringify(st);
+    [].slice.call(doc.querySelectorAll(".dayctl")).forEach(function(n){n.parentNode.removeChild(n);}); /* re-injected on load */
     /* bake current field values into the clone so the saved file matches the screen */
     var live={ck:$$("input[data-ck]"),nt:$$("textarea[data-note]"),bd:$$("input[data-b]")};
     live.ck.forEach(function(b){var c=doc.querySelector('input[data-ck="'+b.dataset.ck+'"]');if(c){if(b.checked)c.setAttribute("checked","checked");else c.removeAttribute("checked");}});
