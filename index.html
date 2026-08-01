@@ -1193,6 +1193,15 @@ function itemsFor(day,cat){
       title:($(".ttl",s)?$(".ttl",s).childNodes[0].textContent.trim():""),
       maps:mapA?mapA.href:null, book:bookA?bookA.href:null,
       rate:rate?rate.textContent.replace(/\s+/g," ").trim():"" };});}
+function renderRows(items){
+  if(!items.length)return '<div class="cm-empty">لا توجد عناصر في هذه الفئة لهذا اليوم</div>';
+  var html="";
+  items.forEach(function(it){
+    html+='<div class="cm-row"><span class="cm-ic"><svg><use href="#i-'+it.icon+'"/></svg></span><span class="cm-t"><b>'+it.title+"</b><small>"+it.time+(it.rate?" · "+it.rate:"")+"</small></span>";
+    if(it.book)html+='<a class="cm-btn" href="'+it.book+'" target="_blank" rel="noopener"><svg><use href="#i-book"/></svg>Book <span class="arl">حجز</span></a>';
+    if(it.maps)html+='<a class="cm-btn" href="'+it.maps+'" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg>Maps <span class="arl">الخريطة</span></a>';
+    html+="</div>";});
+  return html;}
 function openChipModal(day,cat){
   var m=buildModal(), dnum=($(".dnum",day)||{}).textContent||"", ttl=$(".day-head h3",day);
   var tEn=ttl?ttl.childNodes[0].textContent.trim():"", tAr=ttl&&ttl.querySelector(".ar")?ttl.querySelector(".ar").textContent.replace("|","").trim():"";
@@ -1204,15 +1213,21 @@ function openChipModal(day,cat){
     b.innerHTML='<svg><use href="#'+MCATS[k].icon+'"/></svg><b>'+n+"</b> "+MCATS[k].en+' <span class="arl">'+MCATS[k].ar+"</span>";
     b.addEventListener("click",function(){openChipModal(day,k);});
     tabs.appendChild(b);});
-  var list=m.querySelector(".cm-list"), items=itemsFor(day,cat), html="";
-  if(!items.length)html='<div class="cm-empty">لا توجد عناصر في هذه الفئة لهذا اليوم</div>';
-  items.forEach(function(it){
-    html+='<div class="cm-row"><span class="cm-ic"><svg><use href="#i-'+it.icon+'"/></svg></span><span class="cm-t"><b>'+it.title+"</b><small>"+it.time+(it.rate?" · "+it.rate:"")+"</small></span>";
-    if(it.book)html+='<a class="cm-btn" href="'+it.book+'" target="_blank" rel="noopener"><svg><use href="#i-book"/></svg>Book <span class="arl">حجز</span></a>';
-    if(it.maps)html+='<a class="cm-btn" href="'+it.maps+'" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg>Maps <span class="arl">الخريطة</span></a>';
-    html+="</div>";});
-  list.innerHTML=html; list.scrollTop=0;
-  m.hidden=false; document.body.classList.add("modal-open");}
+  var list=m.querySelector(".cm-list");
+  var fresh=m.hidden;
+  m.hidden=false; document.body.classList.add("modal-open");
+  /* unified size: lock the list height to the TALLEST category of this day, so tab switches never resize the window */
+  if(fresh||m.dataset.lockDay!==day.id){
+    list.style.height="auto"; var maxH=0;
+    Object.keys(MCATS).forEach(function(k){
+      var its=itemsFor(day,k); if(!its.length)return;
+      list.innerHTML=renderRows(its);
+      if(list.scrollHeight>maxH)maxH=list.scrollHeight;});
+    var cap=Math.max(180,Math.round(window.innerHeight*0.84)-200);
+    m.dataset.lockDay=day.id; m.dataset.lockH=Math.min(maxH,cap);
+  }
+  list.style.height=m.dataset.lockH+"px";
+  list.innerHTML=renderRows(itemsFor(day,cat)); list.scrollTop=0;}
 document.addEventListener("click",function(e){
   var ch=e.target.closest?e.target.closest(".acchip"):null; if(!ch||!ch.dataset.cat)return;
   var day=ch.closest("article.day"); if(day)openChipModal(day,ch.dataset.cat);});
