@@ -266,6 +266,10 @@ td .arl{display:block;font-family:var(--ar);direction:rtl;color:#57492c;font-siz
 #savebtn:hover{background:var(--olive-deep)}
 #savebtn svg{width:15px;height:15px}
 #savebtn .arl{font-family:var(--ar);letter-spacing:0;font-size:13.5px}
+#topbtn{position:fixed;bottom:84px;right:22px;z-index:70;width:46px;height:46px;border-radius:50%;background:var(--page);border:1px solid var(--gold);color:var(--olive-deep);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 24px rgba(58,53,44,.22);opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .25s,transform .25s,visibility .25s}
+#topbtn.show{opacity:1;visibility:visible;transform:none}
+#topbtn:hover{background:var(--gold);color:#fff;border-color:var(--gold)}
+#topbtn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 #toast{position:fixed;bottom:78px;right:22px;z-index:70;background:var(--ink);color:#fff;font-size:12.5px;padding:11px 16px;border-radius:8px;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;max-width:320px}
 #toast.show{opacity:1;transform:none}
 #toast .arl{font-family:var(--ar);display:block}
@@ -336,7 +340,7 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 .pm-scroll{overflow-y:auto;padding-right:4px}
 @media(max-width:600px){.pm-gal{grid-template-columns:repeat(2,1fr)}.pm-gal img,.pm-gal .gph{height:96px}}
 body.modal-open{overflow:hidden}
-@media print{nav,#tracker,#savebtn,#toast{display:none}.day{break-inside:avoid;box-shadow:none}body{background:#fff}}
+@media print{nav,#tracker,#savebtn,#topbtn,#toast{display:none}.day{break-inside:avoid;box-shadow:none}body{background:#fff}}
 </style>
 </head>
 <body>
@@ -1134,6 +1138,7 @@ body.modal-open{overflow:hidden}
 </div></footer>
 
 <button id="savebtn" title="يحفظ نسخة محدثة من هذا الملف بكل تعديلاتك"><svg><use href="#i-save"/></svg>Save <span class="arl">حفظ</span></button>
+<button id="topbtn" title="العودة لأعلى الصفحة" aria-label="العودة لأعلى الصفحة"><svg viewBox="0 0 24 24"><path d="M12 19V6M5.5 12.5 12 6l6.5 6.5"/></svg></button>
 <div id="toast"></div>
 
 <script type="application/json" id="savestate">{}</script>
@@ -1454,7 +1459,9 @@ function btot(){var t=0;$$("input[data-b]").forEach(function(i){t+=Number(i.valu
 $$("input[data-b]").forEach(function(i){i.addEventListener("input",btot);}); btot();
 /* ── nav highlight ── */
 var links=$$("nav a"),secs=links.map(function(l){return $(l.getAttribute("href"));});
-window.addEventListener("scroll",function(){var y=window.scrollY+140,idx=0;secs.forEach(function(s,i){if(s&&s.offsetTop<=y)idx=i;});links.forEach(function(l,i){l.classList.toggle("active",i===idx);});},{passive:true});
+var tb=$("#topbtn");
+tb.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+window.addEventListener("scroll",function(){var y=window.scrollY+140,idx=0;secs.forEach(function(s,i){if(s&&s.offsetTop<=y)idx=i;});links.forEach(function(l,i){l.classList.toggle("active",i===idx);});tb.classList.toggle("show",window.scrollY>500);},{passive:true});
 /* ── self-save: download this same file with state embedded ── */
 function collect(){var st={checks:{},notes:{},budget:{},savedAt:null};
   $$("input[data-ck]").forEach(function(b){st.checks[b.dataset.ck]=b.checked;});
