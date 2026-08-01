@@ -1055,10 +1055,11 @@ $("#savebtn").addEventListener("click",function(){
     live.bd.forEach(function(i){var c=doc.querySelector('input[data-b="'+i.dataset.b+'"]');if(c)c.setAttribute("value",i.value);});
     var html="<!DOCTYPE html>\n"+doc.outerHTML;
     var blob=new Blob([html],{type:"text/html;charset=utf-8"});
-    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="istanbul-honeymoon-itinerary.html";
+    var isLive=/github\.io$/.test(location.hostname);
+    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=isLive?"index.html":"istanbul-honeymoon-itinerary.html";
     document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},800);
     $("#lastsaved").textContent="Last saved · آخر حفظ: "+st.savedAt;
-    toast("Saved copy downloaded — replace the old file with it.<span class='arl'>تم تنزيل نسخة محدثة تحمل كل تعديلاتك — استبدل بها الملف القديم.</span>");
+    toast(isLive?"index.html downloaded — upload it to the GitHub repo to update the live link.<span class='arl'>تم تنزيل index.html بكل تعديلاتك — ارفعه لمستودع GitHub (Add file → Upload) ليتحدث الرابط خلال دقيقة.</span>":"Saved copy downloaded — replace the old file with it.<span class='arl'>تم تنزيل نسخة محدثة تحمل كل تعديلاتك — استبدل بها الملف القديم.</span>");
   }catch(e){toast("Save failed in this viewer — open the file in a browser and try again.<span class='arl'>تعذر الحفظ في هذا العارض — افتح الملف في المتصفح وأعد المحاولة.</span>");}
 });
 })();
