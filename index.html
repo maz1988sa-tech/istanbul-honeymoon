@@ -269,6 +269,42 @@ footer .scrf{font-family:var(--script);font-size:26px;color:var(--taupe);margin-
 footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 @media(max-width:840px){.infogrid{grid-template-columns:1fr 1fr}.band .wrap{grid-template-columns:1fr 1fr}.stamp,.stamp2{display:none}}
 @media(max-width:600px){.slot{grid-template-columns:58px 34px 1fr;gap:8px}.rail{display:none}}
+/* ══ CHIP POPUP (frosted glass) ══ */
+.acchip{cursor:pointer;transition:.15s}
+.acchip:hover{border-color:var(--olive);box-shadow:0 2px 8px rgba(107,108,76,.25);transform:translateY(-1px)}
+.cmodal{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:18px}
+.cmodal[hidden]{display:none}
+.cm-backdrop{position:absolute;inset:0;background:rgba(46,36,22,.45);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.cm-glass{position:relative;z-index:2;width:min(560px,94vw);max-height:84vh;display:flex;flex-direction:column;border-radius:24px;padding:20px 22px 16px;color:#f6eeda;
+ background:linear-gradient(165deg,rgba(96,76,50,.55),rgba(58,45,28,.72));
+ -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+ border:1px solid rgba(255,246,228,.4);box-shadow:0 30px 70px rgba(35,26,14,.55),inset 0 1px 0 rgba(255,250,238,.35);
+ animation:cmin .18s ease}
+@keyframes cmin{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.cm-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,246,228,.5);background:rgba(255,246,228,.12);color:#fdf8ec;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.cm-x:hover{background:rgba(255,246,228,.3)}
+.cm-day{font-family:var(--serif);font-size:12.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;padding-right:40px}
+.cm-day .arl{font-family:var(--ar);letter-spacing:0;text-transform:none;opacity:.9}
+.cm-tabs{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.cm-tab{display:inline-flex;gap:7px;align-items:center;font-family:var(--sans);font-size:11.5px;font-weight:600;padding:6px 13px;border-radius:99px;border:1px solid rgba(255,246,228,.45);background:rgba(255,246,228,.1);color:#f6eeda;cursor:pointer}
+.cm-tab svg{width:14px;height:14px}
+.cm-tab .arl{font-family:var(--ar)}
+.cm-tab.on{background:#fdf8ec;color:#57462f;border-color:#fdf8ec}
+.cm-rule{height:1.5px;background:rgba(255,246,228,.5);margin:14px 0 4px}
+.cm-list{overflow-y:auto;padding:2px 2px 6px}
+.cm-row{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px dashed rgba(255,246,228,.28)}
+.cm-row:last-child{border-bottom:none}
+.cm-ic{flex:none;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,246,228,.45);display:flex;align-items:center;justify-content:center;color:#fdf8ec}
+.cm-ic svg{width:17px;height:17px}
+.cm-t{flex:1;min-width:0}
+.cm-t b{display:block;font-family:var(--sans);font-size:14.5px;font-weight:600;line-height:1.35}
+.cm-t small{font-size:11px;opacity:.8;letter-spacing:.06em}
+.cm-btn{flex:none;display:inline-flex;gap:6px;align-items:center;font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:7px 13px;border-radius:99px;border:1px solid rgba(255,246,228,.55);color:#fdf8ec;background:rgba(255,246,228,.1);text-decoration:none;margin-left:6px}
+.cm-btn svg{width:12px;height:12px}
+.cm-btn:hover{background:#fdf8ec;color:#57462f;border-bottom-color:transparent}
+.cm-btn .arl{font-family:var(--ar);text-transform:none;letter-spacing:0}
+.cm-empty{text-align:center;opacity:.8;padding:18px 0;font-family:var(--ar);font-size:15px}
+body.modal-open{overflow:hidden}
 @media print{nav,#tracker,#savebtn,#toast{display:none}.day{break-inside:avoid;box-shadow:none}body{background:#fff}}
 </style>
 </head>
@@ -1108,8 +1144,8 @@ $$("article.day").forEach(function(day){
   $$(".slot",day).forEach(function(s){var c=s.dataset.cat;if(c){counts[c]=(counts[c]||0)+1;totals[c]=(totals[c]||0)+1;}if(s.dataset.must){must++;mustTotal++;}});
   var box=$(".autochips",day); if(!box)return; var html="";
   ["act","food","cafe","shop","move"].forEach(function(k){ if(counts[k]){var m=CATS[k];
-    html+='<span class="acchip"><svg><use href="#'+m.icon+'"/></svg><b>'+counts[k]+'</b> '+m.en+' <span class="arl">'+m.ar+'</span></span>';}});
-  if(must)html+='<span class="acchip star"><svg><use href="#i-star"/></svg><b>'+must+'</b> Must-see <span class="arl">مهمة</span></span>';
+    html+='<span class="acchip" data-cat="'+k+'" role="button" title="اضغط لعرض القائمة"><svg><use href="#'+m.icon+'"/></svg><b>'+counts[k]+'</b> '+m.en+' <span class="arl">'+m.ar+'</span></span>';}});
+  if(must)html+='<span class="acchip star" data-cat="must" role="button" title="اضغط لعرض القائمة"><svg><use href="#i-star"/></svg><b>'+must+'</b> Must-see <span class="arl">مهمة</span></span>';
   box.innerHTML=html;
 });
 $("#st-act").textContent=totals.act; $("#st-food").textContent=totals.food+totals.cafe; $("#st-must").textContent=mustTotal;
@@ -1137,6 +1173,49 @@ function dayprog(){var done=$$("article.day.dday-done").length;
 $("#collapseAll").addEventListener("click",function(){$$("article.day").forEach(function(d){d.classList.add("collapsed")});autosave();});
 $("#expandAll").addEventListener("click",function(){$$("article.day").forEach(function(d){d.classList.remove("collapsed")});autosave();});
 dayprog();
+/* ── frosted-glass chip popup ── */
+var MCATS={act:CATS.act,food:CATS.food,cafe:CATS.cafe,shop:CATS.shop,move:CATS.move,must:{icon:"i-star",en:"Must-see",ar:"مهمة"}};
+function buildModal(){ if($("#chipModal"))return $("#chipModal");
+  var m=document.createElement("div"); m.id="chipModal"; m.className="cmodal"; m.hidden=true;
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass"><button class="cm-x" type="button" title="إغلاق">✕</button><div class="cm-day"></div><div class="cm-tabs"></div><div class="cm-rule"></div><div class="cm-list"></div></div>';
+  document.body.appendChild(m);
+  function close(){m.hidden=true;document.body.classList.remove("modal-open");}
+  m.querySelector(".cm-x").addEventListener("click",close);
+  m.querySelector(".cm-backdrop").addEventListener("click",close);
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")close();});
+  return m;}
+function itemsFor(day,cat){
+  var slots=cat==="must"?$$(".slot[data-must]",day):$$('.slot[data-cat="'+cat+'"]',day);
+  return slots.map(function(s){
+    var mapA=s.querySelector("a.act.mapb"), bookA=s.querySelector("a.act:not(.mapb)"), rate=s.querySelector(".pill.rate");
+    return { icon:s.dataset.icon||"pin",
+      time:(s.querySelector(".time")||{}).textContent||"",
+      title:($(".ttl",s)?$(".ttl",s).childNodes[0].textContent.trim():""),
+      maps:mapA?mapA.href:null, book:bookA?bookA.href:null,
+      rate:rate?rate.textContent.replace(/\s+/g," ").trim():"" };});}
+function openChipModal(day,cat){
+  var m=buildModal(), dnum=($(".dnum",day)||{}).textContent||"", ttl=$(".day-head h3",day);
+  var tEn=ttl?ttl.childNodes[0].textContent.trim():"", tAr=ttl&&ttl.querySelector(".ar")?ttl.querySelector(".ar").textContent.replace("|","").trim():"";
+  m.querySelector(".cm-day").innerHTML=dnum+" — "+tEn+' <span class="arl">'+tAr+"</span>";
+  var tabs=m.querySelector(".cm-tabs"); tabs.innerHTML="";
+  Object.keys(MCATS).forEach(function(k){
+    var n=itemsFor(day,k).length; if(!n)return;
+    var b=document.createElement("button"); b.type="button"; b.className="cm-tab"+(k===cat?" on":"");
+    b.innerHTML='<svg><use href="#'+MCATS[k].icon+'"/></svg><b>'+n+"</b> "+MCATS[k].en+' <span class="arl">'+MCATS[k].ar+"</span>";
+    b.addEventListener("click",function(){openChipModal(day,k);});
+    tabs.appendChild(b);});
+  var list=m.querySelector(".cm-list"), items=itemsFor(day,cat), html="";
+  if(!items.length)html='<div class="cm-empty">لا توجد عناصر في هذه الفئة لهذا اليوم</div>';
+  items.forEach(function(it){
+    html+='<div class="cm-row"><span class="cm-ic"><svg><use href="#i-'+it.icon+'"/></svg></span><span class="cm-t"><b>'+it.title+"</b><small>"+it.time+(it.rate?" · "+it.rate:"")+"</small></span>";
+    if(it.book)html+='<a class="cm-btn" href="'+it.book+'" target="_blank" rel="noopener"><svg><use href="#i-book"/></svg>Book <span class="arl">حجز</span></a>';
+    if(it.maps)html+='<a class="cm-btn" href="'+it.maps+'" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg>Maps <span class="arl">الخريطة</span></a>';
+    html+="</div>";});
+  list.innerHTML=html; list.scrollTop=0;
+  m.hidden=false; document.body.classList.add("modal-open");}
+document.addEventListener("click",function(e){
+  var ch=e.target.closest?e.target.closest(".acchip"):null; if(!ch||!ch.dataset.cat)return;
+  var day=ch.closest("article.day"); if(day)openChipModal(day,ch.dataset.cat);});
 /* ── timeline rail ── */
 var rail=$("#rail");
 for(var d=0;d<11;d++){var el=document.createElement("div");el.className="dot";el.textContent=20+d;el.dataset.date="2026-09-"+(20+d);rail.appendChild(el);}
@@ -1223,7 +1302,7 @@ $("#savebtn").addEventListener("click",function(){
     var st=collect();
     var doc=document.documentElement.cloneNode(true);
     var holder=doc.querySelector("#savestate"); holder.textContent=JSON.stringify(st);
-    [].slice.call(doc.querySelectorAll(".dayctl")).forEach(function(n){n.parentNode.removeChild(n);}); /* re-injected on load */
+    [].slice.call(doc.querySelectorAll(".dayctl, #chipModal")).forEach(function(n){n.parentNode.removeChild(n);}); /* re-injected on load */
     /* bake current field values into the clone so the saved file matches the screen */
     var live={ck:$$("input[data-ck]"),nt:$$("textarea[data-note]"),bd:$$("input[data-b]")};
     live.ck.forEach(function(b){var c=doc.querySelector('input[data-ck="'+b.dataset.ck+'"]');if(c){if(b.checked)c.setAttribute("checked","checked");else c.removeAttribute("checked");}});
