@@ -948,7 +948,7 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 <footer><div class="wrap">
 <div class="scrf">collect moments, not things</div>
 <b>Verified August 2026 — official sources:</b> muze.gen.tr (Hagia Sophia · Galata Tower · Maiden's Tower · Chora) · millisaraylar.gov.tr (Topkapı · Dolmabahçe) · yerebatan.com (Cistern) · istanbulmodern.org · sehirhatlari.istanbul (ferries) · turkft.com · neolokal.com · huqqa.com · flynas.com · Michelin Guide Türkiye 2026. Alcohol policies verified per venue via TripAdvisor listings, HalalTrip and official menus (Aug 2026). All links tested. Prices in Türkiye shift with little notice — reconfirm each booking a few days ahead.
-<div class="ar">تم التحقق من كل الروابط والأسعار من المصادر الرسمية في أغسطس ٢٠٢٦ — وننصح بإعادة التأكد قبل كل حجز بأيام، فالأسعار في تركيا تتغير بسرعة. اضغطا زر الحفظ بعد أي تعديل لتنزيل نسخة محدثة من هذا الملف تحفظ كل شيء. رحلة موفقة وشهر عسل سعيد ✦</div>
+<div class="ar">تم التحقق من كل الروابط والأسعار من المصادر الرسمية في أغسطس ٢٠٢٦ — وننصح بإعادة التأكد قبل كل حجز بأيام، فالأسعار في تركيا تتغير بسرعة. الحفظ على مستويين: تعديلاتكما (التشيك والملاحظات والميزانية) تُحفظ <b>تلقائياً وفوراً</b> في ذاكرة هذا المتصفح وتبقى بعد إغلاق الصفحة — وزر «حفظ» ينزّل نسخة الملف لرفعها على GitHub عند الحاجة لمزامنة التعديلات على الرابط لكل الأجهزة. رحلة موفقة وشهر عسل سعيد ✦</div>
 <div id="lastsaved"></div>
 </div></footer>
 
@@ -965,13 +965,28 @@ var DAY_MS=86400000;
 var CATS={act:{icon:"i-landmark",en:"Activities",ar:"فعاليات"},food:{icon:"i-food",en:"Restaurants",ar:"مطاعم"},cafe:{icon:"i-coffee",en:"Cafés & Sweets",ar:"مقاهي وحلا"},shop:{icon:"i-shop",en:"Shopping",ar:"تسوق"},move:{icon:"i-taxi",en:"Transfers",ar:"تنقّل"}};
 function $(s,c){return (c||document).querySelector(s)}
 function $$(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))}
-/* ── restore saved state ── */
-var state={checks:{},notes:{},budget:{},savedAt:null};
-try{var raw=JSON.parse($("#savestate").textContent||"{}"); if(raw&&typeof raw==="object"){state.checks=raw.checks||{};state.notes=raw.notes||{};state.budget=raw.budget||{};state.savedAt=raw.savedAt||null;}}catch(e){}
+/* ── storage layer: embedded state + browser memory (localStorage when the environment allows it) ── */
+var KEY="ist-honeymoon-v1", store=null;
+try{var probe="__ist_probe";window.localStorage.setItem(probe,"1");window.localStorage.removeItem(probe);store=window.localStorage;}catch(e){store=null}
+var EMB={},LS=null;
+try{EMB=JSON.parse($("#savestate").textContent||"{}")||{};}catch(e){EMB={}}
+try{if(store){var lraw=store.getItem(KEY);if(lraw)LS=JSON.parse(lraw);}}catch(e){LS=null}
+/* newer wins: embedded file-state vs this browser's memory */
+var state=(LS&&((LS.ts||0)>=(EMB.ts||0)))?LS:EMB;
+state=state||{};state.checks=state.checks||{};state.notes=state.notes||{};state.budget=state.budget||{};state.savedAt=state.savedAt||null;
 $$("input[data-ck]").forEach(function(b){b.checked=!!state.checks[b.dataset.ck];});
 $$("textarea[data-note]").forEach(function(t){if(state.notes[t.dataset.note])t.value=state.notes[t.dataset.note];});
 $$("input[data-b]").forEach(function(i){if(state.budget[i.dataset.b]!=null)i.value=state.budget[i.dataset.b];});
-if(state.savedAt){$("#lastsaved").textContent="Last saved · آخر حفظ: "+state.savedAt;}
+if(state.savedAt){$("#lastsaved").textContent="Last saved · آخر حفظ: "+state.savedAt+(store?"":" — (المعاينة هنا لا تدعم الحفظ التلقائي)");}
+/* ── AUTOSAVE: any change is written instantly to this browser's memory ── */
+var _t=null;
+function autosave(){ if(!store)return;
+  clearTimeout(_t); _t=setTimeout(function(){ try{
+    var st=collect(); store.setItem(KEY,JSON.stringify(st));
+    $("#lastsaved").textContent="Auto-saved in this browser · حُفظ تلقائياً في هذا المتصفح — "+st.savedAt;
+  }catch(e){} },300);}
+document.addEventListener("change",function(ev){if(ev.target&&(ev.target.dataset.ck||ev.target.dataset.b||ev.target.dataset.note!=null))autosave();});
+document.addEventListener("input",function(ev){if(ev.target&&(ev.target.dataset.note!=null||ev.target.dataset.b))autosave();});
 /* ── day chips + global stats ── */
 var totals={act:0,food:0,cafe:0,shop:0,move:0},mustTotal=0;
 $$("article.day").forEach(function(day){
@@ -1041,6 +1056,7 @@ function collect(){var st={checks:{},notes:{},budget:{},savedAt:null};
   $$("textarea[data-note]").forEach(function(t){if(t.value)st.notes[t.dataset.note]=t.value;});
   $$("input[data-b]").forEach(function(i){if(i.value!=="")st.budget[i.dataset.b]=i.value;});
   var n=istWall(new Date());st.savedAt=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0")+" "+fmtT(n)+" (Istanbul time)";
+  st.ts=Date.now();
   return st;}
 function toast(msg){var t=$("#toast");t.innerHTML=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},4200);}
 $("#savebtn").addEventListener("click",function(){
