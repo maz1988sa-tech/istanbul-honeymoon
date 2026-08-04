@@ -198,8 +198,23 @@
   .flow-node.release{ background:#1F7A48; color:#fff; display:flex; gap:10px; align-items:center; font-weight:700; font-size:14px; }
   .flow-sep{ align-self:center; color:var(--muted); padding:5px 0; }
 
-  /* execution + delivery track (TO-BE) */
-  .exec-wrap{ border:1px solid var(--line); border-radius:11px; background:var(--paper); padding:13px 16px 15px; }
+  /* execution + delivery track (TO-BE) — a closed ring nothing enters directly */
+  .exec-wrap{ position:relative; border:1.6px solid var(--blue); border-radius:11px; background:var(--paper);
+    padding:17px 16px 15px; box-shadow:0 0 0 5px color-mix(in srgb, var(--blue) 12%, transparent);
+    transition:border-color .35s, box-shadow .35s; }
+  .exec-wrap.blocked{ border-color:var(--red); box-shadow:0 0 0 7px color-mix(in srgb, var(--red) 24%, transparent); }
+  .exec-wrap.entered{ box-shadow:0 0 0 7px color-mix(in srgb, var(--green) 26%, transparent); }
+  .exec-shield{ position:absolute; top:-12px; left:14px; z-index:3; display:inline-flex; gap:6px; align-items:center;
+    background:var(--dark-band); color:#fff; border-radius:999px; padding:3px 12px; font-size:10px; font-weight:700; letter-spacing:.07em; }
+  .exec-shield .ic{ width:12px; height:12px; }
+  .pipe-line.hold span:first-child{ color:var(--amber); }
+  .pipe-line.hold .fillbar{ background:var(--amber); }
+  .pipe-line.adhoc span:first-child{ color:var(--red); }
+  .pipe-line.adhoc .fillbar{ background:var(--red); }
+  .req-chip.held{ border-color:var(--amber); background:var(--amber-soft); }
+  .req-chip.held small{ color:var(--amber); }
+  .pkg-chip{ display:inline-flex; align-items:center; gap:6px; background:var(--dark-band); color:#fff;
+    border-radius:999px; padding:4px 12px; font-size:11px; font-weight:700; white-space:nowrap; }
   .ep-head{ display:flex; align-items:center; gap:9px; font-size:13px; flex-wrap:wrap; }
   .ep-head b{ letter-spacing:.05em; }
   .ep-state{ margin-left:auto; font-size:11.5px; font-style:italic; color:var(--muted); }
@@ -275,11 +290,22 @@
   .cap-row{ display:grid; grid-template-columns:150px 1fr 46px; gap:10px; align-items:center; }
   .cap-row .cn{ font-size:13px; font-weight:700; }
   .slots{ display:flex; gap:6px; }
-  .slot{ width:26px; height:26px; border-radius:6px; border:1.5px solid var(--blue); background:var(--surface); transition:background .3s, transform .3s, border-color .3s; }
+  .slot{ position:relative; overflow:hidden; width:26px; height:26px; border-radius:6px; border:1.5px solid var(--blue);
+    background:var(--surface); transition:background .3s, transform .3s, border-color .3s; }
+  .slot .prog{ position:absolute; left:0; right:0; bottom:0; height:0%; background:var(--green); }
   .slot.filled{ background:var(--blue); transform:scale(1.06); }
-  .slot.working{ animation:slotPulse 1.1s ease-in-out infinite; }
-  @keyframes slotPulse{ 0%,100%{ opacity:1; } 50%{ opacity:.5; } }
+  .slot.working{ animation:slotPulse 1.4s ease-in-out infinite; }
+  @keyframes slotPulse{ 0%,100%{ box-shadow:0 0 0 0 transparent; } 50%{ box-shadow:0 0 0 4px color-mix(in srgb, var(--blue) 30%, transparent); } }
   .slot.adhoc{ background:var(--red); border-color:var(--red); }
+  .hold-tray{ margin-top:12px; display:flex; gap:9px; align-items:center; flex-wrap:wrap;
+    background:var(--amber-soft); border:1px dashed var(--amber); color:var(--amber);
+    border-radius:9px; padding:8px 13px; font-size:12.5px; font-weight:700; }
+  .hold-tray .ic{ width:14px; height:14px; }
+  .hold-tray .hchip{ background:var(--surface); border:1px solid var(--amber); color:var(--ink);
+    border-radius:7px; padding:3px 9px; font-size:10.5px; font-weight:700; }
+  .hold-tray .hchip small{ color:var(--amber); display:block; font-size:9px; font-weight:700; }
+  .rq.away{ opacity:.35; border-style:dashed; }
+  .rq.away::after{ content:'→ sitting in HOLD (capacity)'; display:block; color:var(--amber); font-size:9px; }
   .deliver-tray{ margin-top:12px; display:flex; gap:9px; align-items:center; background:var(--green-soft);
     border:1px solid var(--green-line); color:var(--green-deep); border-radius:9px; padding:9px 13px; font-size:13.5px; font-weight:700; }
   .deliver-tray .ic{ font-size:16px; }
@@ -453,6 +479,7 @@
     <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 17.5a8.5 8.5 0 1 1 16 0" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 17.5 16 10" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="17.5" r="1.5" fill="currentColor"/></symbol>
     <symbol id="i-clip" viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M9 4.5V3h6v1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 13.5l2.4 2.4 4.6-4.8" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
     <symbol id="i-switch" viewBox="0 0 24 24"><path d="M4 8h13.5m0 0L14 4.5M17.5 8 14 11.5M20 16H6.5m0 0L10 12.5M6.5 16 10 19.5" fill="none" stroke="currentColor" stroke-width="1.9"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8.5 5v14M15.5 5v14" fill="none" stroke="currentColor" stroke-width="2.6"/></symbol>
     <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2.5 6.5H14v9.5H2.5zM14 10h3.8l2.7 3v3H14z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="6.6" cy="17.6" r="1.9" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17.6" r="1.9" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
     <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M3 12h17m0 0-6-6m6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
     <symbol id="i-arrow-d" viewBox="0 0 24 24"><path d="M12 3v17m0 0-6-6m6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
@@ -631,7 +658,8 @@
               <span>RELEASED: Work Package <span class="num" id="pkgNo"></span> → Engineering Team</span></div>
             <div class="flow-sep" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24"><use href="#i-arrow-d"/></svg></div>
 
-            <div class="exec-wrap">
+            <div class="exec-wrap" id="execWrap">
+              <div class="exec-shield"><svg class="ic" viewBox="0 0 24 24"><use href="#i-shield"/></svg> CLOSED EXECUTION — NOTHING ENTERS DIRECTLY</div>
               <div class="ep-head"><svg class="ic" viewBox="0 0 24 24"><use href="#i-box"/></svg>
                 <b>WORK PACKAGE <span class="num" id="execPkgNo">—</span> · EXECUTION</b>
                 <span class="ep-state" id="execState">waiting for the next planning release</span></div>
@@ -735,6 +763,8 @@
           <h3>Engineering capacity</h3>
           <p class="psub">Fixed weekly slots per engineering capability</p>
           <div class="cap-rows" id="capRows"></div>
+          <div class="hold-tray" id="holdTray"><svg class="ic" viewBox="0 0 24 24"><use href="#i-pause"/></svg>
+            <b>ON HOLD</b> — displaced by ad-hoc: <span id="holdEmpty" style="font-weight:400; font-style:italic;">none</span></div>
           <div class="cap-total num">Total capacity: <b>16 project slots / week</b></div>
           <div class="deliver-tray" id="delivTray"><svg class="ic" viewBox="0 0 24 24"><use href="#i-flag"/></svg>
             Delivered to date: <span class="num" id="delivCount">0</span> projects</div>
@@ -1146,7 +1176,84 @@
       addChip(d.dataset.dept);
     }
 
-    // one full lifecycle: batch gathers -> jumps to planning -> package fills -> drives to delivery
+    // one full lifecycle: batch gathers -> planning -> package enters the closed execution ring -> delivery
+    const execWrap = $('#execWrap');
+    const pipeRows = $$('#tobeStage .pipe-line');
+    const PIPE_LABELS = ['Project 1 — Design', 'Project 2 — Design', 'Project 3 — QA', 'Project 4 — QA'];
+    let pipes = [], adhocBusy = false;
+
+    function ghostFly(html, from, to, ms, easing){
+      return new Promise(res => {
+        const g = document.createElement('div');
+        g.className = 'ghost'; g.innerHTML = html;
+        stage.appendChild(g);
+        g.animate([
+          { transform:`translate(${from.x}px,${from.y}px)`, opacity:1 },
+          { transform:`translate(${to.x}px,${to.y}px)`, opacity:.9 }
+        ], { duration:ms, easing: easing || 'ease-in-out' }).onfinish = () => { g.remove(); res(); };
+      });
+    }
+
+    // how an ad-hoc gets in: blocked at the ring, escorted to governance, then swapped in
+    async function adhocAttempt(){
+      if(!busy || adhocBusy || reduced) return;
+      adhocBusy = true;
+      const d = rand(depts);
+      const s = stage.getBoundingClientRect(), r = execWrap.getBoundingClientRect();
+      const hit = { x: r.left - s.left + 18, y: r.top - s.top + r.height * .45 };
+      const g = document.createElement('div');
+      g.className = 'ghost'; g.innerHTML = '<span class="adhoc-chip">⚡ AD-HOC · urgent</span>';
+      stage.appendChild(g);
+      const from = edgeOf(d, stage, 'right');
+      // 1 — it charges straight at the execution ring…
+      await new Promise(res => g.animate([
+        { transform:`translate(${from.x}px,${from.y - 12}px)`, opacity:0 },
+        { transform:`translate(${from.x}px,${from.y - 12}px)`, opacity:1, offset:.15 },
+        { transform:`translate(${hit.x}px,${hit.y}px)` , opacity:1 }
+      ], { duration:1000, easing:'ease-in' }).onfinish = res);
+      // 2 — …and is blocked: the ring flashes red, the chip bounces off
+      execWrap.classList.add('blocked');
+      await new Promise(res => g.animate([
+        { transform:`translate(${hit.x}px,${hit.y}px)` },
+        { transform:`translate(${hit.x - 46}px,${hit.y - 10}px)` }
+      ], { duration:420, easing:'cubic-bezier(.2,1.6,.6,1)', fill:'forwards' }).onfinish = res);
+      execWrap.classList.remove('blocked');
+      // 3 — escorted up to the only legal door: governance in the planning session
+      const gc = centerOf(gate, stage);
+      await new Promise(res => g.animate([
+        { transform:`translate(${hit.x - 46}px,${hit.y - 10}px)`, opacity:1 },
+        { transform:`translate(${gc.x + 60}px,${gc.y - 12}px)`, opacity:.25 }
+      ], { duration:800, easing:'ease-in-out' }).onfinish = res);
+      g.remove();
+      gate.classList.add('pulse');
+      await wait(900);
+      gate.classList.remove('pulse');
+      if(!busy || !pipes.length){ adhocBusy = false; return; }
+      // 4 — governance approves a swap: Project 4 pauses and returns to the pipeline…
+      const pp = pipes[3];
+      pp.frozen = true;
+      pp.row.classList.add('hold');
+      pp.row.querySelector('span').textContent = '⏸ Project 4 — ON HOLD';
+      execState.textContent = 'governance swap in progress…';
+      const rr = pp.row.getBoundingClientRect();
+      const qr = queue.getBoundingClientRect();
+      await ghostFly('<span class="req-chip held" style="display:inline-flex;flex-direction:column;"><span>Project 4</span><small>⏸ held</small></span>',
+        { x: rr.left - s.left, y: rr.top - s.top },
+        { x: qr.left - s.left + 8, y: qr.top - s.top + 4 }, 750);
+      const held = document.createElement('div');
+      held.className = 'req-chip held';
+      held.innerHTML = '<span>Project 4</span><small>⏸ held · first in next package</small>';
+      queue.insertBefore(held, queue.firstChild);
+      depth++; depthEl.textContent = depth;
+      // 5 — …and the ad-hoc takes its lane inside the package
+      pp.row.classList.remove('hold');
+      pp.row.classList.add('adhoc');
+      pp.row.querySelector('span').textContent = '⚡ AD-HOC — via governance';
+      pp.p = 0; pp.t0 = performance.now(); pp.dur = 2500; pp.frozen = false;
+      execState.textContent = 'ad-hoc absorbed through governance — the ring stays closed';
+      adhocBusy = false;
+    }
+
     async function runCycle(){
       busy = true;
       const chips = Array.from(queue.children).slice(0, BATCH);
@@ -1167,24 +1274,33 @@
       gate.classList.add('pulse');
       await wait(950);
       gate.classList.remove('pulse');
-      // release
+      // release: the approved package leaves planning and enters the closed execution ring
       released++; relEl.textContent = released;
       const letter = String.fromCharCode(64 + ((released - 1) % 26) + 1);
-      pkgNoEl.textContent = letter; execPkgNo.textContent = letter; truckPkg.textContent = letter;
-      execState.textContent = 'in execution — engineers focused, zero interruptions';
-      // pipes fill to 100%
-      const durs = [2600, 3100, 3600, 4000];
+      pkgNoEl.textContent = letter;
+      const s = stage.getBoundingClientRect(), er = execWrap.getBoundingClientRect();
+      await ghostFly(`<span class="pkg-chip"><svg class="ic" viewBox="0 0 24 24" style="width:13px;height:13px"><use href="#i-box"/></svg> Package ${letter} — released</span>`,
+        { x: gc.x - 55, y: gc.y + 16 },
+        { x: er.left - s.left + er.width/2 - 70, y: er.top - s.top - 8 }, 850, 'ease-in-out');
+      execWrap.classList.add('entered');
+      setTimeout(() => execWrap.classList.remove('entered'), 900);
+      execPkgNo.textContent = letter; truckPkg.textContent = letter;
+      execState.textContent = 'in execution — inside the closed ring, zero interruptions';
+      // pipes fill to 100% (per-pipe state so a governance swap can restart one lane)
       const t0 = performance.now();
+      pipes = pipeRows.map((row, i) => ({ row, fill:fillbars[i], pct:pcts[i], p:0, t0, dur:[2600,3100,3600,4200][i], frozen:false }));
+      if(released === 1 || Math.random() < .5) setTimeout(adhocAttempt, 1200);
       await new Promise(res => {
         (function tick(now){
           let doneAll = true;
-          fillbars.forEach((f, i) => {
-            const p = Math.min(1, (now - t0) / durs[i]);
-            f.style.width = (p * 100) + '%';
-            pcts[i].textContent = Math.round(p * 100) + '%';
-            if(p < 1) doneAll = false;
+          pipes.forEach(pp => {
+            if(pp.frozen){ doneAll = false; return; }
+            pp.p = Math.min(1, (now - pp.t0) / pp.dur);
+            pp.fill.style.width = (pp.p * 100) + '%';
+            pp.pct.textContent = Math.round(pp.p * 100) + '%';
+            if(pp.p < 1) doneAll = false;
           });
-          if(doneAll) res(); else requestAnimationFrame(tick);
+          if(doneAll && !adhocBusy) res(); else requestAnimationFrame(tick);
         })(t0);
       });
       execState.textContent = 'QA complete — shipping to delivery';
@@ -1199,8 +1315,13 @@
         ], { duration:2300, easing:'ease-in-out' }).onfinish = res;
       });
       delivered++; deliveredEl.textContent = delivered;
-      // reset for the next batch
-      fillbars.forEach((f, i) => { f.style.width = '0%'; pcts[i].textContent = '0%'; });
+      // reset lanes for the next batch
+      pipes = [];
+      pipeRows.forEach((row, i) => {
+        row.classList.remove('hold','adhoc');
+        row.querySelector('span').textContent = PIPE_LABELS[i];
+        fillbars[i].style.width = '0%'; pcts[i].textContent = '0%';
+      });
       execPkgNo.textContent = '—';
       execState.textContent = 'waiting for the next planning release';
       busy = false;
@@ -1259,37 +1380,63 @@
     CAPS.forEach(([name, n]) => {
       const row = document.createElement('div');
       row.className = 'cap-row';
-      const slots = Array.from({length:n}, () => '<span class="slot"></span>').join('');
+      const slots = Array.from({length:n}, () => '<span class="slot"><span class="prog"></span></span>').join('');
       row.innerHTML = `<span class="cn">${name}</span><span class="slots">${slots}</span><span class="cq num">${n} / wk</span>`;
       rows.appendChild(row);
       row.querySelectorAll('.slot').forEach(s => slotEls.push(s));
     });
-    const slotState = slotEls.map(() => ({ chip:null, adhoc:false }));
+    const slotState = slotEls.map(() => ({ chip:null, adhoc:false, active:false, p:0, t0:0, dur:0 }));
 
     const btn = $('#runPlanning'), adhocBtn = $('#adhocBtn'), result = $('#capResult');
     const tray = $('#delivTray'), delivEl = $('#delivCount');
-    let pending = chips.slice(), week = 0, deliveredN = 0, phase = 'idle', adhocSeq = 1;
+    const holdTray = $('#holdTray'), holdEmpty = $('#holdEmpty');
+    let pending = chips.slice(), heldItems = [], week = 0, deliveredN = 0, phase = 'idle', adhocSeq = 1, inFlight = 0;
 
     function setStatus(html){ result.innerHTML = html; }
+    function updateHold(){ holdEmpty.style.display = heldItems.length ? 'none' : ''; }
 
+    function completeSlot(i){
+      const s = slotEls[i], st = slotState[i];
+      const label = st.adhoc ? '<span class="adhoc-chip">⚡ AD-HOC</span>'
+        : `<span class="rq" style="border-color:var(--green-line)">${st.chip.querySelector('.num').textContent}</span>`;
+      flyGhost(label, posIn(s), posIn(tray), 650, st.adhoc ? null : 90);
+      if(st.chip){ st.chip.classList.remove('released'); st.chip.classList.add('done'); }
+      s.classList.remove('filled','working','adhoc');
+      s.querySelector('.prog').style.height = '0%';
+      st.chip = null; st.adhoc = false;
+      deliveredN++; delivEl.textContent = deliveredN;
+    }
+
+    // an ad-hoc takes over a working slot; the displaced project sits in the HOLD area of capacity
     async function adHoc(){
       if(phase !== 'executing') return;
-      const idx = slotState.findIndex(s => s.chip && !s.adhoc);
+      const idx = slotState.findIndex(st => st.active && st.chip && !st.adhoc && st.p < .8);
       if(idx < 0) return;
-      adhocBtn.setAttribute('disabled','');
+      adhocBtn.setAttribute('disabled',''); inFlight++;
       const slot = slotEls[idx], st = slotState[idx];
       const held = st.chip;
-      // ad-hoc chip flies in from the demand panel onto the busy slot
+      st.active = false;
+      // 1 — the ad-hoc lands on the busy slot
       const from = posIn(pool); from.y -= 34;
       const to = posIn(slot);
       await flyGhost(`<span class="adhoc-chip">⚡ AD-HOC ${adhocSeq} · urgent</span>`, {x:from.x, y:from.y}, {x:to.x - 30, y:to.y - 4}, 800);
-      // the displaced project goes on hold and returns to the pipeline
-      flyGhost(held.outerHTML.replace('class="rq released"','class="rq"'), posIn(slot), posIn(held), 700, 120);
-      held.classList.remove('released'); held.classList.add('hold');
-      pending.unshift(held);
-      slot.classList.add('adhoc'); st.chip = null; st.adhoc = true;
+      // 2 — the displaced project flies into the HOLD area inside Engineering Capacity
+      flyGhost(`<span class="rq">${held.querySelector('.num').textContent}<small>${held.querySelector('small').textContent}</small></span>`,
+        posIn(slot), posIn(holdTray), 750, 110);
+      const h = document.createElement('span');
+      h.className = 'hchip';
+      h.innerHTML = `${held.querySelector('.num').textContent}<small>⚡ AD-HOC ${adhocSeq} took its slot</small>`;
+      holdTray.appendChild(h);
+      heldItems.push({ poolChip: held, el: h });
+      updateHold();
+      held.classList.remove('released'); held.classList.add('away');
+      // 3 — the ad-hoc starts loading in that slot
+      slot.classList.add('adhoc');
+      slot.querySelector('.prog').style.height = '0%';
+      st.chip = null; st.adhoc = true; st.p = 0; st.t0 = performance.now(); st.dur = reduced ? 150 : 3200; st.active = true;
+      setStatus(`⚡ <b style="color:var(--red)">Ad-hoc ${adhocSeq} absorbed through governance</b> — the displaced project now <b style="color:var(--amber)">sits in HOLD inside capacity</b> (it does not go back to requests) and is released first next week. Every other slot keeps loading, uninterrupted.`);
       adhocSeq++;
-      setStatus(`⚡ <b style="color:var(--red)">Ad-hoc absorbed through governance</b> — one released project is <b style="color:var(--amber)">on hold</b> and returns to the pipeline; the ad-hoc takes its slot. The other ${slotState.filter(s=>s.chip).length} projects keep working, uninterrupted.`);
+      inFlight--;
       await wait(400);
       if(phase === 'executing') adhocBtn.removeAttribute('disabled');
     }
@@ -1298,64 +1445,89 @@
       week++; phase = 'filling';
       btn.setAttribute('disabled',''); adhocBtn.setAttribute('disabled','');
       chips.forEach(c => c.classList.remove('waits'));
-      const take = pending.splice(0, slotEls.length);
-      setStatus(`<b>Planning week ${week}:</b> releasing ${take.length} projects into capability slots — by priority, value and capacity.`);
-      for(let i = 0; i < take.length; i++){
-        const chip = take[i], slot = slotEls[i];
-        chip.classList.remove('hold');
+      // held work leaves the HOLD area first, then new demand fills the rest
+      const takeHeld = heldItems.splice(0, slotEls.length);
+      const takeNew = pending.splice(0, slotEls.length - takeHeld.length);
+      setStatus(`<b>Planning week ${week}:</b> releasing ${takeHeld.length ? takeHeld.length + ' held + ' : ''}${takeNew.length} projects into capability slots — blue when a slot is taken.`);
+      let i = 0;
+      for(const hd of takeHeld){
+        const slot = slotEls[i];
+        flyGhost(`<span class="rq">${hd.poolChip.querySelector('.num').textContent}<small>from HOLD</small></span>`, posIn(hd.el), posIn(slot), 550, 110);
+        hd.el.remove();
+        hd.poolChip.classList.remove('away'); hd.poolChip.classList.add('released');
+        await wait(120);
+        slot.classList.add('filled');
+        slotState[i] = { chip: hd.poolChip, adhoc:false, active:false, p:0, t0:0, dur:0 };
+        i++;
+      }
+      updateHold();
+      for(const chip of takeNew){
+        const slot = slotEls[i];
         flyGhost(chip.outerHTML, posIn(chip), posIn(slot), 550, 120);
         await wait(120);
         slot.classList.add('filled');
         chip.classList.add('released');
-        slotState[i].chip = chip; slotState[i].adhoc = false;
+        slotState[i] = { chip, adhoc:false, active:false, p:0, t0:0, dur:0 };
+        i++;
       }
       pending.forEach(c => c.classList.add('waits'));
-      // execution
+      // execution: each blue slot loads green 0 -> 100%, then travels to Delivered
       phase = 'executing';
-      slotEls.forEach((s, i) => { if(slotState[i].chip) s.classList.add('working'); });
-      adhocBtn.removeAttribute('disabled');
-      setStatus(`<b>Week ${week} in execution</b> — ${take.length} projects in progress. ${pending.length} wait safely in the pipeline.` +
-        (week === 1 ? ' <i>(watch for the ad-hoc…)</i>' : ''));
-      if(week === 1) setTimeout(adHoc, reduced ? 100 : 1800);
-      await wait(5200);
-      // delivery: filled slots empty out and travel to the delivered tray
-      phase = 'delivering'; adhocBtn.setAttribute('disabled','');
-      let n = 0;
-      for(let i = 0; i < slotEls.length; i++){
-        const s = slotEls[i], st = slotState[i];
-        if(!st.chip && !st.adhoc) continue;
-        const label = st.adhoc ? '<span class="adhoc-chip">⚡ AD-HOC</span>' : `<span class="rq released" style="background:var(--surface)">${st.chip.querySelector('.num').textContent}</span>`;
-        flyGhost(label, posIn(s), posIn(tray), 650, st.adhoc ? null : 90);
-        await wait(90);
-        if(st.chip){ st.chip.classList.remove('released'); st.chip.classList.add('done'); }
-        s.classList.remove('filled','working','adhoc');
-        st.chip = null; st.adhoc = false;
-        n++; deliveredN++; delivEl.textContent = deliveredN;
+      const t0 = performance.now();
+      let started = 0;
+      for(let k = 0; k < slotEls.length; k++){
+        const st = slotState[k];
+        if(!st.chip) continue;
+        st.active = true; st.p = 0; st.t0 = t0;
+        st.dur = reduced ? 100 + started * 30 : 3600 + Math.random() * 2600;
+        slotEls[k].classList.add('working');
+        started++;
       }
-      const left = pending.length;
+      adhocBtn.removeAttribute('disabled');
+      setStatus(`<b>Week ${week} in execution</b> — each slot loads green as its project completes; done projects fly to Delivered.` +
+        (week === 1 ? ' <i>(watch for the ad-hoc…)</i>' : ''));
+      if(week === 1) setTimeout(adHoc, reduced ? 120 : 1700);
+      await new Promise(res => {
+        (function tick(now){
+          let anyActive = false;
+          for(let k = 0; k < slotEls.length; k++){
+            const st = slotState[k];
+            if(!st.active) continue;
+            st.p = Math.min(1, (now - st.t0) / st.dur);
+            slotEls[k].querySelector('.prog').style.height = (st.p * 100) + '%';
+            if(st.p >= 1){ st.active = false; completeSlot(k); }
+            else anyActive = true;
+          }
+          if(anyActive || inFlight > 0) requestAnimationFrame(tick); else res();
+        })(t0);
+      });
+      adhocBtn.setAttribute('disabled','');
+      const left = pending.length + heldItems.length;
       if(left > 0){
         phase = 'idle';
-        setStatus(`<b style="color:var(--green-deep)">Week ${week} done — ${n} delivered ✓</b> · ${left} projects (including any held work) are queued for the next planning session.`);
+        setStatus(`<b style="color:var(--green-deep)">Week ${week} done ✓</b> — completed slots emptied into Delivered (${deliveredN} to date). ${heldItems.length ? `<b style="color:var(--amber)">${heldItems.length} project in HOLD is released first.</b> ` : ''}${left} queued for the next planning session.`);
         btn.textContent = `Run planning week ${week + 1}`;
         btn.removeAttribute('disabled');
       } else {
         phase = 'finished';
-        setStatus(`<b style="color:var(--green-deep)">All demand delivered ✓</b> — ${deliveredN} projects through ${week} governed weekly cycles. No interruptions ever reached an engineer.`);
+        setStatus(`<b style="color:var(--green-deep)">All demand delivered ✓</b> — ${deliveredN} projects through ${week} governed weekly cycles. No interruption ever reached an engineer.`);
         btn.textContent = 'Reset simulation';
         btn.removeAttribute('disabled');
       }
     }
 
     function resetAll(){
-      chips.forEach(c => c.classList.remove('released','waits','done','hold'));
-      slotEls.forEach(s => s.classList.remove('filled','working','adhoc'));
-      slotState.forEach(st => { st.chip = null; st.adhoc = false; });
-      pending = chips.slice(); week = 0; deliveredN = 0; adhocSeq = 1; phase = 'idle';
-      delivEl.textContent = 0;
+      chips.forEach(c => c.classList.remove('released','waits','done','away'));
+      slotEls.forEach(s => { s.classList.remove('filled','working','adhoc'); s.querySelector('.prog').style.height = '0%'; });
+      slotState.forEach(st => { st.chip = null; st.adhoc = false; st.active = false; });
+      heldItems.forEach(hd => hd.el.remove());
+      pending = chips.slice(); heldItems = []; week = 0; deliveredN = 0; adhocSeq = 1; phase = 'idle';
+      delivEl.textContent = 0; updateHold();
       btn.textContent = 'Run planning week 1';
       setStatus('Demand exceeds capacity every week — planning decides what wins, openly.');
     }
 
+    updateHold();
     btn.addEventListener('click', () => {
       if(phase === 'finished'){ resetAll(); return; }
       if(phase === 'idle') runWeek();
