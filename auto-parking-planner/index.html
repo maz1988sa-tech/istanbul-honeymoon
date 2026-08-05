@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto Parking Planner</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ══════════════════════ TOP BAR ══════════════════════ -->
+  <header id="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="3" fill="#2f6fed"/>
+        <text x="12" y="17" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" font-family="Arial">P</text>
+      </svg>
+      <span>Auto&nbsp;Parking&nbsp;Planner</span>
+    </div>
+    <div class="topbar-mid">
+      <span id="topProjectName">Untitled Project</span>
+    </div>
+    <div class="topbar-actions">
+      <button id="btnUndo" class="tb-btn" title="Undo (Ctrl+Z)">&#8630; Undo</button>
+      <button id="btnRedo" class="tb-btn" title="Redo (Ctrl+Y)">&#8631; Redo</button>
+      <button id="btnRegenerate" class="tb-btn primary" title="Discard manual edits and re-run the full optimizer">&#10227; Regenerate</button>
+      <button id="btnPanelLeft"  class="tb-btn narrow-only" title="Toggle inputs panel">&#9776;</button>
+      <button id="btnPanelRight" class="tb-btn narrow-only" title="Toggle results panel">&#9783;</button>
+    </div>
+  </header>
+
+  <!-- ══════════════════════ LEFT PANEL — INPUTS ══════════════════════ -->
+  <aside id="leftPanel">
+
+    <!-- Project information -->
+    <details class="sec" open id="secProject">
+      <summary>Project information</summary>
+      <div class="sec-body">
+        <label class="fld"><span>Project name</span><input type="text" data-bind="project.name" data-type="str"></label>
+        <label class="fld"><span>Project number</span><input type="text" data-bind="project.number" data-type="str"></label>
+        <label class="fld"><span>Designer</span><input type="text" data-bind="project.designer" data-type="str"></label>
+        <label class="fld"><span>Client</span><input type="text" data-bind="project.client" data-type="str"></label>
+        <div class="fld-row">
+          <label class="fld"><span>Latitude (optional)</span><input type="number" step="any" data-bind="project.lat" data-type="numopt" placeholder="e.g. 24.7136"></label>
+          <label class="fld"><span>Longitude (optional)</span><input type="number" step="any" data-bind="project.lng" data-type="numopt" placeholder="e.g. 46.6753"></label>
+        </div>
+        <p class="hint">Latitude / longitude are project-location metadata only. All site geometry is designed in metres — geographic coordinates alone are not sufficient for centimetre-accurate site design without a GIS projection.</p>
+      </div>
+    </details>
+
+    <!-- Land boundary -->
+    <details class="sec" open id="secLand">
+      <summary>Land boundary</summary>
+      <div class="sec-body">
+        <div class="seg" role="radiogroup" aria-label="Land definition method">
+          <label><input type="radio" name="landMode" value="rect"  data-bind="land.mode" data-type="radio"><span>Rectangular</span></label>
+          <label><input type="radio" name="landMode" value="poly"  data-bind="land.mode" data-type="radio"><span>Custom polygon</span></label>
+        </div>
+        <div id="landRectFields">
+          <div class="fld-row">
+            <label class="fld"><span>Land width (m)</span><input type="number" min="10" max="1000" step="0.5" data-bind="land.width" data-type="num"></label>
+            <label class="fld"><span>Land depth (m)</span><input type="number" min="10" max="1000" step="0.5" data-bind="land.depth" data-type="num"></label>
+          </div>
+          <div class="fld-row">
+            <label class="fld"><span>Site rotation (&deg;)</span><input type="number" min="-180" max="180" step="1" data-bind="land.rotation" data-type="num"></label>
+            <label class="fld"><span>North direction (&deg;)</span><input type="number" min="-180" max="180" step="1" data-bind="land.northAngle" data-type="num" title="0 = north points up. Positive rotates the north arrow clockwise."></label>
+          </div>
+        </div>
+        <div id="landPolyFields" class="is-hidden">
+          <div class="btn-grid">
+            <button id="btnPolyStart"  class="btn">Start drawing</button>
+            <button id="btnPolyFinish" class="btn">Finish boundary</button>
+            <button id="btnPolyUndo"   class="btn">Undo last point</button>
+            <button id="btnPolyClear"  class="btn danger">Clear boundary</button>
+            <button id="btnPolyEdit"   class="btn">Edit vertices</button>
+          </div>
+          <p class="hint">Click on the canvas to place boundary points. Segment lengths are shown live on the plan. The polygon area is computed with the shoelace formula.</p>
+          <div class="mini-stat">Vertices: <b id="polyVertexCount">0</b> &nbsp;&middot;&nbsp; Area: <b id="polyArea">–</b></div>
+        </div>
+        <div class="mini-stat">Land area: <b id="landAreaInline">–</b></div>
+      </div>
+    </details>
+
+    <!-- Roads -->
+    <details class="sec" id="secRoads">
+      <summary>Roads</summary>
+      <div class="sec-body">
+        <div id="roadsList" class="dyn-list"></div>
+        <button id="btnAddRoad" class="btn wide">+ Add road</button>
+        <p class="hint">Assign each road to a land edge. Roads narrower than their minimum permitted width are highlighted on the plan and reported as warnings.</p>
+      </div>
+    </details>
+
+    <!-- Building -->
+    <details class="sec" open id="secBuilding">
+      <summary>Building</summary>
+      <div class="sec-body">
+        <div id="buildingTabs" class="chip-row"></div>
+        <div class="seg" role="radiogroup" aria-label="Building definition method">
+          <label><input type="radio" name="bldgMethod" value="wh"   id="bldgMethodWh"><span>Width &times; depth</span></label>
+          <label><input type="radio" name="bldgMethod" value="area" id="bldgMethodArea"><span>Required area</span></label>
+        </div>
+        <div id="bldgWhFields">
+          <div class="fld-row">
+            <label class="fld"><span>Width (m)</span><input type="number" min="3" max="500" step="0.5" id="bldgWidth"></label>
+            <label class="fld"><span>Depth (m)</span><input type="number" min="3" max="500" step="0.5" id="bldgDepth"></label>
+          </div>
+        </div>
+        <div id="bldgAreaFields" class="is-hidden">
+          <div class="fld-row">
+            <label class="fld"><span>Footprint area (m&sup2;)</span><input type="number" min="9" max="100000" step="1" id="bldgArea"></label>
+            <label class="fld"><span>Aspect ratio (W:D)</span><input type="number" min="0.2" max="5" step="0.05" id="bldgAspect"></label>
+          </div>
+          <p class="hint">Width and depth are derived from the required area and the preferred aspect ratio.</p>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>Centre X (m)</span><input type="number" step="0.1" id="bldgX"></label>
+          <label class="fld"><span>Centre Y (m)</span><input type="number" step="0.1" id="bldgY"></label>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>Rotation (&deg;)</span><input type="number" min="-180" max="180" step="1" id="bldgRot"></label>
+          <label class="fld chk"><span>Lock position</span><input type="checkbox" id="bldgLock"></label>
+        </div>
+        <div class="btn-grid">
+          <button id="btnBldgCenter" class="btn">Centre on site</button>
+          <button id="btnBldgDuplicate" class="btn">Duplicate</button>
+          <button id="btnBldgDelete" class="btn danger">Delete</button>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>Align to edge</span>
+            <select id="selAlignEdge">
+              <option value="0">North edge</option>
+              <option value="1">East edge</option>
+              <option value="2" selected>South edge</option>
+              <option value="3">West edge</option>
+            </select>
+          </label>
+          <button id="btnBldgAlign" class="btn" style="align-self:flex-end">Align</button>
+        </div>
+        <p class="hint">Drag the building on the plan to move it; use the corner handles to resize and the top handle to rotate. The plan and parking layout regenerate automatically.</p>
+      </div>
+    </details>
+
+    <!-- Municipal setbacks -->
+    <details class="sec" id="secSetbacks">
+      <summary>Municipal setbacks</summary>
+      <div class="sec-body">
+        <div class="fld-row">
+          <label class="fld"><span>Front setback (m)</span><input type="number" min="0" max="50" step="0.5" data-bind="setbacks.front" data-type="num"></label>
+          <label class="fld"><span>Rear setback (m)</span><input type="number" min="0" max="50" step="0.5" data-bind="setbacks.rear" data-type="num"></label>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>Left setback (m)</span><input type="number" min="0" max="50" step="0.5" data-bind="setbacks.left" data-type="num"></label>
+          <label class="fld"><span>Right setback (m)</span><input type="number" min="0" max="50" step="0.5" data-bind="setbacks.right" data-type="num"></label>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>Road setback (m)</span><input type="number" min="0" max="50" step="0.5" data-bind="setbacks.road" data-type="num" title="Additional minimum setback applied on every edge that has a road"></label>
+          <label class="fld"><span>Wall clearance (m)</span><input type="number" min="0" max="10" step="0.1" data-bind="setbacks.wallClearance" data-type="num" title="Clearance to the boundary wall on edges without a road"></label>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>Building &rarr; parking (m)</span><input type="number" min="0" max="10" step="0.1" data-bind="setbacks.bldgToParking" data-type="num" title="Clearance between the building sidewalk and any parking stall"></label>
+          <label class="fld"><span>Building &rarr; aisle (m)</span><input type="number" min="0" max="10" step="0.1" data-bind="setbacks.bldgToAisle" data-type="num" title="Clearance between the building sidewalk and any drive aisle"></label>
+        </div>
+      </div>
+    </details>
+
+    <!-- Sidewalks & buffers -->
+    <details class="sec" id="secSidewalks">
+      <summary>Sidewalks &amp; buffers</summary>
+      <div class="sec-body">
+        <div class="fld-row">
+          <label class="fld"><span>Sidewalk around building (m)</span><input type="number" min="0" max="10" step="0.1" data-bind="sidewalks.building" data-type="num"></label>
+          <label class="fld"><span>Sidewalk along street (m)</span><input type="number" min="0" max="10" step="0.1" data-bind="sidewalks.street" data-type="num"></label>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>Landscape buffer (m)</span><input type="number" min="0" max="20" step="0.1" data-bind="sidewalks.landscapeBuffer" data-type="num" title="Green buffer strip along the site boundary — unavailable for parking"></label>
+        </div>
+        <p class="hint">Setback, sidewalk and buffer zones are drawn on the plan and are excluded from the parking area.</p>
+      </div>
+    </details>
+
+    <!-- Parking standards -->
+    <details class="sec" id="secStandards">
+      <summary>Parking standards</summary>
+      <div class="sec-body">
+        <h4>Standard stall</h4>
+        <div class="fld-row">
+          <label class="fld"><span>Stall width (m)</span><input type="number" min="2" max="4" step="0.05" data-bind="parking.stallW" data-type="num"></label>
+          <label class="fld"><span>Stall length (m)</span><input type="number" min="4" max="8" step="0.05" data-bind="parking.stallL" data-type="num"></label>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>Parking angle</span>
+            <select data-bind="parking.angle" data-type="str">
+              <option value="auto">Auto (best of all)</option>
+              <option value="90">90&deg;</option>
+              <option value="60">60&deg;</option>
+              <option value="45">45&deg;</option>
+              <option value="30">30&deg;</option>
+              <option value="parallel">Parallel</option>
+            </select>
+          </label>
+          <label class="fld"><span>Row loading</span>
+            <select data-bind="parking.rowType" data-type="str">
+              <option value="auto">Auto</option>
+              <option value="double">Double-loaded</option>
+              <option value="single">Single-loaded</option>
+            </select>
+          </label>
+        </div>
+        <h4>Drive aisle minimum widths</h4>
+        <div class="fld-row">
+          <label class="fld"><span>One-way 90&deg; (m)</span><input type="number" min="3" max="12" step="0.1" data-bind="parking.aisleOneWay90" data-type="num"></label>
+          <label class="fld"><span>Two-way 90&deg; (m)</span><input type="number" min="3" max="12" step="0.1" data-bind="parking.aisleTwoWay90" data-type="num"></label>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>60&deg; parking (m)</span><input type="number" min="3" max="12" step="0.1" data-bind="parking.aisle60" data-type="num"></label>
+          <label class="fld"><span>45&deg; parking (m)</span><input type="number" min="3" max="12" step="0.1" data-bind="parking.aisle45" data-type="num"></label>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>30&deg; parking (m)</span><input type="number" min="3" max="12" step="0.1" data-bind="parking.aisle30" data-type="num"></label>
+          <label class="fld"><span>Parallel parking (m)</span><input type="number" min="3" max="12" step="0.1" data-bind="parking.aisleParallel" data-type="num"></label>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>Main circulation (m)</span><input type="number" min="3" max="15" step="0.1" data-bind="parking.aisleMain" data-type="num"></label>
+          <label class="fld"><span>Fire-truck route (m)</span><input type="number" min="3" max="15" step="0.1" data-bind="parking.fireRoute" data-type="num"></label>
+        </div>
+        <h4>Accessible parking</h4>
+        <div class="fld-row">
+          <label class="fld"><span>Stall width (m)</span><input type="number" min="2.4" max="5" step="0.05" data-bind="accessible.stallW" data-type="num"></label>
+          <label class="fld"><span>Stall length (m)</span><input type="number" min="4" max="8" step="0.05" data-bind="accessible.stallL" data-type="num"></label>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>Access-aisle width (m)</span><input type="number" min="1" max="3" step="0.05" data-bind="accessible.aisleW" data-type="num"></label>
+          <label class="fld"><span>1 accessible per N stalls</span><input type="number" min="1" max="200" step="1" data-bind="accessible.ratioPer" data-type="num"></label>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>Minimum number</span><input type="number" min="0" max="50" step="1" data-bind="accessible.min" data-type="num"></label>
+        </div>
+        <h4>EV parking</h4>
+        <div class="fld-row">
+          <label class="fld"><span>Required (%)</span><input type="number" min="0" max="100" step="1" data-bind="ev.pct" data-type="num"></label>
+          <label class="fld"><span>Charger clearance (m)</span><input type="number" min="0" max="3" step="0.1" data-bind="ev.clearance" data-type="num"></label>
+        </div>
+      </div>
+    </details>
+
+    <!-- Parking demand -->
+    <details class="sec" open id="secDemand">
+      <summary>Parking demand</summary>
+      <div class="sec-body">
+        <label class="fld"><span>Calculation method</span>
+          <select data-bind="demand.method" data-type="str" id="demandMethod">
+            <option value="perArea">A — 1 space per X m&sup2;</option>
+            <option value="per100">B — spaces per 100 m&sup2;</option>
+            <option value="fixed">C — fixed number</option>
+            <option value="mixed">D — mixed uses</option>
+          </select>
+        </label>
+        <div id="demandPerArea">
+          <div class="fld-row">
+            <label class="fld"><span>m&sup2; per space</span><input type="number" min="5" max="500" step="1" data-bind="demand.sqmPerSpace" data-type="num"></label>
+            <label class="fld"><span>Total GFA (m&sup2;)</span><input type="number" min="0" max="1000000" step="1" data-bind="demand.gfa" data-type="num"></label>
+          </div>
+          <div class="fld-row">
+            <label class="fld"><span>Number of floors</span><input type="number" min="1" max="100" step="1" data-bind="demand.floors" data-type="num"></label>
+            <label class="fld chk"><span>GFA = footprint &times; floors</span><input type="checkbox" data-bind="demand.autoGfa" data-type="bool"></label>
+          </div>
+        </div>
+        <div id="demandPer100" class="is-hidden">
+          <div class="fld-row">
+            <label class="fld"><span>Spaces per 100 m&sup2;</span><input type="number" min="0.1" max="50" step="0.1" data-bind="demand.per100" data-type="num"></label>
+            <label class="fld"><span>Total GFA (m&sup2;)</span><input type="number" min="0" max="1000000" step="1" data-bind="demand.gfa2" data-type="num"></label>
+          </div>
+        </div>
+        <div id="demandFixed" class="is-hidden">
+          <label class="fld"><span>Required spaces</span><input type="number" min="0" max="10000" step="1" data-bind="demand.fixed" data-type="num"></label>
+        </div>
+        <div id="demandMixed" class="is-hidden">
+          <div id="mixedRowsList" class="dyn-list"></div>
+          <button id="btnAddMixedRow" class="btn wide">+ Add use</button>
+        </div>
+        <label class="fld"><span>Shared-parking reduction (%)</span><input type="number" min="0" max="90" step="1" data-bind="demand.sharedReductionPct" data-type="num"></label>
+        <div class="mini-stat big">Required parking: <b id="requiredInline">–</b> spaces</div>
+      </div>
+    </details>
+
+    <!-- Access & circulation -->
+    <details class="sec" id="secAccess">
+      <summary>Access &amp; circulation</summary>
+      <div class="sec-body">
+        <div id="accessList" class="dyn-list"></div>
+        <button id="btnAddAccess" class="btn wide" data-tool="addAccess">+ Add access point (click an eligible edge)</button>
+        <div class="fld-row">
+          <label class="fld"><span>Min distance from corner (m)</span><input type="number" min="0" max="50" step="0.5" data-bind="accessRules.minCornerDist" data-type="num"></label>
+          <label class="fld"><span>Min spacing between points (m)</span><input type="number" min="0" max="100" step="0.5" data-bind="accessRules.minSpacing" data-type="num"></label>
+        </div>
+        <div class="fld-row">
+          <label class="fld"><span>Throat depth (m)</span><input type="number" min="0" max="30" step="0.5" data-bind="accessRules.throatDepth" data-type="num" title="Depth kept clear of stalls behind each entrance / exit"></label>
+          <label class="fld"><span>Max dead-end aisle (m)</span><input type="number" min="5" max="100" step="1" data-bind="accessRules.maxDeadEnd" data-type="num"></label>
+        </div>
+      </div>
+    </details>
+
+    <!-- Optimization -->
+    <details class="sec" id="secOptimize">
+      <summary>Optimization settings</summary>
+      <div class="sec-body">
+        <h4>Row orientations to test</h4>
+        <label class="fld chk"><span>0&deg; (east–west rows)</span><input type="checkbox" data-bind="optimization.tryO0" data-type="bool"></label>
+        <label class="fld chk"><span>90&deg; (north–south rows)</span><input type="checkbox" data-bind="optimization.tryO90" data-type="bool"></label>
+        <label class="fld chk"><span>Parallel to longest edge</span><input type="checkbox" data-bind="optimization.tryLongest" data-type="bool"></label>
+        <label class="fld chk"><span>Parallel to building</span><input type="checkbox" data-bind="optimization.tryBuilding" data-type="bool"></label>
+        <div class="fld-row">
+          <label class="fld chk"><span>Custom angle</span><input type="checkbox" data-bind="optimization.tryCustom" data-type="bool"></label>
+          <label class="fld"><span>Custom angle (&deg;)</span><input type="number" min="-90" max="90" step="1" data-bind="optimization.customAngle" data-type="num"></label>
+        </div>
+        <h4>Scoring weights</h4>
+        <label class="fld rng"><span>Stall count <em id="wCountVal"></em></span><input type="range" min="0" max="10" step="1" data-bind="optimization.weights.count" data-type="num"></label>
+        <label class="fld rng"><span>Demand compliance <em id="wComplianceVal"></em></span><input type="range" min="0" max="10" step="1" data-bind="optimization.weights.compliance" data-type="num"></label>
+        <label class="fld rng"><span>Circulation quality <em id="wCirculationVal"></em></span><input type="range" min="0" max="10" step="1" data-bind="optimization.weights.circulation" data-type="num"></label>
+        <label class="fld rng"><span>Accessible proximity <em id="wAccessVal"></em></span><input type="range" min="0" max="10" step="1" data-bind="optimization.weights.accessProx" data-type="num"></label>
+        <label class="fld rng"><span>Landscape preservation <em id="wLandscapeVal"></em></span><input type="range" min="0" max="10" step="1" data-bind="optimization.weights.landscape" data-type="num"></label>
+        <label class="fld rng"><span>Geometry simplicity <em id="wSimpleVal"></em></span><input type="range" min="0" max="10" step="1" data-bind="optimization.weights.simplicity" data-type="num"></label>
+        <h4>Generated options</h4>
+        <div id="optionCards" class="option-cards"></div>
+      </div>
+    </details>
+
+    <!-- Layers -->
+    <details class="sec" id="secLayers">
+      <summary>Layers</summary>
+      <div class="sec-body" id="layerToggles">
+        <label class="fld chk"><span>Grid</span><input type="checkbox" data-layer="grid" checked></label>
+        <label class="fld chk"><span>Roads</span><input type="checkbox" data-layer="roads" checked></label>
+        <label class="fld chk"><span>Setbacks</span><input type="checkbox" data-layer="setbacks" checked></label>
+        <label class="fld chk"><span>Sidewalks</span><input type="checkbox" data-layer="sidewalks" checked></label>
+        <label class="fld chk"><span>Landscape</span><input type="checkbox" data-layer="landscape" checked></label>
+        <label class="fld chk"><span>Aisles</span><input type="checkbox" data-layer="aisles" checked></label>
+        <label class="fld chk"><span>Parking stalls</span><input type="checkbox" data-layer="parking" checked></label>
+        <label class="fld chk"><span>Circulation arrows</span><input type="checkbox" data-layer="arrows" checked></label>
+        <label class="fld chk"><span>Building</span><input type="checkbox" data-layer="building" checked></label>
+        <label class="fld chk"><span>Zones</span><input type="checkbox" data-layer="zones" checked></label>
+        <label class="fld chk"><span>Dimensions</span><input type="checkbox" data-layer="dimensions" checked></label>
+        <label class="fld chk"><span>Labels</span><input type="checkbox" data-layer="labels" checked></label>
+      </div>
+    </details>
+
+    <!-- Presets -->
+    <details class="sec" id="secPresets">
+      <summary>Municipality presets</summary>
+      <div class="sec-body">
+        <label class="fld"><span>Preset</span><select id="selPreset"></select></label>
+        <div class="btn-grid">
+          <button id="btnPresetLoad" class="btn">Load</button>
+          <button id="btnPresetSave" class="btn">Save as&hellip;</button>
+          <button id="btnPresetDup" class="btn">Duplicate</button>
+          <button id="btnPresetDelete" class="btn danger">Delete</button>
+          <button id="btnPresetReset" class="btn">Reset defaults</button>
+          <button id="btnPresetExport" class="btn">Export JSON</button>
+        </div>
+        <label class="fld file"><span>Import preset JSON</span><input type="file" id="filePresetImport" accept=".json,application/json"></label>
+        <p class="hint">Presets store parking ratios, stall sizes, accessible / EV requirements, setbacks, coverage and road rules. They are saved in this browser only (localStorage). No unverified legal values are hard-coded — every field is editable.</p>
+        <div class="fld-row">
+          <label class="fld"><span>Max site coverage (%)</span><input type="number" min="1" max="100" step="1" data-bind="regs.maxCoveragePct" data-type="num"></label>
+          <label class="fld"><span>Min landscape (%)</span><input type="number" min="0" max="90" step="1" data-bind="regs.minLandscapePct" data-type="num"></label>
+        </div>
+      </div>
+    </details>
+
+    <!-- Export -->
+    <details class="sec" id="secExport">
+      <summary>Export</summary>
+      <div class="sec-body">
+        <div class="btn-grid">
+          <button id="btnExpSVG" class="btn">Export SVG</button>
+          <button id="btnExpPNG" class="btn">Export PNG</button>
+          <button id="btnExpPrint" class="btn">Print / PDF</button>
+          <button id="btnExpCSV" class="btn">Parking CSV</button>
+          <button id="btnExpJSON" class="btn">Project JSON</button>
+        </div>
+        <label class="fld file"><span>Import project JSON</span><input type="file" id="fileProjectImport" accept=".json,application/json"></label>
+      </div>
+    </details>
+
+    <p class="disclaimer">This application is an early-stage planning and feasibility tool. Final compliance must be verified against the applicable municipality, Saudi Building Code, accessibility requirements, Civil Defense requirements, and project-specific authority approvals.</p>
+  </aside>
+
+  <!-- ══════════════════════ CENTER — SITE PLAN ══════════════════════ -->
+  <main id="centerPane">
+    <div id="toolbar">
+      <div class="tool-group">
+        <button class="tool-btn active" data-tool="select"    title="Select / move (V)">&#10548;<span>Select</span></button>
+        <button class="tool-btn" data-tool="pan"       title="Pan (H, or hold Space / middle mouse)">&#9995;<span>Pan</span></button>
+        <button class="tool-btn" data-tool="measure"   title="Measure distance (M)">&#128207;<span>Measure</span></button>
+        <button class="tool-btn" data-tool="dimension" title="Add a dimension annotation (D)">&#8596;<span>Dimension</span></button>
+      </div>
+      <div class="tool-group">
+        <button class="tool-btn" data-tool="zoneNo"    title="Draw a no-parking zone">&#9940;<span>No-park</span></button>
+        <button class="tool-btn" data-tool="zoneLs"    title="Draw a landscape island">&#127795;<span>Landscape</span></button>
+        <button class="tool-btn" data-tool="crossing"  title="Place a pedestrian crossing">&#128694;<span>Crossing</span></button>
+        <button class="tool-btn" data-tool="addStall"  title="Add a parking stall manually">&#128663;<span>Stall</span></button>
+        <button class="tool-btn" data-tool="addAccess" title="Add an entrance / exit on an eligible edge">&#11015;<span>Access</span></button>
+      </div>
+      <div class="tool-group">
+        <button class="tool-btn" id="btnZoomIn"  title="Zoom in (+)">&#65291;</button>
+        <button class="tool-btn" id="btnZoomOut" title="Zoom out (−)">&#65293;</button>
+        <button class="tool-btn" id="btnZoomFit" title="Zoom to fit (F)">&#8862;</button>
+        <select id="selScale" title="Drawing scale">
+          <option value="fit">Fit</option>
+          <option value="100">1:100</option>
+          <option value="200">1:200</option>
+          <option value="250">1:250</option>
+          <option value="500">1:500</option>
+        </select>
+      </div>
+      <div class="tool-group">
+        <button class="tool-btn tog active" id="btnGrid"  title="Toggle grid (G)">#<span>Grid</span></button>
+        <button class="tool-btn tog active" id="btnSnap"  title="Toggle snapping (S)">&#129522;<span>Snap</span></button>
+        <button class="tool-btn" id="btnResetLayout" title="Clear manual edits and regenerate">&#8634;<span>Reset</span></button>
+      </div>
+    </div>
+
+    <div id="canvasWrap">
+      <svg id="plan" xmlns="http://www.w3.org/2000/svg" tabindex="0" role="img" aria-label="Interactive site plan"></svg>
+      <div id="selInfo" class="is-hidden"></div>
+    </div>
+
+    <div id="statusbar">
+      <span id="statCoords">x: – , y: –</span>
+      <span id="statZoom">–</span>
+      <span id="statHint">Ready.</span>
+    </div>
+  </main>
+
+  <!-- ══════════════════════ RIGHT PANEL — RESULTS ══════════════════════ -->
+  <aside id="rightPanel">
+    <div id="compBanner" class="banner">–</div>
+
+    <div class="kpi-grid">
+      <div class="kpi"><span class="kpi-label">Land area</span><b id="kpiLandArea">–</b></div>
+      <div class="kpi"><span class="kpi-label">Building footprint</span><b id="kpiFootprint">–</b></div>
+      <div class="kpi"><span class="kpi-label">Site coverage</span><b id="kpiCoverage">–</b></div>
+      <div class="kpi"><span class="kpi-label">Required spaces</span><b id="kpiRequired">–</b></div>
+      <div class="kpi"><span class="kpi-label">Provided spaces</span><b id="kpiProvided">–</b></div>
+      <div class="kpi"><span class="kpi-label">Deficit / surplus</span><b id="kpiBalance">–</b></div>
+      <div class="kpi"><span class="kpi-label">Regular stalls</span><b id="kpiRegular">–</b></div>
+      <div class="kpi"><span class="kpi-label">Accessible stalls</span><b id="kpiAccessible">–</b></div>
+      <div class="kpi"><span class="kpi-label">EV stalls</span><b id="kpiEV">–</b></div>
+      <div class="kpi"><span class="kpi-label">Efficiency</span><b id="kpiEfficiency">–</b><span class="kpi-sub">m&sup2; paved / stall</span></div>
+      <div class="kpi"><span class="kpi-label">Landscape area</span><b id="kpiLandscape">–</b></div>
+      <div class="kpi"><span class="kpi-label">Paved area</span><b id="kpiPaved">–</b></div>
+    </div>
+
+    <h3>Warnings</h3>
+    <ul id="warnList" class="warn-list"><li class="ok">No warnings.</li></ul>
+
+    <h3>Compliance summary</h3>
+    <table class="sum-table">
+      <thead><tr><th>Metric</th><th>Required</th><th>Proposed</th><th>Status</th></tr></thead>
+      <tbody id="sumBody"></tbody>
+    </table>
+
+    <h3>Design summary</h3>
+    <p id="designSummary" class="design-summary">–</p>
+
+    <p class="disclaimer">This application is an early-stage planning and feasibility tool. Final compliance must be verified against the applicable municipality, Saudi Building Code, accessibility requirements, Civil Defense requirements, and project-specific authority approvals.</p>
+  </aside>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
