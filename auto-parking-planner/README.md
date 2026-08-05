@@ -33,6 +33,11 @@ Safari — desktop or tablet). The app loads a working demo automatically:
 * Stall 2.50 × 5.50 m, two-way aisle 6 m
 * Demand: 1 space / 30 m² on 1 200 m² GFA → **40 required spaces**
 
+With these exact standards the site legally fits about 34 stalls, so the demo
+deliberately opens showing a deficit — the compliance engine reporting real
+geometry rather than painting stalls inside drive aisles. Widen the land,
+relax a setback, or drag the building and watch the balance change live.
+
 Your session is autosaved to browser storage; use **Export → Project JSON**
 for a portable save file.
 
@@ -117,8 +122,10 @@ loaded, duplicated, exported and imported as JSON.
   and convex sites, **conservative (may over-clip) for concave sites**.
 * One row orientation is used per layout; mixed-orientation hybrid layouts
   (e.g. perimeter parallel + interior 90°) are not yet generated.
-* Aisle segments are trimmed against obstacle *bounding boxes* in the row
-  frame — conservative for strongly rotated buildings.
+* Aisle segments are split around obstacle *bounding boxes* in the row
+  frame (conservative for strongly rotated buildings) and clipped to the
+  developable polygon; paved-area statistics subtract pairwise aisle
+  overlaps, so only rare triple overlaps are still counted twice.
 * Circulation is modelled as entrance spines + row aisles; a full network
   graph (loop roads, one-way systems, fire-truck turning circles) is not
   simulated. Fire-route checking is limited to a width comparison.
@@ -126,7 +133,9 @@ loaded, duplicated, exported and imported as JSON.
   enough that the grid shifts, some edits may no longer find their stall
   (zones and manual stalls always survive).
 * Accessible stall width is provided via a shared access-aisle slot (a full
-  stall slot is hatched as an aisle), rather than by re-spacing the row.
+  stall slot is hatched as an aisle), rather than by re-spacing the row; the
+  CSV schedule and selection card therefore report the drawn slot size, not
+  the nominal accessible-stall inputs.
 * Latitude/longitude are metadata only — by design, geographic coordinates
   are not used for geometry (no GIS projection).
 

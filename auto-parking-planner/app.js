@@ -245,6 +245,24 @@ const G = {
     return out;
   },
 
+  /** Clip a polygon against a CONVEX clip polygon (Sutherland–Hodgman:
+      successive half-plane clips along the clip polygon's edges).
+      Returns the intersection polygon ([] when disjoint). */
+  convexClip(subject, clip) {
+    let out = subject.slice();
+    for (let i = 0; i < clip.length && out.length >= 3; i++) {
+      const n = G.inwardNormal(clip, i);
+      out = G.clipHalfPlane(out, clip[i], n);
+    }
+    return out.length >= 3 ? out : [];
+  },
+
+  /** Area of the intersection of two convex polygons (0 when disjoint). */
+  convexOverlapArea(a, b) {
+    const inter = G.convexClip(a, b);
+    return inter.length >= 3 ? G.polygonArea(inter) : 0;
+  },
+
   /** Inward normal of edge i of a polygon (unit vector pointing toward
       the polygon interior, robust to winding direction). */
   inwardNormal(poly, i) {
@@ -386,16 +404,26 @@ const State = {
   },
 
   /** Merge a possibly older/partial saved state over fresh defaults so new
-      fields always exist. Returns null when input is unusable. */
+      fields always exist. Values are type-checked against the defaults:
+      arrays must be arrays, numeric fields must be finite numbers — junk
+      keeps the default instead of poisoning the state. Returns null when
+      input is unusable. */
   migrate(saved) {
-    if (!saved || typeof saved !== 'object' || !saved.land) return null;
+    if (!saved || typeof saved !== 'object' || Array.isArray(saved) || !saved.land) return null;
     const merge = (base, over) => {
       for (const k in over) {
-        if (over[k] && typeof over[k] === 'object' && !Array.isArray(over[k]) &&
-            base[k] && typeof base[k] === 'object' && !Array.isArray(base[k])) {
-          merge(base[k], over[k]);
-        } else {
-          base[k] = over[k];
+        const bv = base[k], ov = over[k];
+        if (Array.isArray(bv)) {
+          if (Array.isArray(ov)) base[k] = ov;
+        } else if (bv !== null && typeof bv === 'object') {
+          if (ov !== null && typeof ov === 'object' && !Array.isArray(ov)) merge(bv, ov);
+        } else if (typeof bv === 'number') {
+          const n = Number(ov);
+          if (isFinite(n)) base[k] = n;
+        } else if (typeof bv === 'boolean') {
+          base[k] = !!ov;
+        } else if (ov === null || ['string', 'number', 'boolean'].includes(typeof ov)) {
+          base[k] = ov;   // string / nullable metadata fields
         }
       }
       return base;
@@ -863,7 +891,13 @@ const Generator = {
     }
     const deg = parseFloat(key);
     if (deg === 90) {
-      return { key, pitch: w, depth: l, axisLow: 90, axisHigh: -90, aisle: p.aisleTwoWay90, oneWay: false, label: '90°' };
+      /* single-loaded 90° rows run one-way; double-loaded rows two-way */
+      const single = p.rowType === 'single';
+      return {
+        key, pitch: w, depth: l, axisLow: 90, axisHigh: -90,
+        aisle: single ? p.aisleOneWay90 : p.aisleTwoWay90,
+        oneWay: single, label: '90°'
+      };
     }
     const rad = G.d2r(deg);
     const pitch = w / Math.sin(rad);
@@ -935,23 +969,33 @@ const Generator = {
       const b1 = dir > 0 ? cursor + mod : cursor;
       const rows = [];
       let aY0, aY1;
+      /* serpentine flow: odd bands mirror the stall lean so the alternating
+         one-way aisle directions match the angled geometry (no-op for 90°) */
+      const mir = (bi % 2 === 0) ? 1 : -1;
       if (double) {
         aY0 = b0 + geom.depth; aY1 = b1 - geom.depth;
-        rows.push({ yc: b0 + geom.depth / 2, axis: geom.axisHigh, side: 0 });  // above aisle
-        rows.push({ yc: b1 - geom.depth / 2, axis: geom.axisLow, side: 1 });   // below aisle
+        rows.push({ yc: b0 + geom.depth / 2, axis: mir * geom.axisHigh, side: 0 });  // above aisle
+        rows.push({ yc: b1 - geom.depth / 2, axis: mir * geom.axisLow, side: 1 });   // below aisle
       } else if (dir > 0) {
         aY0 = b0 + geom.depth; aY1 = b1;
-        rows.push({ yc: b0 + geom.depth / 2, axis: geom.axisHigh, side: 0 });
+        rows.push({ yc: b0 + geom.depth / 2, axis: mir * geom.axisHigh, side: 0 });
       } else {
         aY0 = b0; aY1 = b0 + geom.aisle;
-        rows.push({ yc: b1 - geom.depth / 2, axis: geom.axisLow, side: 1 });
+        rows.push({ yc: b1 - geom.depth / 2, axis: mir * geom.axisLow, side: 1 });
       }
       layout.bands.push({ bi, b0, b1, aY0, aY1, rows, double });
       cursor += dir * mod;
       bi++;
     }
 
-    /* Perimeter connector aisles at the row ends (loop circulation) */
+    /* Aisle segments per band (split around obstacles), then stalls */
+    const spinePolys = ctx.spines.map(sp => sp.poly);
+    const spineBBoxF = ctx.spines.map(sp => G.bbox(sp.poly.map(toF)));
+    let segId = 0;
+
+    /* Perimeter connector aisles at the row ends (loop circulation).
+       Each strip is split around obstacles and clipped to the inset
+       polygon; unusably short slivers are discarded. */
     let conn = null;
     if (useConnectors && layout.bands.length) {
       const wc = Math.max(s.parking.aisleMain, geom.aisle);
@@ -960,14 +1004,44 @@ const Generator = {
         left: { x0: bb.minX, x1: bb.minX + wc },
         right: { x0: bb.maxX - wc, x1: bb.maxX },
         y0: Math.min(...layout.bands.map(b => b.b0)),
-        y1: Math.max(...layout.bands.map(b => b.b1))
+        y1: Math.max(...layout.bands.map(b => b.b1)),
+        segs: []
       };
+      for (const strip of [conn.left, conn.right]) {
+        const blocked = [];
+        for (const ob of aisleBlockers) {
+          if (ob.maxX > strip.x0 + 0.05 && ob.minX < strip.x1 - 0.05) {
+            blocked.push([ob.minY - 0.1, ob.maxY + 0.1]);
+          }
+        }
+        blocked.sort((p, q) => p[0] - q[0]);
+        const free = [];
+        let y = conn.y0;
+        for (const [f0, f1] of blocked) {
+          if (f0 > y) free.push([y, Math.min(f0, conn.y1)]);
+          y = Math.max(y, f1);
+        }
+        if (y < conn.y1) free.push([y, conn.y1]);
+        for (const [f0, f1] of free) {
+          if (f1 - f0 < Math.max(geom.aisle, 3)) continue;
+          const rectF = [
+            { x: strip.x0, y: f0 }, { x: strip.x0, y: f1 },
+            { x: strip.x1, y: f1 }, { x: strip.x1, y: f0 }
+          ];
+          const clipped = G.convexClip(rectF, insetF);
+          if (!clipped.length || G.polygonArea(clipped) < geom.aisle * 2) continue;
+          const seg = {
+            id: 's' + (segId++), band: -1, x0: strip.x0, x1: strip.x1,
+            y0: f0, y1: f1, poly: clipped.map(fromF),
+            oneWay: false, connected: false, spineHits: [], connector: true,
+            stripX0: strip.x0, stripX1: strip.x1
+          };
+          conn.segs.push(seg);
+          layout.aisles.push(seg);
+        }
+      }
+      if (!conn.segs.length) conn = null;   // no usable connectors survived
     }
-
-    /* Aisle segments per band (split around obstacles), then stalls */
-    const spinePolys = ctx.spines.map(sp => sp.poly);
-    const spineBBoxF = ctx.spines.map(sp => G.bbox(sp.poly.map(toF)));
-    let segId = 0;
 
     for (const band of layout.bands) {
       /* blocked x-intervals across this band's aisle */
@@ -990,10 +1064,15 @@ const Generator = {
       for (const [f0, f1] of free) {
         if (f1 - f0 < Math.max(geom.pitch, 3)) continue;
         const polyF = [{ x: f0, y: band.aY0 }, { x: f1, y: band.aY0 }, { x: f1, y: band.aY1 }, { x: f0, y: band.aY1 }];
-        const polyW = polyF.map(fromF);
+        /* clip the aisle to the developable polygon so it never pokes
+           outside rotated / irregular sites */
+        const clippedF = G.convexClip(polyF, insetF);
+        if (!clippedF.length) continue;
+        const cbb = G.bbox(clippedF);
         const seg = {
           id: 's' + (segId++), band: band.bi, x0: f0, x1: f1,
-          y0: band.aY0, y1: band.aY1, poly: polyW,
+          cx0: cbb.minX, cx1: cbb.maxX,
+          y0: band.aY0, y1: band.aY1, poly: clippedF.map(fromF),
           oneWay: geom.oneWay, connected: false, spineHits: []
         };
         /* record where spines / connectors cross (used for dead-end lengths;
@@ -1004,8 +1083,17 @@ const Generator = {
           }
         }
         if (conn) {
-          if (seg.x0 <= conn.left.x1 + 0.1) seg.spineHits.push(seg.x0);
-          if (seg.x1 >= conn.right.x0 - 0.1) seg.spineHits.push(seg.x1);
+          /* an end counts as covered only when a surviving connector
+             sub-segment actually crosses this band's aisle there */
+          const covers = cs => cs.y0 < band.aY1 - 0.05 && cs.y1 > band.aY0 + 0.05;
+          if (seg.x0 <= conn.left.x1 + 0.1 &&
+              conn.segs.some(cs => cs.stripX0 === conn.left.x0 && covers(cs))) {
+            seg.spineHits.push(seg.x0);
+          }
+          if (seg.x1 >= conn.right.x0 - 0.1 &&
+              conn.segs.some(cs => cs.stripX0 === conn.right.x0 && covers(cs))) {
+            seg.spineHits.push(seg.x1);
+          }
         }
         band.segments.push(seg);
         layout.aisles.push(seg);
@@ -1042,22 +1130,6 @@ const Generator = {
       }
     }
 
-    /* Connector aisle strips become drawable aisles (point order chosen so
-       the circulation arrows run along the connector's long axis). */
-    if (conn) {
-      for (const strip of [conn.left, conn.right]) {
-        const polyF = [
-          { x: strip.x0, y: conn.y0 }, { x: strip.x0, y: conn.y1 },
-          { x: strip.x1, y: conn.y1 }, { x: strip.x1, y: conn.y0 }
-        ];
-        layout.aisles.push({
-          id: 's' + (segId++), band: -1, x0: strip.x0, x1: strip.x1,
-          y0: conn.y0, y1: conn.y1, poly: polyF.map(fromF),
-          oneWay: false, connected: true, spineHits: [], connector: true
-        });
-      }
-    }
-
     /* Circulation: BFS over the aisle graph (spines seed it, touching
        aisles/connectors propagate), then drop stalls on unreachable
        aisles — unless there are no access points at all, in which case
@@ -1082,9 +1154,11 @@ const Generator = {
     /* Dead-end aisles */
     const deadEnds = [];
     for (const seg of layout.aisles) {
-      if (!seg.connected || !seg.spineHits.length) continue;
-      const near = Math.min(...seg.spineHits) - seg.x0;
-      const far = seg.x1 - Math.max(...seg.spineHits);
+      if (!seg.connected || !seg.spineHits.length || seg.connector) continue;
+      const lo = seg.cx0 !== undefined ? seg.cx0 : seg.x0;
+      const hi = seg.cx1 !== undefined ? seg.cx1 : seg.x1;
+      const near = Math.min(...seg.spineHits) - lo;
+      const far = hi - Math.max(...seg.spineHits);
       const worst = Math.max(near, far);
       if (worst > s.accessRules.maxDeadEnd) deadEnds.push(worst);
     }
@@ -1150,7 +1224,8 @@ const Generator = {
     }
     const toF = p => G.toFrame(p, orient);
     const fromF = p => G.fromFrame(p, orient);
-    const bb = G.bbox(insetPoly.map(toF));
+    const insetF = insetPoly.map(toF);
+    const bb = G.bbox(insetF);
     const obb = G.bbox(ctx.buildingInfos[0].obAi.map(toF));
     const spinePolys = ctx.spines.map(sp => sp.poly);
     const aisleBlockers = ctx.obstaclesAisle.map(ob => G.bbox(ob.map(toF)));
@@ -1171,12 +1246,20 @@ const Generator = {
       return out.filter(iv => iv[1] - iv[0] >= Math.max(pitch, 3));
     };
 
+    /** Frame-space rectangles of every aisle laid so far — stalls must
+        never overlap a drive aisle (e.g. W/E columns ending at the S/N
+        perimeter aisles). */
+    const aisleRectsF = [];
+
     /**
      * Fill one strip. horiz=true → rows run along frame-x, packing along
      * frame-y away from the building (dir ±1) starting at `start`.
-     * span = [s0,s1] across the rows; lim = outer packing limit.
+     * span = [s0,s1] across the rows (aisles); stalls are additionally
+     * limited to [st0,st1] so they stop at neighbouring strips' aisles.
      */
-    const fillStrip = (horiz, start, dir, lim, s0, s1) => {
+    const fillStrip = (horiz, start, dir, lim, s0, s1, st0, st1) => {
+      if (st0 === undefined) st0 = s0;
+      if (st1 === undefined) st1 = s1;
       let cursor = start;
       let firstAisle = null;
       const avail = () => dir > 0 ? lim - cursor : cursor - lim;
@@ -1213,18 +1296,23 @@ const Generator = {
           const rect = horiz
             ? [{ x: f0, y: aA0 }, { x: f1, y: aA0 }, { x: f1, y: aA1 }, { x: f0, y: aA1 }]
             : [{ x: aA0, y: f0 }, { x: aA0, y: f1 }, { x: aA1, y: f1 }, { x: aA1, y: f0 }];
+          const clipped = G.convexClip(rect, insetF);
+          if (!clipped.length) continue;
           const seg = {
             id: 'r' + (segId++), band: bi, x0: f0, x1: f1, y0: aA0, y1: aA1,
-            poly: rect.map(fromF), oneWay: false, connected: true, spineHits: []
+            poly: clipped.map(fromF), oneWay: false, connected: true, spineHits: []
           };
           segs.push(seg);
           layout.aisles.push(seg);
+          aisleRectsF.push(horiz
+            ? { minX: f0, maxX: f1, minY: aA0, maxY: aA1 }
+            : { minX: aA0, maxX: aA1, minY: f0, maxY: f1 });
         }
         if (firstAisle === null) firstAisle = [aA0, aA1];
         /* stalls */
         rows.forEach((rc, ri) => {
           let slot = 0;
-          for (let c = s0 + pitch / 2; c <= s1 - pitch / 2 + 0.001; c += pitch, slot++) {
+          for (let c = st0 + pitch / 2; c <= st1 - pitch / 2 + 0.001; c += pitch, slot++) {
             const seg2 = segs.find(sg => c >= sg.x0 - 0.05 && c <= sg.x1 + 0.05);
             if (!seg2) continue;
             const fx = horiz ? c : rc, fy = horiz ? rc : c;
@@ -1235,6 +1323,13 @@ const Generator = {
             for (const pb of placed) {
               if (sbbF.minX < pb.maxX - G.TOL && sbbF.maxX > pb.minX + G.TOL &&
                   sbbF.minY < pb.maxY - G.TOL && sbbF.maxY > pb.minY + G.TOL) { collide = true; break; }
+            }
+            /* never park inside any drive aisle (own aisle only touches) */
+            if (!collide) {
+              for (const ar of aisleRectsF) {
+                if (sbbF.minX < ar.maxX - G.TOL && sbbF.maxX > ar.minX + G.TOL &&
+                    sbbF.minY < ar.maxY - G.TOL && sbbF.maxY > ar.minY + G.TOL) { collide = true; break; }
+              }
             }
             if (collide) continue;
             const polyW = stallPolyF.map(fromF);
@@ -1258,14 +1353,18 @@ const Generator = {
       return firstAisle;
     };
 
-    /* S and N strips take the full width; W/E strips stop at the first
-       S/N aisle so cars can loop around the building. */
+    /* S and N strips take the full width. W/E strip AISLES run to the far
+       edge of the first S/N aisle (so cars can loop around the building)
+       but their STALL columns stop at the near edge — no parking inside
+       the perimeter aisles. */
     const sAisle = fillStrip(true, obb.maxY, 1, bb.maxY, bb.minX, bb.maxX);
     const nAisle = fillStrip(true, obb.minY, -1, bb.minY, bb.minX, bb.maxX);
     const wLimS = sAisle ? sAisle[1] : bb.maxY;
     const wLimN = nAisle ? nAisle[0] : bb.minY;
-    fillStrip(false, obb.minX, -1, bb.minX, wLimN, wLimS);
-    fillStrip(false, obb.maxX, 1, bb.maxX, wLimN, wLimS);
+    const stallLimS = sAisle ? sAisle[0] : bb.maxY;
+    const stallLimN = nAisle ? nAisle[1] : bb.minY;
+    fillStrip(false, obb.minX, -1, bb.minX, wLimN, wLimS, stallLimN, stallLimS);
+    fillStrip(false, obb.maxX, 1, bb.maxX, wLimN, wLimS, stallLimN, stallLimS);
 
     this.connectAisles(layout.aisles, spinePolys);
     const segMap = {};
@@ -1320,11 +1419,24 @@ const Generator = {
       }
     }
 
-    /* EV stalls: percentage of provided spaces, nearest to the entrance */
+    /* EV stalls: percentage of provided spaces, nearest to the entrance.
+       When a charger clearance is required, prefer row-end stalls (a free
+       flank leaves room for the charging unit). */
     const provided = usable();
     const needEV = Math.ceil(provided.length * Util.clamp(s.ev.pct, 0, 100) / 100);
+    const isRowEnd = st => {
+      const l = layout.stalls.find(o => o.band === st.band && o.row === st.row && o.slot === st.slot - 1);
+      const r = layout.stalls.find(o => o.band === st.band && o.row === st.row && o.slot === st.slot + 1);
+      return !l || !r;
+    };
     const candidates = provided.filter(st => st.type === 'regular')
-      .sort((a, b) => G.dist({ x: a.cx, y: a.cy }, ent) - G.dist({ x: b.cx, y: b.cy }, ent));
+      .sort((a, b) => {
+        if (s.ev.clearance > 0) {
+          const ea = isRowEnd(a) ? 0 : 1, eb = isRowEnd(b) ? 0 : 1;
+          if (ea !== eb) return ea - eb;
+        }
+        return G.dist({ x: a.cx, y: a.cy }, ent) - G.dist({ x: b.cx, y: b.cy }, ent);
+      });
     for (let i = 0; i < Math.min(needEV, candidates.length); i++) candidates[i].type = 'ev';
   },
 
@@ -1358,10 +1470,21 @@ const Generator = {
       for (const c of crossings) if (G.convexOverlap(p.poly, c)) { st.crossingConflicts++; break; }
     }
     st.avgAccDist = st.accessible ? accDistSum / st.accessible : 0;
+    /* aisles and spines deliberately overlap where they meet (ring corners,
+       spine junctions) — subtract pairwise intersections so the paved KPI
+       is not double-counted (residual error only at rare triple overlaps) */
+    const pavePolys = layout.aisles.map(a => a.poly).concat(ctx.spines.map(sp => sp.poly));
+    const paveBBs = pavePolys.map(p => G.bbox(p));
     let aisleArea = 0;
-    for (const a of layout.aisles) aisleArea += G.polygonArea(a.poly);
-    for (const sp of ctx.spines) aisleArea += G.polygonArea(sp.poly);
-    st.paved = stallArea + aisleArea;
+    for (const p of pavePolys) aisleArea += G.polygonArea(p);
+    for (let i = 0; i < pavePolys.length; i++) {
+      for (let j = i + 1; j < pavePolys.length; j++) {
+        const a = paveBBs[i], b = paveBBs[j];
+        if (a.minX >= b.maxX || b.minX >= a.maxX || a.minY >= b.maxY || b.minY >= a.maxY) continue;
+        aisleArea -= G.convexOverlapArea(pavePolys[i], pavePolys[j]);
+      }
+    }
+    st.paved = stallArea + Math.max(0, aisleArea);
     st.landscapeArea = Math.max(0, ctx.landArea - Demand.footprintArea(s) - ctx.sidewalkArea - st.paved);
     return st;
   },
@@ -1411,7 +1534,7 @@ const Generator = {
   },
 
   stallKeyList(s) {
-    return s.parking.angle === 'auto' ? ['90', '60', '45', 'parallel'] : [s.parking.angle];
+    return s.parking.angle === 'auto' ? ['90', '60', '45', '30', 'parallel'] : [s.parking.angle];
   },
 
   /** Full optimization: build the candidate pools and pick options A/B/C. */
@@ -1539,7 +1662,9 @@ const Generator = {
         added.push({
           id: a.id, key: a.id, cx: a.x, cy: a.y, poly, axisWorld: a.axis,
           band: -1, row: -1, slot: -1, segId: null,
-          type: a.type || 'manual', connected: true, manual: true
+          /* type overrides are keyed by stall key (= id for manual stalls) */
+          type: man.typeOverrides[a.id] || a.type || 'manual',
+          connected: true, manual: true
         });
       }
     }
@@ -1810,8 +1935,9 @@ const Renderer = {
     /* buildings + sidewalk ring */
     if (lay.building) this.drawBuildings(s, ctx);
 
-    /* user zones */
-    if (lay.zones) this.drawZones(s);
+    /* user zones (landscape islands are gated by the Landscape layer,
+       no-parking zones and crossings by the Zones layer) */
+    if (lay.zones || lay.landscape) this.drawZones(s);
 
     /* access points */
     this.drawAccessPoints(s, ctx);
@@ -1951,6 +2077,7 @@ const Renderer = {
   drawZones(s) {
     const L = this.layers, C = this.COLORS;
     for (const z of s.zones) {
+      if (z.type === 'landscape' ? !s.view.layers.landscape : !s.view.layers.zones) continue;
       const pts = G.rectPoly(z.x + z.w / 2, z.y + z.h / 2, z.w, z.h, z.angle || 0);
       if (z.type === 'noparking') {
         this.poly(L.zones, pts, { fill: C.zoneNo, 'fill-opacity': 0.25, stroke: C.zoneNo, 'stroke-width': 0.08, 'data-zone': z.id });
@@ -2243,6 +2370,35 @@ const Interact = {
     return Renderer.s2w({ x: e.clientX - r.left, y: e.clientY - r.top });
   },
 
+  /** Pointer capture, tolerant of already-released/synthetic pointers. */
+  capture(e) {
+    try { this.svg.setPointerCapture(e.pointerId); } catch (err) { /* pointer already gone */ }
+  },
+
+  /** Read a data-* attribute from the event target or its nearest ancestor
+      (markers like access points set the attribute on a <g> wrapper). */
+  dataAt(el, attr) {
+    const n = el && el.closest ? el.closest('[' + attr + ']') : null;
+    return n ? n.getAttribute(attr) : undefined;
+  },
+
+  /** Start a drag whose undo snapshot is only committed once the drag
+      actually mutates state — plain clicks never pollute the undo stack. */
+  beginDrag(drag) {
+    drag.snap = JSON.stringify(State.s);
+    drag.pushed = false;
+    this.drag = drag;
+  },
+  markDragMutation() {
+    const d = this.drag;
+    if (!d || d.pushed || !d.snap) return;
+    State.undoStack.push(d.snap);
+    if (State.undoStack.length > State.UNDO_LIMIT) State.undoStack.shift();
+    State.redoStack.length = 0;
+    UI.updateUndoButtons();
+    d.pushed = true;
+  },
+
   snap(p, step) {
     const s = App.state();
     if (!s.view.snap) return { x: p.x, y: p.y };
@@ -2277,22 +2433,33 @@ const Interact = {
     if (panWanted) {
       this.drag = { kind: 'pan', sx: e.clientX, sy: e.clientY, tx: Renderer.view.tx, ty: Renderer.view.ty };
       this.svg.classList.add('panning');
-      this.svg.setPointerCapture(e.pointerId);
+      this.capture(e);
       return;
     }
     if (e.button !== 0) return;
-    this.svg.setPointerCapture(e.pointerId);
+    this.capture(e);
 
     /* polygon drawing / editing takes precedence */
     if (this.polyMode === 'draw') {
-      this.polyDraft.push(this.snap(w));
-      UI.hint(`${this.polyDraft.length} point(s). Double-click or press “Finish boundary” to close.`);
+      const p = this.snap(w);
+      const last = this.polyDraft[this.polyDraft.length - 1];
+      /* a click on (or next to) the previous point = the finish gesture —
+         the native dblclick event cannot fire because each render swaps
+         the elements under the cursor */
+      if (last && G.dist(p, last) < 8 / Renderer.view.k) {
+        UI.finishPolygon();
+        return;
+      }
+      this.polyDraft.push(p);
+      const vc = Util.el('polyVertexCount');
+      if (vc) vc.textContent = String(this.polyDraft.length);
+      UI.hint(`${this.polyDraft.length} point(s). Click the last point again, double-click, or press “Finish boundary” to close.`);
       App.renderOnly();
       return;
     }
-    if (this.polyMode === 'edit' && t.dataset.vertex !== undefined) {
-      this.drag = { kind: 'vertex', idx: parseInt(t.dataset.vertex, 10) };
-      State.pushUndo();
+    const vertexAttr = this.dataAt(t, 'data-vertex');
+    if (this.polyMode === 'edit' && vertexAttr !== undefined) {
+      this.beginDrag({ kind: 'vertex', idx: parseInt(vertexAttr, 10) });
       return;
     }
 
@@ -2350,54 +2517,52 @@ const Interact = {
     }
 
     /* ── select tool ── */
-    if (t.dataset.handle === 'resize') {
+    const handle = this.dataAt(t, 'data-handle');
+    if (handle === 'resize' || handle === 'rotate') {
       const s = App.state();
       const b = s.buildings[s.selectedBuilding];
       if (b && !b.locked) {
-        State.pushUndo();
-        this.drag = { kind: 'resize', corner: parseInt(t.dataset.corner, 10), b };
+        this.beginDrag(handle === 'resize'
+          ? { kind: 'resize', corner: parseInt(this.dataAt(t, 'data-corner'), 10), b }
+          : { kind: 'rotate', b });
       }
       return;
     }
-    if (t.dataset.handle === 'rotate') {
+    const bldgAttr = this.dataAt(t, 'data-building');
+    if (bldgAttr !== undefined) {
       const s = App.state();
-      const b = s.buildings[s.selectedBuilding];
-      if (b && !b.locked) {
-        State.pushUndo();
-        this.drag = { kind: 'rotate', b };
-      }
-      return;
-    }
-    if (t.dataset.building !== undefined) {
-      const s = App.state();
-      const idx = parseInt(t.dataset.building, 10);
+      const idx = parseInt(bldgAttr, 10);
       s.selectedBuilding = idx;
       this.select({ type: 'building', idx });
       const b = s.buildings[idx];
       UI.syncBuildingFields();
       if (b && !b.locked) {
-        State.pushUndo();
-        this.drag = { kind: 'moveBuilding', b, ox: b.x - w.x, oy: b.y - w.y, moved: false };
+        this.beginDrag({ kind: 'moveBuilding', b, ox: b.x - w.x, oy: b.y - w.y });
       }
       return;
     }
-    if (t.dataset.stall) { this.select({ type: 'stall', id: t.dataset.stall }); return; }
-    if (t.dataset.seg) { this.select({ type: 'seg', id: t.dataset.seg }); return; }
-    if (t.dataset.ap) {
-      this.select({ type: 'ap', id: t.dataset.ap });
+    const stallAttr = this.dataAt(t, 'data-stall');
+    if (stallAttr) { this.select({ type: 'stall', id: stallAttr }); return; }
+    const segAttr = this.dataAt(t, 'data-seg');
+    if (segAttr) { this.select({ type: 'seg', id: segAttr }); return; }
+    const apAttr = this.dataAt(t, 'data-ap');
+    if (apAttr) {
+      this.select({ type: 'ap', id: apAttr });
       const s = App.state();
-      const ap = s.accessPoints.find(a => a.id === t.dataset.ap);
-      if (ap) { State.pushUndo(); this.drag = { kind: 'moveAp', ap }; }
+      const ap = s.accessPoints.find(a => a.id === apAttr);
+      if (ap) this.beginDrag({ kind: 'moveAp', ap });
       return;
     }
-    if (t.dataset.zone) {
-      this.select({ type: 'zone', id: t.dataset.zone });
+    const zoneAttr = this.dataAt(t, 'data-zone');
+    if (zoneAttr) {
+      this.select({ type: 'zone', id: zoneAttr });
       const s = App.state();
-      const z = s.zones.find(x => x.id === t.dataset.zone);
-      if (z) { State.pushUndo(); this.drag = { kind: 'moveZone', z, ox: z.x - w.x, oy: z.y - w.y }; }
+      const z = s.zones.find(x => x.id === zoneAttr);
+      if (z) this.beginDrag({ kind: 'moveZone', z, ox: z.x - w.x, oy: z.y - w.y });
       return;
     }
-    if (t.dataset.dim) { this.select({ type: 'dim', id: t.dataset.dim }); return; }
+    const dimAttr = this.dataAt(t, 'data-dim');
+    if (dimAttr) { this.select({ type: 'dim', id: dimAttr }); return; }
     this.select(null);
   },
 
@@ -2428,15 +2593,16 @@ const Interact = {
         Renderer.drawOverlay();
         break;
       case 'moveBuilding': {
+        this.markDragMutation();
         const p = this.snap({ x: w.x + d.ox, y: w.y + d.oy });
         d.b.x = Math.round(p.x * 100) / 100;
         d.b.y = Math.round(p.y * 100) / 100;
-        d.moved = true;
         UI.syncBuildingFields();
         App.schedulePreview();
         break;
       }
       case 'resize': {
+        this.markDragMutation();
         const b = d.b;
         const rot = G.d2r(b.rotation);
         /* pointer in building-local frame (origin = current centre) */
@@ -2456,6 +2622,7 @@ const Interact = {
         break;
       }
       case 'rotate': {
+        this.markDragMutation();
         const b = d.b;
         let ang = G.r2d(Math.atan2(w.y - b.y, w.x - b.x)) + 90;
         const s = App.state();
@@ -2469,6 +2636,7 @@ const Interact = {
         const ctx = App.ctx;
         const ap = d.ap;
         if (ctx && ctx.valid && ap.edge >= 0 && ap.edge < ctx.edges.length) {
+          this.markDragMutation();
           const e2 = ctx.edges[ap.edge];
           const cp = G.closestPointOnSeg(w, e2.a, e2.b);
           const tRaw = G.dist(e2.a, cp) / e2.len;
@@ -2479,6 +2647,7 @@ const Interact = {
         break;
       }
       case 'moveZone': {
+        this.markDragMutation();
         const p = this.snap({ x: w.x + d.ox, y: w.y + d.oy });
         d.z.x = p.x; d.z.y = p.y;
         App.schedulePreview();
@@ -2487,7 +2656,11 @@ const Interact = {
       case 'vertex': {
         const s = App.state();
         const p = this.snap(w);
-        if (s.land.polygon[d.idx]) { s.land.polygon[d.idx] = { x: p.x, y: p.y }; App.schedulePreview(); }
+        if (s.land.polygon[d.idx]) {
+          this.markDragMutation();
+          s.land.polygon[d.idx] = { x: p.x, y: p.y };
+          App.schedulePreview();
+        }
         break;
       }
       case 'zoneDraw':
@@ -2511,14 +2684,13 @@ const Interact = {
     if (!d) return;
     switch (d.kind) {
       case 'moveBuilding':
-        if (d.moved) App.recalc(true); else State.undoStack.pop();
-        break;
       case 'resize':
       case 'rotate':
       case 'moveAp':
       case 'moveZone':
       case 'vertex':
-        App.recalc(true);
+        /* run the full optimizer only when the drag actually changed state */
+        if (d.pushed) App.recalc(true);
         break;
       case 'zoneDraw': {
         if (d.b) {
@@ -2552,9 +2724,11 @@ const Interact = {
     const tag = document.activeElement && document.activeElement.tagName;
     const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
     if (e.code === 'Space' && !typing) { this.spaceDown = true; this.updateCursor(); e.preventDefault(); return; }
+    /* while typing, leave Ctrl+Z / Ctrl+Y to the browser's native text
+       undo — app-level undo stays available via the toolbar buttons */
+    if (typing) return;
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); UI.doUndo(); return; }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); UI.doRedo(); return; }
-    if (typing) return;
     switch (e.key) {
       case 'Delete': case 'Backspace': this.deleteSelection(); break;
       case 'Escape':
@@ -2724,8 +2898,10 @@ const Interact = {
       const st = App.layout && App.layout.stalls.find(x => x.key === sel.id);
       if (!st) { box.classList.add('is-hidden'); return; }
       const typeName = { regular: 'Regular stall', accessible: 'Accessible stall', ev: 'EV stall', accessAisle: 'Access aisle', manual: 'Manual stall' }[st.type] || st.type;
+      /* report the dimensions actually drawn (from the stall polygon) */
+      const e01 = G.dist(st.poly[0], st.poly[1]), e12 = G.dist(st.poly[1], st.poly[2]);
       html = `<div class="si-title">${typeName}</div>
-        ${Util.fmt(s.parking.stallW)} × ${Util.fmt(s.parking.stallL)} m — centre ${Util.fmt(st.cx, 1)}, ${Util.fmt(st.cy, 1)}`;
+        ${Util.fmt(Math.min(e01, e12))} × ${Util.fmt(Math.max(e01, e12))} m — centre ${Util.fmt(st.cx, 1)}, ${Util.fmt(st.cy, 1)}`;
       actions = [
         ['To Accessible', () => this.convertStall('accessible')],
         ['To EV', () => this.convertStall('ev')],
@@ -2858,6 +3034,7 @@ const UI = {
   syncFromState() {
     const s = State.s;
     document.querySelectorAll('[data-bind]').forEach(inp => {
+      if (inp === document.activeElement) return;   // never clobber live typing
       const v = State.get(inp.dataset.bind);
       const type = inp.dataset.type || 'str';
       if (type === 'bool') inp.checked = !!v;
@@ -2878,6 +3055,14 @@ const UI = {
     this.buildMixedList();
     this.syncBuildingFields();
     this.updateUndoButtons();
+  },
+
+  /** Rebuild the access-point panel unless the user is editing inside it
+      (called from App.recalc so canvas-side changes never leave it stale). */
+  refreshAccessList() {
+    const wrap = Util.el('accessList');
+    if (wrap && wrap.contains(document.activeElement)) return;
+    this.buildAccessList();
   },
 
   syncModeVisibility() {
@@ -2903,10 +3088,12 @@ const UI = {
   },
 
   doUndo() {
+    this._focusSnapshot = null;   // a stale focus snapshot must never survive a state swap
     if (State.undo()) { this.syncFromState(); App.recalc(true); this.hint('Undo.'); }
     this.updateUndoButtons();
   },
   doRedo() {
+    this._focusSnapshot = null;
     if (State.redo()) { this.syncFromState(); App.recalc(true); this.hint('Redo.'); }
     this.updateUndoButtons();
   },
@@ -2985,8 +3172,14 @@ const UI = {
     });
     Util.el('btnPolyFinish').addEventListener('click', () => this.finishPolygon());
     Util.el('btnPolyUndo').addEventListener('click', () => {
-      if (Interact.polyMode === 'draw' && Interact.polyDraft.length) Interact.polyDraft.pop();
-      else if (State.s.land.polygon.length) { State.pushUndo(); State.s.land.polygon.pop(); App.recalc(true); }
+      if (Interact.polyMode === 'draw' && Interact.polyDraft.length) {
+        Interact.polyDraft.pop();
+        Util.el('polyVertexCount').textContent = String(Interact.polyDraft.length);
+      } else if (State.s.land.polygon.length) {
+        State.pushUndo();
+        State.s.land.polygon.pop();
+        App.recalc(true);
+      }
       App.renderOnly();
     });
     Util.el('btnPolyClear').addEventListener('click', () => {
@@ -3326,7 +3519,7 @@ const UI = {
         </div>`;
       card.querySelector('.dyn-del').addEventListener('click', () => {
         State.pushUndo();
-        State.s.roads.splice(idx, 1);
+        State.s.roads = State.s.roads.filter(x => x.id !== r.id);
         this.buildRoadsList();
         App.scheduleRecalc();
       });
@@ -3379,7 +3572,9 @@ const UI = {
         </div>`;
       card.querySelector('.dyn-del').addEventListener('click', () => {
         State.pushUndo();
-        State.s.accessPoints.splice(idx, 1);
+        /* remove by identity — a stale card must never delete a different point */
+        State.s.accessPoints = State.s.accessPoints.filter(a => a.id !== ap.id);
+        if (Interact.sel && Interact.sel.type === 'ap' && Interact.sel.id === ap.id) Interact.select(null);
         this.buildAccessList();
         App.scheduleRecalc();
       });
@@ -3422,7 +3617,7 @@ const UI = {
         </div>`;
       card.querySelector('.dyn-del').addEventListener('click', () => {
         State.pushUndo();
-        State.s.demand.mixed.splice(idx, 1);
+        State.s.demand.mixed = State.s.demand.mixed.filter(x => x !== row);
         this.buildMixedList();
         App.scheduleRecalc();
       });
@@ -3561,7 +3756,7 @@ const UI = {
     rows.push(['EV parking', String(needEV), st ? String(st.ev) : '–', st ? st.ev >= needEV : false]);
     const sbOk = ctx.buildingInfos.every(i => i.violations.length === 0);
     rows.push(['Setbacks',
-      `F ${s.setbacks.front} / R ${s.setbacks.rear} / L ${s.setbacks.left} / R ${s.setbacks.right} m`,
+      `front ${s.setbacks.front} / rear ${s.setbacks.rear} / left ${s.setbacks.left} / right ${s.setbacks.right} m`,
       sbOk ? 'satisfied' : 'violated', sbOk]);
     if (s.roads.length) {
       const roadsOk = s.roads.every(r => r.width >= r.minWidth);
@@ -3574,7 +3769,7 @@ const UI = {
     rows.push(['Access points', '≥ 1, corner ≥ ' + Util.fmt(s.accessRules.minCornerDist) + ' m', String(ctx.apInfos.length), apOk]);
     if (App.layout) {
       const g = App.layout.meta.geom;
-      rows.push(['Drive aisle', g.oneWay ? 'one-way' : 'two-way' + ' standard', Util.fmt(g.aisle) + ' m', g.aisle >= (g.oneWay ? Rules.FLOORS.oneWayAisle : Rules.FLOORS.twoWayAisle)]);
+      rows.push(['Drive aisle', (g.oneWay ? 'one-way' : 'two-way') + ' standard', Util.fmt(g.aisle) + ' m', g.aisle >= (g.oneWay ? Rules.FLOORS.oneWayAisle : Rules.FLOORS.twoWayAisle)]);
     }
     Util.el('sumBody').innerHTML = rows.map(r =>
       `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${pill(r[3])}</td></tr>`).join('');
@@ -3749,15 +3944,18 @@ const UI = {
     const layout = App.layout;
     if (!layout) { this.hint('No layout to export yet.'); return; }
     const rows = [['ID', 'Type', 'Band', 'Row', 'Slot', 'Centre X (m)', 'Centre Y (m)', 'Orientation (deg)', 'Width (m)', 'Length (m)', 'Connected']];
-    const s = State.s;
     let i = 1;
     for (const st of layout.stalls) {
+      /* dimensions are measured from the drawn polygon so the schedule
+         always matches the plan (accessible width is provided via the
+         adjacent hatched access-aisle slot, not a wider stall) */
+      const e01 = G.dist(st.poly[0], st.poly[1]), e12 = G.dist(st.poly[1], st.poly[2]);
       rows.push([
         'P' + String(i++).padStart(3, '0'),
         st.type, st.band >= 0 ? st.band + 1 : 'manual', st.row >= 0 ? st.row + 1 : '-', st.slot >= 0 ? st.slot + 1 : '-',
         st.cx.toFixed(2), st.cy.toFixed(2), Util.fmt(((st.axisWorld % 360) + 360) % 360, 1),
-        st.type === 'accessible' ? s.accessible.stallW : s.parking.stallW,
-        st.type === 'accessible' ? s.accessible.stallL : s.parking.stallL,
+        Util.fmt(Math.min(e01, e12), 2),
+        Util.fmt(Math.max(e01, e12), 2),
         st.connected ? 'yes' : 'no'
       ]);
     }
@@ -3795,11 +3993,15 @@ const UI = {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
+      const prevJson = JSON.stringify(State.s);
       try {
         const data = JSON.parse(reader.result);
         const incoming = data.state || data;
         const migrated = State.migrate(incoming);
         if (!migrated) throw new Error('unrecognised file');
+        /* trial-run the imported state BEFORE committing it */
+        Generator.buildContext(migrated);
+        Demand.compute(migrated);
         State.pushUndo();
         State.s = migrated;
         this.syncFromState();
@@ -3807,7 +4009,13 @@ const UI = {
         Renderer.zoomFit(App.ctx);
         this.hint('Project imported.');
       } catch (err) {
-        this.hint('Import failed: the file is not a valid project JSON.');
+        /* roll back to the pre-import state on any failure */
+        try {
+          State.s = JSON.parse(prevJson);
+          this.syncFromState();
+          App.recalc(true);
+        } catch (e2) { /* keep current state */ }
+        this.hint('Import failed: the file is not a valid project JSON. The previous project was kept.');
       }
       e.target.value = '';
     };
@@ -3877,6 +4085,7 @@ const App = {
     this.warnings = Rules.evaluate(s, this.ctx, this.layout, this.demandInfo);
     this.renderOnly();
     UI.updateResults();
+    UI.refreshAccessList();
     if (full) UI.updateOptionCards();
     State.autosave();
   },
