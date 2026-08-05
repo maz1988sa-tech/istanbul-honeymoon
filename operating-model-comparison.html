@@ -148,11 +148,16 @@
     border-radius:9px; padding:5px 10px; font-size:10.5px; font-weight:600; }
   .dest .cnt{ background:rgba(255,255,255,.25); border-radius:999px; padding:0 8px; }
 
-  .noview{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
-    border:1.5px dashed var(--line-strong); border-radius:12px; padding:14px; text-align:center; min-height:86px; }
-  .noview b{ font-size:11px; letter-spacing:.12em; color:var(--caption); text-transform:uppercase; }
-  .noview p{ font-size:12.5px; color:var(--muted); max-width:38ch; }
-  .noview p em{ font-style:normal; color:var(--red-deep); font-weight:600; }
+  .noview{ flex:1; display:flex; flex-direction:column; justify-content:center; gap:11px;
+    border:1.5px dashed var(--line-strong); border-radius:12px; padding:13px 12px; min-height:86px; }
+  .noview b{ font-size:11px; letter-spacing:.12em; color:var(--caption); text-transform:uppercase; text-align:center; }
+  .nv-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px 6px; }
+  .nv{ display:flex; flex-direction:column; align-items:center; gap:5px; text-align:center; }
+  .nv .nvi{ position:relative; width:32px; height:32px; border-radius:50%; background:var(--paper2);
+    border:1px solid var(--line); display:flex; align-items:center; justify-content:center; color:var(--caption); font-size:15px; }
+  .nv .nvi::after{ content:''; position:absolute; top:-3px; right:-3px; width:9px; height:9px; border-radius:50%;
+    background:var(--red); border:2px solid var(--surface); }
+  .nv span{ font-size:10.5px; font-weight:600; color:var(--muted); line-height:1.25; }
   .mini-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:auto; }
   .ms{ border:1px solid var(--line); border-radius:12px; padding:8px 10px; background:var(--surface); }
   .ms .v{ font-size:24px; font-weight:300; line-height:1.1; font-variant-numeric:tabular-nums; }
@@ -199,6 +204,9 @@
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.2 2.5 5.4 13.4h4.9L8.6 21.5l8-11.4h-5z" fill="currentColor"/></symbol>
   <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.7" fill="none"/></symbol>
   <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2.5 6.5H14v9.5H2.5zM14 10h3.8l2.7 3v3H14z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="6.6" cy="17.6" r="1.9" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17.6" r="1.9" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-stream" viewBox="0 0 24 24"><path d="M3.5 6.5h17M3.5 12h12.5M3.5 17.5h8" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+  <symbol id="i-sort" viewBox="0 0 24 24"><path d="M4 6h10M4 11h7M4 16h4M17.5 5v13.5m0 0L14.5 15m3 3.5 3-3.5" fill="none" stroke="currentColor" stroke-width="1.9"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 17.5a8.5 8.5 0 1 1 16 0" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 17.5 16 10" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="17.5" r="1.5" fill="currentColor"/></symbol>
 </defs></svg>
 
 <header class="top">
@@ -248,9 +256,15 @@
             <div class="focus"><i style="width:100%"></i></div><div class="fl">focus <span class="num">100</span>%</div></div>
         </div>
         <div class="noview">
-          <b>Management view</b>
-          <p>Nothing to see: <em>no queue, no scores, no capacity, no dates</em>.
-            Work hides in personal inboxes — the only reporting tool is asking around.</p>
+          <b>Management view — nothing to see</b>
+          <div class="nv-grid">
+            <div class="nv"><span class="nvi"><svg class="ic" viewBox="0 0 24 24"><use href="#i-stream"/></svg></span><span>No queue</span></div>
+            <div class="nv"><span class="nvi"><svg class="ic" viewBox="0 0 24 24"><use href="#i-sort"/></svg></span><span>No priorities</span></div>
+            <div class="nv"><span class="nvi"><svg class="ic" viewBox="0 0 24 24"><use href="#i-gauge"/></svg></span><span>No capacity view</span></div>
+            <div class="nv"><span class="nvi"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cal"/></svg></span><span>No committed dates</span></div>
+            <div class="nv"><span class="nvi"><svg class="ic" viewBox="0 0 24 24"><use href="#i-mail"/></svg></span><span>Work hidden in inboxes</span></div>
+            <div class="nv"><span class="nvi"><svg class="ic" viewBox="0 0 24 24"><use href="#i-users"/></svg></span><span>Status = asking around</span></div>
+          </div>
         </div>
         <div class="mini-stats">
           <div class="ms bad"><div class="v num" id="lInt">0</div><div class="l">interruptions reached engineers</div></div>
