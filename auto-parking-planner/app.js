@@ -3710,7 +3710,17 @@ const UI = {
   importParcelText(text) {
     text = (text || '').trim();
     if (!text) { this.hint('Paste a GeoJSON geometry or coordinate lines first.'); return; }
+
+    /* Normalise Arabic-Indic digits and separators so coordinates copied
+       from Arabic UIs parse correctly: ٢٤٫٧١٣٦ → 24.7136 */
+    text = text
+      .replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 0x0660))
+      .replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 0x06F0))
+      .replace(/٫/g, '.')     // Arabic decimal separator
+      .replace(/،/g, ',');    // Arabic comma
+
     let coords = null;
+    let note = '';
 
     /* 1) GeoJSON ([lng, lat] order) */
     try {
@@ -3737,27 +3747,74 @@ const UI = {
       }
     } catch (e) { /* not JSON — try coordinate lines */ }
 
-    /* 2) plain "lat, lng" per line */
+    /* 2) DMS format: 24°42'49.0"N 46°40'31.1"E (Google Maps / Earth copy) */
+    if (!coords && /[NSEW]/i.test(text) && /[°'"]/.test(text)) {
+      const toks = [];
+      const re = /(\d+(?:\.\d+)?)\s*°\s*(?:(\d+(?:\.\d+)?)\s*['’]\s*)?(?:(\d+(?:\.\d+)?)\s*["”]\s*)?\s*([NSEW])/gi;
+      let m;
+      while ((m = re.exec(text)) !== null) {
+        const val = parseFloat(m[1]) + (m[2] ? parseFloat(m[2]) / 60 : 0) + (m[3] ? parseFloat(m[3]) / 3600 : 0);
+        const h = m[4].toUpperCase();
+        toks.push({ val: (h === 'S' || h === 'W') ? -val : val, isLat: h === 'N' || h === 'S' });
+      }
+      const pairs = [];
+      for (let i = 0; i + 1 < toks.length; i += 2) {
+        const a = toks[i], b = toks[i + 1];
+        if (a.isLat !== b.isLat) pairs.push({ lat: a.isLat ? a.val : b.val, lng: a.isLat ? b.val : a.val });
+      }
+      if (pairs.length >= 2) coords = pairs;
+    }
+
+    /* 3) KML coordinate string: "lng,lat,alt lng,lat,alt …" */
+    if (!coords) {
+      const kml = text.match(/-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?(?:,-?\d+(?:\.\d+)?)?(?=\s|$)/g);
+      if (kml && kml.length >= 3 && /,.*,/.test(kml[0] + '') ) {
+        coords = kml.map(t => {
+          const parts = t.split(',');
+          return { lat: parseFloat(parts[1]), lng: parseFloat(parts[0]) };
+        });
+      }
+    }
+
+    /* 4) plain "lat, lng" per line */
     if (!coords) {
       const pairs = [];
       for (const line of text.split(/[\n;]+/)) {
         const nums = line.match(/-?\d+(?:\.\d+)?/g);
         if (nums && nums.length >= 2) pairs.push([parseFloat(nums[0]), parseFloat(nums[1])]);
       }
-      if (pairs.length >= 3) {
+      if (pairs.length >= 2) {
         /* order detection: values beyond ±90 must be longitudes */
         const firstIsLng = pairs.some(p => Math.abs(p[0]) > 90);
         coords = pairs.map(p => firstIsLng ? { lat: p[1], lng: p[0] } : { lat: p[0], lng: p[1] });
       }
     }
 
-    if (!coords || coords.length < 3) {
-      this.hint('Import failed: could not read a polygon (need GeoJSON or at least 3 "lat, lng" lines).');
+    if (!coords || coords.length < 2) {
+      this.hint('Import failed: could not read coordinates. Use GeoJSON, or one "lat, lng" pair per line (at least 3 points, or 2 opposite corners).');
+      return;
+    }
+    if (coords.some(c => Math.abs(c.lat) > 1000 || Math.abs(c.lng) > 1000)) {
+      this.hint('Import failed: these look like projected UTM metres, not degrees — export the parcel as WGS84 latitude/longitude (degrees) and try again.');
       return;
     }
     if (coords.some(c => !isFinite(c.lat) || !isFinite(c.lng) || Math.abs(c.lat) > 90 || Math.abs(c.lng) > 180)) {
-      this.hint('Import failed: coordinates out of range — expected WGS84 latitude/longitude.');
+      this.hint('Import failed: coordinates out of range — expected WGS84 latitude/longitude in degrees.');
       return;
+    }
+
+    /* exactly 2 points = opposite corners of a north-aligned rectangle */
+    if (coords.length === 2) {
+      const [a, b] = coords;
+      if (Math.abs(a.lat - b.lat) < 1e-7 || Math.abs(a.lng - b.lng) < 1e-7) {
+        this.hint('Import failed: the 2 points must be OPPOSITE corners of the parcel (they share an edge line).');
+        return;
+      }
+      coords = [
+        { lat: a.lat, lng: a.lng }, { lat: a.lat, lng: b.lng },
+        { lat: b.lat, lng: b.lng }, { lat: b.lat, lng: a.lng }
+      ];
+      note = ' (rectangle built from 2 corners)';
     }
     /* drop a repeated closing vertex and consecutive duplicates */
     const clean = [];
@@ -3796,7 +3853,7 @@ const UI = {
     this.syncFromState();
     App.recalc(true);
     Renderer.zoomFit(App.ctx);
-    this.hint(`Parcel imported: ${n} vertices, ${Util.fmtArea(area)} at ${s.project.lat}, ${s.project.lng}. Now assign roads to the correct edges.`);
+    this.hint(`Parcel imported${note}: ${n} vertices, ${Util.fmtArea(area)} at ${s.project.lat}, ${s.project.lng}. Now assign roads to the correct edges.`);
   },
 
   finishPolygon() {
