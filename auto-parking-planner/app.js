@@ -3776,20 +3776,33 @@ const UI = {
       }
     }
 
-    /* 4) plain "lat, lng" per line */
+    /* 4) plain coordinate lines: "lat, lng" per line — or one NUMBER per
+       line (lat on one line, lng on the next), which people often paste */
     if (!coords) {
+      const lineNums = text.split(/[\n;]+/)
+        .map(l => l.match(/-?\d+(?:\.\d+)?/g))
+        .filter(n => n && n.length);
       const pairs = [];
-      for (const line of text.split(/[\n;]+/)) {
-        const nums = line.match(/-?\d+(?:\.\d+)?/g);
-        if (nums && nums.length >= 2) pairs.push([parseFloat(nums[0]), parseFloat(nums[1])]);
+      if (lineNums.length >= 2 && lineNums.every(n => n.length === 1)) {
+        for (let i = 0; i + 1 < lineNums.length; i += 2) {
+          pairs.push([parseFloat(lineNums[i][0]), parseFloat(lineNums[i + 1][0])]);
+        }
+      } else {
+        for (const nums of lineNums) {
+          if (nums.length >= 2) pairs.push([parseFloat(nums[0]), parseFloat(nums[1])]);
+        }
       }
-      if (pairs.length >= 2) {
+      if (pairs.length >= 1) {
         /* order detection: values beyond ±90 must be longitudes */
         const firstIsLng = pairs.some(p => Math.abs(p[0]) > 90);
         coords = pairs.map(p => firstIsLng ? { lat: p[1], lng: p[0] } : { lat: p[0], lng: p[1] });
       }
     }
 
+    if (coords && coords.length === 1) {
+      this.hint('That is only ONE point — it locates the parcel but cannot draw its boundary. Paste at least 2 OPPOSITE corners (or all corners, one "lat, lng" per line).');
+      return;
+    }
     if (!coords || coords.length < 2) {
       this.hint('Import failed: could not read coordinates. Use GeoJSON, or one "lat, lng" pair per line (at least 3 points, or 2 opposite corners).');
       return;
