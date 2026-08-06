@@ -364,6 +364,7 @@ const State = {
       },
       accessible: { stallW: 3.6, stallL: 5.5, aisleW: 1.5, ratioPer: 25, min: 1 },
       ev: { pct: 5, clearance: 0.5 },
+      frontage: { enabled: false },
       demand: {
         method: 'perArea', sqmPerSpace: 30, gfa: 1200, floors: 3, autoGfa: false,
         per100: 3.3, gfa2: 1200, fixed: 40,
@@ -479,7 +480,7 @@ const State = {
     'setbacks.front', 'setbacks.rear', 'setbacks.left', 'setbacks.right', 'setbacks.road',
     'regs.maxCoveragePct', 'regs.minLandscapePct',
     'accessRules.minCornerDist', 'accessRules.minSpacing',
-    'sidewalks.landscapeBuffer'
+    'sidewalks.landscapeBuffer', 'frontage.enabled'
   ],
 
   /** Built-in example preset. Values are editable defaults, NOT verified
@@ -820,9 +821,10 @@ const Generator = {
       const boundaryL = Math.max(0, exit ? exit.t - (ctx.insets[exit.edge] || 0) : 0);
       let L = boundaryL;
       /* the spine stops at the first obstacle in its path (e.g. the building) */
-      for (const ob of ctx.obstaclesAisle) {
-        const tEnter = G.rayPolygonEnter(pos, n, ob);
-        if (tEnter < L) L = tEnter;
+      let trimOb = -1;
+      for (let oi = 0; oi < ctx.obstaclesAisle.length; oi++) {
+        const tEnter = G.rayPolygonEnter(pos, n, ctx.obstaclesAisle[oi]);
+        if (tEnter < L) { L = tEnter; trimOb = oi; }
       }
       L = Math.max(0, L);
       if (L > 0.5) {
@@ -837,10 +839,12 @@ const Generator = {
           pos, normal: n, len: L, width: ws
         });
       }
-      /* When an obstacle blocks the straight run (building in front of the
-         entrance), cars turn: add a T-bar aisle across the spine end so
-         circulation can route around the obstruction. */
-      if (L < boundaryL - 0.5 && L > 0.5) {
+      /* When an obstacle blocks the straight run SHORTLY after the entrance
+         (building right in front of it — not even one parking module fits
+         before the obstruction), cars must turn: add a T-bar aisle across
+         the spine end so circulation can route around. A longer spine
+         reaches the normal aisle network and needs no T-bar. */
+      if (L < boundaryL - 0.5 && L > 0.5 && L < ws + s.parking.stallL + 1) {
         const barEnd = L, barStart = Math.max(0.2, L - ws);
         const thick = barEnd - barStart;
         if (thick > 1.5) {
@@ -854,8 +858,48 @@ const Generator = {
             }
             return Math.max(0, t);
           };
-          const tl = lateral(G.scale(tang, -1));
-          const tr = lateral(tang);
+          let tl = lateral(G.scale(tang, -1));
+          let tr = lateral(tang);
+          /* Municipal frontage mode: the turn runs to ONE side only (the
+             wider strip beside the blocking obstacle) plus a side lane
+             past the obstacle — the rest of the frontage stays available
+             for street-served stalls instead of a parallel inner road. */
+          if (s.frontage && s.frontage.enabled && trimOb >= 0) {
+            const proj = p => G.dot(p, tang);
+            const obPts = ctx.obstaclesAisle[trimOb];
+            let obLo = Infinity, obHi = -Infinity, laLo = Infinity, laHi = -Infinity;
+            for (const p of obPts) { const v = proj(p); if (v < obLo) obLo = v; if (v > obHi) obHi = v; }
+            for (const p of poly) { const v = proj(p); if (v < laLo) laLo = v; if (v > laHi) laHi = v; }
+            const sideDir = (obLo - laLo) >= (laHi - obHi) ? -1 : 1;
+            if (sideDir < 0) tr = Math.min(tr, ws / 2 + 1); else tl = Math.min(tl, ws / 2 + 1);
+            /* side lane hugging the obstacle, from the T-bar toward the rear */
+            const p0v = proj(pos);
+            let laneOff = sideDir < 0 ? obLo - ws / 2 - 0.2 : obHi + ws / 2 + 0.2;
+            laneOff = Util.clamp(laneOff, laLo + ws / 2 + 0.3, laHi - ws / 2 - 0.3);
+            const laneReach = sideDir < 0 ? (p0v - laneOff) : (laneOff - p0v);
+            if (laneReach > 0 && laneReach < (sideDir < 0 ? tl : tr) + ws) {
+              const laneFront = G.add(G.add(pos, G.scale(tang, laneOff - p0v)), G.scale(n, barStart));
+              const lexit = G.rayPolygonExit(laneFront, n, poly);
+              let laneLen = lexit ? lexit.t - (ctx.insets[lexit.edge] || 0) : 0;
+              for (let oi = 0; oi < ctx.obstaclesAisle.length; oi++) {
+                if (oi === trimOb) continue;
+                const te = G.rayPolygonEnter(laneFront, n, ctx.obstaclesAisle[oi]);
+                if (te < laneLen) laneLen = te;
+              }
+              if (laneLen > 2) {
+                const hw3 = ws / 2;
+                ctx.spines.push({
+                  apId: ap.id + '_lane',
+                  poly: [
+                    G.add(laneFront, G.scale(tang, -hw3)), G.add(laneFront, G.scale(tang, hw3)),
+                    G.add(G.add(laneFront, G.scale(tang, hw3)), G.scale(n, laneLen)),
+                    G.add(G.add(laneFront, G.scale(tang, -hw3)), G.scale(n, laneLen))
+                  ],
+                  pos: laneFront, normal: n, len: laneLen, width: ws
+                });
+              }
+            }
+          }
           if (tl + tr > 3) {
             const p0 = G.add(cEnd, G.scale(tang, -tl));
             const half = G.scale(n, thick / 2);
@@ -887,6 +931,51 @@ const Generator = {
       ctx.entrancePt = best.m;
     } else {
       ctx.entrancePt = G.centroid(poly);
+    }
+
+    /* Frontage stalls (municipal option): 90° stalls along every access-
+       allowed road edge, nosed in and served DIRECTLY from the public
+       street — they may sit inside the front setback strip, which is the
+       point of the requirement. They keep clear of the building (incl.
+       sidewalk + clearances), entrance throats, spines, zones and the
+       side boundaries, and they become obstacles for the interior
+       generator so nothing else is planned on top of them. */
+    ctx.frontageStalls = [];
+    if (s.frontage && s.frontage.enabled) {
+      const fw = s.parking.stallW, fl = s.parking.stallL;
+      const cornerClear = 2;
+      for (const road of validRoads) {
+        if (road.accessAllowed === false) continue;
+        const e = ctx.edges[road.edge];
+        if (!e || e.len < fw + 2 * cornerClear) continue;
+        const tang = G.norm(G.sub(e.b, e.a));
+        const n = G.inwardNormal(poly, e.idx);
+        const axis = G.r2d(Math.atan2(n.y, n.x));
+        let slot = 0;
+        for (let d = cornerClear + fw / 2; d <= e.len - cornerClear - fw / 2 + 0.001; d += fw, slot++) {
+          const outer = { x: e.a.x + tang.x * d, y: e.a.y + tang.y * d };
+          const c = G.add(outer, G.scale(n, fl / 2));
+          const stallP = G.stallPoly(c.x, c.y, fw, fl, axis);
+          if (!G.polyInsidePolygon(stallP, poly)) continue;
+          let bad = false;
+          for (const ob of ctx.obstaclesStall) if (G.convexOverlap(stallP, ob)) { bad = true; break; }
+          if (!bad) for (const th of ctx.throats) if (G.convexOverlap(stallP, th)) { bad = true; break; }
+          if (!bad) for (const sp of ctx.spines) if (G.convexOverlap(stallP, sp.poly)) { bad = true; break; }
+          if (!bad) for (const e2 of ctx.edges) {
+            if (e2.idx === e.idx) continue;
+            if (G.polySegDist(stallP, e2.a, e2.b) < 1.0) { bad = true; break; }
+          }
+          if (bad) continue;
+          ctx.frontageStalls.push({
+            id: 'f' + e.idx + '_' + slot, key: 'kf_' + e.idx + '_' + slot,
+            cx: c.x, cy: c.y, poly: stallP, axisWorld: axis,
+            band: -2, row: 0, slot, segId: null,
+            type: 'regular', connected: true, frontage: true
+          });
+          ctx.obstaclesStall.push(stallP);
+          ctx.obstaclesAisle.push(stallP);
+        }
+      }
     }
 
     ctx.valid = true;
@@ -1238,6 +1327,9 @@ const Generator = {
       if (worst > s.accessRules.maxDeadEnd) deadEnds.push(worst);
     }
 
+    /* Frontage stalls (served directly from the street) join every layout */
+    for (const fs of (ctx.frontageStalls || [])) layout.stalls.push(Object.assign({}, fs));
+
     this.assignSpecialStalls(layout, s, ctx);
     layout.stats = this.computeStats(s, ctx, layout, dropped, deadEnds);
     return layout;
@@ -1503,6 +1595,7 @@ const Generator = {
       }
       layout.stalls = keep;
     }
+    for (const fs of (ctx.frontageStalls || [])) layout.stalls.push(Object.assign({}, fs));
     this.assignSpecialStalls(layout, s, ctx);
     layout.stats = this.computeStats(s, ctx, layout, dropped, []);
     return layout;
@@ -1816,6 +1909,17 @@ const Generator = {
     layout.stats = this.computeStats(s, ctx, layout,
       layout.stats ? layout.stats.droppedDisconnected : 0,
       layout.stats ? layout.stats.deadEnds : []);
+
+    this.numberStalls(layout);
+  },
+
+  /** Sequential stall numbering (drawn on the plan and used by the CSV
+      schedule). Access-aisle slots are not counted. */
+  numberStalls(layout) {
+    let n = 0;
+    for (const st of layout.stalls) {
+      st.num = st.type === 'accessAisle' ? null : ++n;
+    }
   }
 };
 
@@ -2134,12 +2238,27 @@ const Renderer = {
         'data-stall': st.key
       });
       if (st.manual || st.type === 'manual') el.setAttribute('stroke-dasharray', '0.3 0.18');
+      /* symbol + stall number: the number sits toward the stall's far end
+         when a symbol occupies the centre, and reads across the stall */
+      const hasSymbol = st.type === 'accessible' || st.type === 'ev';
       if (st.type === 'accessAisle') {
         this.poly(L.parking, st.poly, { fill: 'url(#patAccAisle)', stroke: 'none', 'pointer-events': 'none' });
       } else if (st.type === 'accessible') {
         this.wtext(L.parking, st.cx, st.cy, '♿', 1.6, { fill: C.accessibleInk, 'pointer-events': 'none' });
       } else if (st.type === 'ev') {
         this.wtext(L.parking, st.cx, st.cy, 'EV', 1.0, { fill: C.evInk, 'font-weight': '700', 'pointer-events': 'none' });
+      }
+      if (st.num != null && s.view.layers.labels) {
+        let rot = (st.axisWorld || 90) - 90;
+        rot = ((rot % 360) + 360) % 360;
+        if (rot > 90 && rot < 270) rot -= 180;
+        const ax = G.d2r(st.axisWorld || 90);
+        const off = hasSymbol ? 1.7 : 0;
+        const nx = st.cx + Math.cos(ax) * off, ny = st.cy + Math.sin(ax) * off;
+        this.wtext(L.parking, nx, ny, String(st.num), 0.85, {
+          fill: '#6b7280', 'font-weight': '600', 'pointer-events': 'none',
+          transform: `rotate(${rot} ${nx} ${ny})`
+        });
       }
     }
   },
@@ -3042,7 +3161,7 @@ const Interact = {
       const typeName = { regular: 'Regular stall', accessible: 'Accessible stall', ev: 'EV stall', accessAisle: 'Access aisle', manual: 'Manual stall' }[st.type] || st.type;
       /* report the dimensions actually drawn (from the stall polygon) */
       const e01 = G.dist(st.poly[0], st.poly[1]), e12 = G.dist(st.poly[1], st.poly[2]);
-      html = `<div class="si-title">${typeName}</div>
+      html = `<div class="si-title">${st.num != null ? 'P' + String(st.num).padStart(3, '0') + ' — ' : ''}${typeName}</div>
         ${Util.fmt(Math.min(e01, e12))} × ${Util.fmt(Math.max(e01, e12))} m — centre ${Util.fmt(st.cx, 1)}, ${Util.fmt(st.cy, 1)}`;
       actions = [
         ['To Accessible', () => this.convertStall('accessible')],
@@ -4086,15 +4205,16 @@ const UI = {
     const layout = App.layout;
     if (!layout) { this.hint('No layout to export yet.'); return; }
     const rows = [['ID', 'Type', 'Band', 'Row', 'Slot', 'Centre X (m)', 'Centre Y (m)', 'Orientation (deg)', 'Width (m)', 'Length (m)', 'Connected']];
-    let i = 1;
+    let aa = 0;
     for (const st of layout.stalls) {
       /* dimensions are measured from the drawn polygon so the schedule
          always matches the plan (accessible width is provided via the
          adjacent hatched access-aisle slot, not a wider stall) */
       const e01 = G.dist(st.poly[0], st.poly[1]), e12 = G.dist(st.poly[1], st.poly[2]);
       rows.push([
-        'P' + String(i++).padStart(3, '0'),
-        st.type, st.band >= 0 ? st.band + 1 : 'manual', st.row >= 0 ? st.row + 1 : '-', st.slot >= 0 ? st.slot + 1 : '-',
+        /* IDs match the numbers drawn on the plan */
+        st.num != null ? 'P' + String(st.num).padStart(3, '0') : 'AA' + String(++aa).padStart(2, '0'),
+        st.type, st.band === -2 ? 'frontage' : st.band >= 0 ? st.band + 1 : 'manual', st.row >= 0 ? st.row + 1 : '-', st.slot >= 0 ? st.slot + 1 : '-',
         st.cx.toFixed(2), st.cy.toFixed(2), Util.fmt(((st.axisWorld % 360) + 360) % 360, 1),
         Util.fmt(Math.min(e01, e12), 2),
         Util.fmt(Math.max(e01, e12), 2),

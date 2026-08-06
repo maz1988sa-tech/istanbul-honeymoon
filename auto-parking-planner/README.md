@@ -81,6 +81,14 @@ full optimizer on release.
 5. **Accessible & EV** — accessible stalls (with shared access-aisle slots)
    are reserved nearest the building entrance on the front side; EV stalls are
    tagged next by the entered percentage.
+5b. **Frontage stalls (municipal option)** — an *Access & circulation*
+   checkbox places 90° stalls along every access-allowed street frontage,
+   nosed in directly from the public street (they may occupy the front
+   setback strip — the point of the municipal rule). They keep clear of the
+   building + sidewalk + clearances, entrance throats and side boundaries,
+   count toward the provided total (and can become accessible/EV), and act
+   as obstacles for the interior generator. They appear only where the gap
+   between street and building actually fits a stall length.
 6. **Scoring & options** — every candidate is scored with editable weights
    (stall count, demand compliance, circulation quality, dead-ends, accessible
    proximity, landscape preservation, geometry simplicity). Three options are
