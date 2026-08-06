@@ -364,7 +364,7 @@ const State = {
       },
       accessible: { stallW: 3.6, stallL: 5.5, aisleW: 1.5, ratioPer: 25, min: 1 },
       ev: { pct: 5, clearance: 0.5 },
-      frontage: { enabled: false },
+      frontage: { enabled: true },
       demand: {
         method: 'perArea', sqmPerSpace: 30, gfa: 1200, floors: 3, autoGfa: false,
         per100: 3.3, gfa2: 1200, fixed: 40,
@@ -499,7 +499,7 @@ const State = {
         'setbacks.front': 6, 'setbacks.rear': 3, 'setbacks.left': 3, 'setbacks.right': 3, 'setbacks.road': 0,
         'regs.maxCoveragePct': 60, 'regs.minLandscapePct': 10,
         'accessRules.minCornerDist': 5, 'accessRules.minSpacing': 12,
-        'sidewalks.landscapeBuffer': 0
+        'sidewalks.landscapeBuffer': 0, 'frontage.enabled': true
       }
     };
   },
@@ -623,6 +623,9 @@ const Rules = {
       if (st.crossingConflicts > 0) {
         warn(`${st.crossingConflicts} parking stall(s) intersect a pedestrian crossing.`);
       }
+      if (st.frontParallelAisles > 0) {
+        warn(`${st.frontParallelAisles} internal drive aisle(s) run parallel and adjacent to the street frontage — municipal practice expects stalls fronting the street, with side/rear parking accessed from a side lane.`);
+      }
     }
 
     /* Aisle standards sanity checks */
@@ -728,6 +731,7 @@ const Generator = {
     const frontRoad = validRoads.find(r => r.designation === 'front') || validRoads[0] || null;
     ctx.frontEdgeIdx = frontRoad ? frontRoad.edge : (s.land.mode === 'rect' ? 2 : 0);
     ctx.edgeRoles = poly.map((_, i) => this.edgeRole(s, ctx, i, validRoads));
+    ctx.roadEdges = validRoads.map(r => r.edge);
 
     /* Per-edge insets */
     const sb = s.setbacks, sw = s.sidewalks;
@@ -860,11 +864,11 @@ const Generator = {
           };
           let tl = lateral(G.scale(tang, -1));
           let tr = lateral(tang);
-          /* Municipal frontage mode: the turn runs to ONE side only (the
-             wider strip beside the blocking obstacle) plus a side lane
-             past the obstacle — the rest of the frontage stays available
-             for street-served stalls instead of a parallel inner road. */
-          if (s.frontage && s.frontage.enabled && trimOb >= 0) {
+          /* The turn always runs to ONE side only (the wider strip beside
+             the blocking obstacle) plus a side lane past it — an internal
+             road running parallel to the public street is never built;
+             the frontage belongs to stalls or landscape. */
+          if (trimOb >= 0) {
             const proj = p => G.dot(p, tang);
             const obPts = ctx.obstaclesAisle[trimOb];
             let obLo = Infinity, obHi = -Infinity, laLo = Infinity, laHi = -Infinity;
@@ -1662,8 +1666,34 @@ const Generator = {
       total: 0, regular: 0, accessible: 0, ev: 0, accessAisles: 0, manual: 0,
       paved: 0, landscapeArea: Math.max(0, ctx.landArea - Demand.footprintArea(s) - ctx.sidewalkArea),
       droppedDisconnected: 0, deadEnds: [], fragments: 0, bandCount: 0,
-      crossingConflicts: 0, avgAccDist: 0
+      crossingConflicts: 0, avgAccDist: 0, frontParallelAisles: 0
     };
+  },
+
+  /** Count drive aisles that run parallel AND hard against a street
+      frontage (closer than one stall length, so no stall row can front
+      the street there) — the "inner road duplicating the public street"
+      pattern that municipal practice rejects. */
+  countFrontParallelAisles(s, ctx, layout) {
+    if (!ctx.roadEdges || !ctx.roadEdges.length) return 0;
+    let count = 0;
+    for (const seg of layout.aisles) {
+      let dir = null, best = 0;
+      for (let i = 0; i < seg.poly.length; i++) {
+        const a = seg.poly[i], b = seg.poly[(i + 1) % seg.poly.length];
+        const l = G.dist(a, b);
+        if (l > best) { best = l; dir = G.norm(G.sub(b, a)); }
+      }
+      if (!dir) continue;
+      for (const ei of ctx.roadEdges) {
+        const e = ctx.edges[ei];
+        if (!e) continue;
+        const ed = G.norm(G.sub(e.b, e.a));
+        if (Math.abs(G.cross(dir, ed)) > 0.26) continue;   // > ~15° → not parallel
+        if (G.polySegDist(seg.poly, e.a, e.b) < s.parking.stallL - 0.5) { count++; break; }
+      }
+    }
+    return count;
   },
 
   computeStats(s, ctx, layout, dropped, deadEnds) {
@@ -1703,6 +1733,7 @@ const Generator = {
     }
     st.paved = stallArea + Math.max(0, aisleArea);
     st.landscapeArea = Math.max(0, ctx.landArea - Demand.footprintArea(s) - ctx.sidewalkArea - st.paved);
+    st.frontParallelAisles = this.countFrontParallelAisles(s, ctx, layout);
     return st;
   },
 
@@ -1716,6 +1747,8 @@ const Generator = {
     sc += w.count * st.total;
     sc += w.compliance * (complianceRatio * 20 + (st.total >= demand.required ? 20 : 0));
     sc -= w.circulation * (st.droppedDisconnected * 1.5 + st.deadEnds.length * 6);
+    /* an inner road duplicating the public street is heavily penalised */
+    sc -= 45 * (st.frontParallelAisles || 0);
     sc += w.accessProx * Math.max(0, 15 - st.avgAccDist / 4);
     /* landscape reward is capped so an empty site can never outscore a
        layout that actually parks cars */
