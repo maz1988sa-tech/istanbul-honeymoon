@@ -4110,4 +4110,10 @@ const App = {
   }
 };
 
-document.addEventListener('DOMContentLoaded', () => App.init());
+/* Boot when the DOM is ready — robust whether this script runs during
+   parsing or is injected after the document has already loaded. */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => App.init());
+} else {
+  App.init();
+}
