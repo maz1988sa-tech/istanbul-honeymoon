@@ -817,7 +817,8 @@ const Generator = {
       }
       const ws = Math.max(s.parking.aisleMain, ap.width);
       const exit = G.rayPolygonExit(pos, n, poly);
-      let L = exit ? exit.t - (ctx.insets[exit.edge] || 0) : 0;
+      const boundaryL = Math.max(0, exit ? exit.t - (ctx.insets[exit.edge] || 0) : 0);
+      let L = boundaryL;
       /* the spine stops at the first obstacle in its path (e.g. the building) */
       for (const ob of ctx.obstaclesAisle) {
         const tEnter = G.rayPolygonEnter(pos, n, ob);
@@ -835,6 +836,39 @@ const Generator = {
           ],
           pos, normal: n, len: L, width: ws
         });
+      }
+      /* When an obstacle blocks the straight run (building in front of the
+         entrance), cars turn: add a T-bar aisle across the spine end so
+         circulation can route around the obstruction. */
+      if (L < boundaryL - 0.5 && L > 0.5) {
+        const barEnd = L, barStart = Math.max(0.2, L - ws);
+        const thick = barEnd - barStart;
+        if (thick > 1.5) {
+          const cEnd = G.add(pos, G.scale(n, (barStart + barEnd) / 2));
+          const lateral = dirV => {
+            const ex = G.rayPolygonExit(cEnd, dirV, poly);
+            let t = ex ? ex.t - 0.4 : 0;
+            for (const ob of ctx.obstaclesAisle) {
+              const te = G.rayPolygonEnter(cEnd, dirV, ob);
+              if (te < t) t = te;
+            }
+            return Math.max(0, t);
+          };
+          const tl = lateral(G.scale(tang, -1));
+          const tr = lateral(tang);
+          if (tl + tr > 3) {
+            const p0 = G.add(cEnd, G.scale(tang, -tl));
+            const half = G.scale(n, thick / 2);
+            ctx.spines.push({
+              apId: ap.id + '_bar', bar: true,
+              poly: [
+                G.sub(p0, half), G.sub(G.add(p0, G.scale(tang, tl + tr)), half),
+                G.add(G.add(p0, G.scale(tang, tl + tr)), half), G.add(p0, half)
+              ],
+              pos: p0, normal: tang, len: tl + tr, width: thick
+            });
+          }
+        }
       }
     }
 
@@ -917,24 +951,32 @@ const Generator = {
      perimeter CONNECTOR aisles at the row ends (the standard loop-road
      solution) and keep whichever variant yields more connected stalls.
      ───────────────────────────────────────────────────────────────── */
-  generateCandidate(s, ctx, orient, stallKey, flip, extraInset, forceConnectors) {
+  generateCandidate(s, ctx, orient, stallKey, flip, extraInset, forceConnectors, anchor, connWhich) {
     if (forceConnectors !== undefined) {
-      return this.generateCandidateRaw(s, ctx, orient, stallKey, flip, extraInset, forceConnectors);
+      return this.generateCandidateRaw(s, ctx, orient, stallKey, flip, extraInset, forceConnectors, anchor, connWhich);
     }
-    const base = this.generateCandidateRaw(s, ctx, orient, stallKey, flip, extraInset, false);
-    if (base.stats.droppedDisconnected > 0 && ctx.spines.length) {
-      const alt = this.generateCandidateRaw(s, ctx, orient, stallKey, flip, extraInset, true);
-      if (alt.stats.total > base.stats.total) return alt;
+    let best = this.generateCandidateRaw(s, ctx, orient, stallKey, flip, extraInset, false, anchor);
+    if (best.stats.droppedDisconnected > 0 && ctx.spines.length) {
+      /* try loop connectors on one side only first — the other side keeps
+         its stalls — then on both sides; keep whichever parks the most */
+      for (const which of ['left', 'right', 'both']) {
+        const alt = this.generateCandidateRaw(s, ctx, orient, stallKey, flip, extraInset, true, anchor, which);
+        if (alt.stats.total > best.stats.total) best = alt;
+      }
     }
-    return base;
+    return best;
   },
 
-  generateCandidateRaw(s, ctx, orient, stallKey, flip, extraInset, useConnectors) {
+  generateCandidateRaw(s, ctx, orient, stallKey, flip, extraInset, useConnectors, anchor, connWhich) {
     const geom = this.stallGeom(s, stallKey);
     const insets = ctx.insets.map(v => v + extraInset);
     const insetPoly = G.insetPolygonPerEdge(ctx.landPoly, insets);
     const layout = {
-      meta: { orient, stallKey, flip, extraInset, geom, useConnectors: !!useConnectors },
+      meta: {
+        orient, stallKey, flip, extraInset, geom,
+        useConnectors: !!useConnectors, anchor: anchor == null ? null : anchor,
+        connWhich: connWhich || 'both'
+      },
       stalls: [], aisles: [], bands: [], stats: null, score: 0
     };
     if (insetPoly.length < 3) { layout.stats = this.emptyStats(s, ctx, layout); return layout; }
@@ -957,6 +999,17 @@ const Generator = {
     /* Build bands along frame-y */
     let cursor = flip ? bb.maxY : bb.minY;
     const dir = flip ? -1 : 1;
+    /* Anchored packing: shift the band grid so one drive aisle is centred
+       on the access point's axis — the natural layout for narrow sites
+       where the entrance aisle doubles as the main parking aisle. */
+    if (anchor != null && !flip) {
+      const modBase = allowDouble ? modD : modS;
+      if (modBase > 0.1) {
+        let off = ((anchor - geom.aisle / 2 - geom.depth) - bb.minY) % modBase;
+        if (off < 0) off += modBase;
+        if (off > 0.05 && off < modBase - 0.05) cursor = bb.minY + off;
+      }
+    }
     let bi = 0;
     while (true) {
       const remaining = flip ? cursor - bb.minY : bb.maxY - cursor;
@@ -999,15 +1052,33 @@ const Generator = {
     let conn = null;
     if (useConnectors && layout.bands.length) {
       const wc = Math.max(s.parking.aisleMain, geom.aisle);
+      const landF = ctx.landPoly.map(toF);
+      const lbb = G.bbox(landF);
       conn = {
         wc,
         left: { x0: bb.minX, x1: bb.minX + wc },
         right: { x0: bb.maxX - wc, x1: bb.maxX },
         y0: Math.min(...layout.bands.map(b => b.b0)),
         y1: Math.max(...layout.bands.map(b => b.b1)),
-        segs: []
+        segs: [], landF
       };
-      for (const strip of [conn.left, conn.right]) {
+      /* Extend connectors (as driveways, allowed through setbacks) toward
+         spines / entrance T-bars that sit outside the band range, so the
+         loop can actually reach the entrance. */
+      for (const sp of ctx.spines) {
+        const sbbF = G.bbox(sp.poly.map(toF));
+        if (sbbF.minY > conn.y1 - 0.1) {
+          conn.y1 = Math.min(lbb.maxY - 0.3, (sbbF.minY + sbbF.maxY) / 2);
+        }
+        if (sbbF.maxY < conn.y0 + 0.1) {
+          conn.y0 = Math.max(lbb.minY + 0.3, (sbbF.minY + sbbF.maxY) / 2);
+        }
+      }
+      const strips = connWhich === 'left' ? [conn.left]
+        : connWhich === 'right' ? [conn.right]
+        : [conn.left, conn.right];
+      for (const strip of strips) {
+        strip.alive = false;
         const blocked = [];
         for (const ob of aisleBlockers) {
           if (ob.maxX > strip.x0 + 0.05 && ob.minX < strip.x1 - 0.05) {
@@ -1028,7 +1099,9 @@ const Generator = {
             { x: strip.x0, y: f0 }, { x: strip.x0, y: f1 },
             { x: strip.x1, y: f1 }, { x: strip.x1, y: f0 }
           ];
-          const clipped = G.convexClip(rectF, insetF);
+          /* connectors are driveways: clipped to the land, not the insets,
+             so they may legitimately cross a setback to reach the entrance */
+          const clipped = G.convexClip(rectF, conn.landF);
           if (!clipped.length || G.polygonArea(clipped) < geom.aisle * 2) continue;
           const seg = {
             id: 's' + (segId++), band: -1, x0: strip.x0, x1: strip.x1,
@@ -1038,6 +1111,7 @@ const Generator = {
           };
           conn.segs.push(seg);
           layout.aisles.push(seg);
+          strip.alive = true;
         }
       }
       if (!conn.segs.length) conn = null;   // no usable connectors survived
@@ -1109,9 +1183,10 @@ const Generator = {
             ? G.rectPoly(cx, row.yc, s.parking.stallL, s.parking.stallW, 0)
             : G.stallPoly(cx, row.yc, s.parking.stallW, s.parking.stallL, row.axis);
           if (conn) {
+            /* only surviving connector strips exclude stalls */
             const sbb = G.bbox(stallPolyF);
-            if ((sbb.maxX > conn.left.x0 && sbb.minX < conn.left.x1) ||
-                (sbb.maxX > conn.right.x0 && sbb.minX < conn.right.x1)) continue;
+            if ((conn.left.alive && sbb.maxX > conn.left.x0 && sbb.minX < conn.left.x1) ||
+                (conn.right.alive && sbb.maxX > conn.right.x0 && sbb.minX < conn.right.x1)) continue;
           }
           const polyW = stallPolyF.map(fromF);
           const seg = (band.segments || []).find(sg => cx >= sg.x0 - 0.05 && cx <= sg.x1 + 0.05);
@@ -1179,6 +1254,55 @@ const Generator = {
     for (const th of ctx.throats) if (G.convexOverlap(polyW, th)) return false;
     for (const sp of spinePolys) if (G.convexOverlap(polyW, sp)) return false;
     return true;
+  },
+
+  /* ─────────────────────────────────────────────────────────────────
+     Prune drive aisles that serve no stalls and are not needed to keep
+     a stall-bearing aisle connected to an entrance — "aisles to
+     nowhere" never appear on the drawing. Runs once on the displayed
+     layout (not per candidate) so cost is negligible.
+     ───────────────────────────────────────────────────────────────── */
+  pruneAisles(layout, ctx) {
+    if (!layout) return;
+    const spinePolys = ctx.spines.map(sp => sp.poly);
+    const used = new Set(layout.stalls.filter(st => st.segId).map(st => st.segId));
+    let segs = layout.aisles.slice();
+
+    /* with no entrances there is no network to preserve — empty aisles go */
+    if (!spinePolys.length) {
+      layout.aisles = segs.filter(sg => used.has(sg.id));
+      return;
+    }
+
+    /** All stall-bearing segments still reachable from a spine in `list`? */
+    const stillOk = list => {
+      const present = new Set(list.map(sg => sg.id));
+      for (const id of used) if (!present.has(id)) return false;
+      const connected = new Set();
+      const queue = [];
+      for (const sg of list) {
+        if (spinePolys.some(sp => G.convexOverlap(sg.poly, sp))) { connected.add(sg.id); queue.push(sg); }
+      }
+      while (queue.length) {
+        const cur = queue.pop();
+        for (const o of list) {
+          if (!connected.has(o.id) && G.convexOverlap(cur.poly, o.poly)) { connected.add(o.id); queue.push(o); }
+        }
+      }
+      for (const id of used) if (!connected.has(id)) return false;
+      return true;
+    };
+
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (let i = 0; i < segs.length; i++) {
+        if (used.has(segs[i].id)) continue;
+        const test = segs.slice(0, i).concat(segs.slice(i + 1));
+        if (stillOk(test)) { segs = test; changed = true; break; }
+      }
+    }
+    layout.aisles = segs;
   },
 
   /** Breadth-first connectivity across the circulation network: aisle
@@ -1560,6 +1684,19 @@ const Generator = {
       }
     }
 
+    /* Entrance-anchored banded candidates: shift the band grid so a drive
+       aisle lines up with each access point's axis (the classic narrow-
+       site layout where the entrance aisle is the main parking aisle).
+       Only meaningful when the rows run parallel to the entrance spine. */
+    for (const o of orients) for (const k of keys) for (const ai of ctx.apInfos) {
+      const nF = G.toFrame(ai.normal, o);
+      if (Math.abs(nF.x) < 0.9) continue;
+      const anchor = G.toFrame(ai.pos, o).y;
+      const cand = this.generateCandidate(s, ctx, o, k, false, 0, undefined, anchor);
+      this.score(s, ctx, cand, demand);
+      pool0.push(cand);
+    }
+
     /* Ring (building-hugging) candidates for 90° parking */
     if (keys.includes('90') && s.buildings.length) {
       const ringOrients = [], seenR = new Set();
@@ -1607,12 +1744,17 @@ const Generator = {
     return { A, B, C };
   },
 
-  /** Fast single-combination regeneration used as the drag preview. */
+  /** Fast single-combination regeneration used as the drag preview.
+      Also prunes useless aisles — this is the layout that gets drawn. */
   regenerateLike(s, ctx, demand, meta) {
     if (!ctx.valid) return null;
     const cand = meta.mode === 'ring'
       ? this.generateRing(s, ctx, meta.orient, meta.extraInset)
-      : this.generateCandidate(s, ctx, meta.orient, meta.stallKey, meta.flip, meta.extraInset, meta.useConnectors);
+      : this.generateCandidate(s, ctx, meta.orient, meta.stallKey, meta.flip, meta.extraInset, meta.useConnectors, meta.anchor, meta.connWhich);
+    this.pruneAisles(cand, ctx);
+    cand.stats = this.computeStats(s, ctx, cand,
+      cand.stats ? cand.stats.droppedDisconnected : 0,
+      cand.stats ? cand.stats.deadEnds : []);
     this.score(s, ctx, cand, demand);
     return cand;
   },
