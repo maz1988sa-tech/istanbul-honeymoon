@@ -327,7 +327,31 @@ const G = {
 
   /** Rotate world → frame (frame x-axis at angDeg in world). */
   toFrame(p, angDeg) { return G.rot(p, -G.d2r(angDeg)); },
-  fromFrame(p, angDeg) { return G.rot(p, G.d2r(angDeg)); }
+  fromFrame(p, angDeg) { return G.rot(p, G.d2r(angDeg)); },
+
+  /**
+   * Project WGS84 lat/lng vertices to local metres with a tangent-plane
+   * (equirectangular) projection centred on the parcel — centimetre-level
+   * accuracy at parcel scale. Returns { pts, centroid } with x east and
+   * y south (north up on screen), translated to positive coordinates.
+   */
+  latLngToLocal(coords) {
+    let lat0 = 0, lng0 = 0;
+    for (const c of coords) { lat0 += c.lat; lng0 += c.lng; }
+    lat0 /= coords.length; lng0 /= coords.length;
+    const mPerLat = 110574;
+    const mPerLng = 111320 * Math.cos(G.d2r(lat0));
+    let pts = coords.map(c => ({
+      x: (c.lng - lng0) * mPerLng,
+      y: (lat0 - c.lat) * mPerLat          // north points up (−y)
+    }));
+    const bb = G.bbox(pts);
+    pts = pts.map(p => ({
+      x: Math.round((p.x - bb.minX) * 100) / 100,
+      y: Math.round((p.y - bb.minY) * 100) / 100
+    }));
+    return { pts, centroid: { lat: lat0, lng: lng0 } };
+  }
 };
 
 /* ═══════════════════════ 3. State ═══════════════════════ */
@@ -3656,6 +3680,18 @@ const UI = {
       reader.readAsText(file);
     });
 
+    /* Parcel import (GeoJSON / coordinate list) */
+    Util.el('btnParcelImport').addEventListener('click', () => {
+      this.importParcelText(Util.el('parcelPaste').value);
+    });
+    Util.el('fileParcelImport').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => { this.importParcelText(String(reader.result)); e.target.value = ''; };
+      reader.readAsText(file);
+    });
+
     /* Exports */
     Util.el('btnExpSVG').addEventListener('click', () => this.exportSVG());
     Util.el('btnExpPNG').addEventListener('click', () => this.exportPNG());
@@ -3663,6 +3699,104 @@ const UI = {
     Util.el('btnExpCSV').addEventListener('click', () => this.exportCSV());
     Util.el('btnExpJSON').addEventListener('click', () => this.exportProject());
     Util.el('fileProjectImport').addEventListener('change', e => this.importProject(e));
+  },
+
+  /**
+   * Import a parcel from pasted GeoJSON or a "lat, lng" line list
+   * (copied from Suhail, Balady, Google Earth, QGIS…). The geometry is
+   * projected to local metres, the boundary + location metadata are set,
+   * and the layout regenerates immediately.
+   */
+  importParcelText(text) {
+    text = (text || '').trim();
+    if (!text) { this.hint('Paste a GeoJSON geometry or coordinate lines first.'); return; }
+    let coords = null;
+
+    /* 1) GeoJSON ([lng, lat] order) */
+    try {
+      const gj = JSON.parse(text);
+      const rings = [];
+      const walk = node => {
+        if (!node || typeof node !== 'object') return;
+        if (node.type === 'FeatureCollection') (node.features || []).forEach(walk);
+        else if (node.type === 'Feature') walk(node.geometry);
+        else if (node.type === 'GeometryCollection') (node.geometries || []).forEach(walk);
+        else if (node.type === 'Polygon') { if (node.coordinates && node.coordinates[0]) rings.push(node.coordinates[0]); }
+        else if (node.type === 'MultiPolygon') (node.coordinates || []).forEach(pg => { if (pg[0]) rings.push(pg[0]); });
+        else if (node.type === 'LineString') { if (node.coordinates) rings.push(node.coordinates); }
+      };
+      walk(gj);
+      if (rings.length) {
+        /* choose the largest ring (a parcel file may carry several) */
+        let bestRing = rings[0], bestA = -1;
+        for (const r of rings) {
+          const a = Math.abs(G.polygonSignedArea(r.map(c => ({ x: c[0], y: c[1] }))));
+          if (a > bestA) { bestA = a; bestRing = r; }
+        }
+        coords = bestRing.map(c => ({ lat: +c[1], lng: +c[0] }));
+      }
+    } catch (e) { /* not JSON — try coordinate lines */ }
+
+    /* 2) plain "lat, lng" per line */
+    if (!coords) {
+      const pairs = [];
+      for (const line of text.split(/[\n;]+/)) {
+        const nums = line.match(/-?\d+(?:\.\d+)?/g);
+        if (nums && nums.length >= 2) pairs.push([parseFloat(nums[0]), parseFloat(nums[1])]);
+      }
+      if (pairs.length >= 3) {
+        /* order detection: values beyond ±90 must be longitudes */
+        const firstIsLng = pairs.some(p => Math.abs(p[0]) > 90);
+        coords = pairs.map(p => firstIsLng ? { lat: p[1], lng: p[0] } : { lat: p[0], lng: p[1] });
+      }
+    }
+
+    if (!coords || coords.length < 3) {
+      this.hint('Import failed: could not read a polygon (need GeoJSON or at least 3 "lat, lng" lines).');
+      return;
+    }
+    if (coords.some(c => !isFinite(c.lat) || !isFinite(c.lng) || Math.abs(c.lat) > 90 || Math.abs(c.lng) > 180)) {
+      this.hint('Import failed: coordinates out of range — expected WGS84 latitude/longitude.');
+      return;
+    }
+    /* drop a repeated closing vertex and consecutive duplicates */
+    const clean = [];
+    for (const c of coords) {
+      const prev = clean[clean.length - 1];
+      if (!prev || Math.abs(prev.lat - c.lat) > 1e-9 || Math.abs(prev.lng - c.lng) > 1e-9) clean.push(c);
+    }
+    if (clean.length > 1) {
+      const f = clean[0], l = clean[clean.length - 1];
+      if (Math.abs(f.lat - l.lat) < 1e-9 && Math.abs(f.lng - l.lng) < 1e-9) clean.pop();
+    }
+    if (clean.length < 3) { this.hint('Import failed: fewer than 3 distinct vertices.'); return; }
+
+    const { pts, centroid } = G.latLngToLocal(clean);
+    const area = G.polygonArea(pts);
+    if (!isFinite(area) || area < 30 || area > 5e6) {
+      this.hint(`Import failed: computed area ${Util.fmt(area, 0)} m² is outside the plausible parcel range.`);
+      return;
+    }
+
+    State.pushUndo();
+    const s = State.s;
+    s.land.mode = 'poly';
+    s.land.polygon = pts;
+    s.project.lat = Math.round(centroid.lat * 1e6) / 1e6;
+    s.project.lng = Math.round(centroid.lng * 1e6) / 1e6;
+    /* references to edges that no longer exist would silently misbehave */
+    const n = pts.length;
+    s.roads = s.roads.filter(r => r.edge < n);
+    s.accessPoints = s.accessPoints.filter(a => a.edge < n);
+    /* keep the building visible on the new site */
+    const c = G.centroid(pts);
+    for (const b of s.buildings) { b.x = Math.round(c.x * 10) / 10; b.y = Math.round(c.y * 10) / 10; }
+    Interact.polyMode = null;
+    Interact.polyDraft = [];
+    this.syncFromState();
+    App.recalc(true);
+    Renderer.zoomFit(App.ctx);
+    this.hint(`Parcel imported: ${n} vertices, ${Util.fmtArea(area)} at ${s.project.lat}, ${s.project.lng}. Now assign roads to the correct edges.`);
   },
 
   finishPolygon() {

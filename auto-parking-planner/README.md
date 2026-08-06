@@ -114,6 +114,29 @@ editable field, and presets (including the example *"Saudi Municipality —
 Custom Project Preset"*) are stored in browser localStorage and can be saved,
 loaded, duplicated, exported and imported as JSON.
 
+## 4b. Parcel import (Suhail / Balady / GIS bridge)
+
+The *Land boundary* section imports a real parcel in two formats:
+
+* **GeoJSON** — paste or load a `Feature` / `FeatureCollection` /
+  `Polygon` / `MultiPolygon` (standard `[lng, lat]` order); the largest
+  ring is used.
+* **Coordinate list** — one `lat, lng` pair per line (Google Earth /
+  map-popup style; the order is auto-detected when values exceed ±90°).
+
+Vertices are projected to local metres with a tangent-plane projection
+centred on the parcel (centimetre-level accuracy at parcel scale), the
+polygon boundary and project latitude/longitude are set, the building is
+centred on the new site, and the layout regenerates immediately — then
+assign your roads to the correct edges.
+
+**About Suhail (suhail.ai):** Suhail publishes no public developer API and
+its site blocks third-party browser requests, so a live "click a parcel in
+Suhail" link is not possible from a serverless browser app — that would
+require an official Suhail partnership/API key or a backend proxy. The
+import box above is the practical bridge: copy the parcel geometry from
+any source (including a Suhail export) and paste it here.
+
 ## 5. Export
 
 * **SVG** — standalone plan with border, title block (project, date, scale,

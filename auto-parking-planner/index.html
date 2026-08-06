@@ -79,6 +79,15 @@
           <div class="mini-stat">Vertices: <b id="polyVertexCount">0</b> &nbsp;&middot;&nbsp; Area: <b id="polyArea">–</b></div>
         </div>
         <div class="mini-stat">Land area: <b id="landAreaInline">–</b></div>
+        <h4>Import parcel (GeoJSON / coordinates)</h4>
+        <label class="fld"><span>Paste GeoJSON or one "lat, lng" pair per line</span>
+          <textarea id="parcelPaste" rows="4" placeholder='{"type":"Polygon","coordinates":[[[46.6753,24.7136], … ]]}&#10;or:&#10;24.71360, 46.67530&#10;24.71361, 46.67570&#10;…'></textarea>
+        </label>
+        <div class="fld-row">
+          <button id="btnParcelImport" class="btn wide">Import parcel</button>
+          <label class="fld file" style="margin-bottom:0"><span>or file</span><input type="file" id="fileParcelImport" accept=".json,.geojson,application/json"></label>
+        </div>
+        <p class="hint">Copy the parcel geometry from any GIS source (Suhail, Balady, Google Earth, QGIS…). Coordinates are projected to metres locally — the boundary, area and location metadata are set automatically and the parking layout regenerates. After importing, assign your roads to the correct edges.</p>
       </div>
     </details>
 
