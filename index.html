@@ -396,36 +396,56 @@ body.modal-open{overflow:hidden}
 /* ══ MOBILE: first screen = full trip interface, then page-by-page snap ══ */
 #fold{display:contents}
 @media (max-width:740px){
-  html{scroll-snap-type:y mandatory;scroll-padding-top:130px}
+  html{scroll-snap-type:y proximity;scroll-padding-top:130px}
   #fold{display:flex;flex-direction:column;min-height:calc(100svh - 50px)}
-  #fold,#tcard,#glance,#days,article.day,#food,#tiktok,#book,#budget,#altdays,#info{scroll-snap-align:start;scroll-snap-stop:always}
+  #fold,#tcard,#glance,#days,article.day,#food,#tiktok,#book,#budget,#altdays,#info{scroll-snap-align:start}
   header.hero{display:flex;flex-direction:column;flex:1;justify-content:space-between;padding:8px 0 0}
   .hero .path{display:none}
-  .hero .kicker{font-size:9px;letter-spacing:.3em}
-  .hero h1{font-size:clamp(40px,11.5vw,52px)}
-  .hero .scr{font-size:clamp(26px,7.5vw,34px);margin-top:-4px}
-  .hero .couple{font-size:11.5px;letter-spacing:.22em;margin-top:4px}
-  .hero .arh{font-size:14.5px;margin-top:5px}
+  .hero .kicker{font-size:10px;letter-spacing:.32em}
+  .hero h1{font-size:clamp(44px,12.5vw,58px)}
+  .hero .scr{font-size:clamp(30px,9vw,42px);margin-top:-2px}
+  .hero .couple{font-size:13px;letter-spacing:.24em;margin-top:6px}
+  .hero .arh{font-size:16.5px;margin-top:6px}
   .hr-heart{margin:9px auto 3px}
-  .hero .tag{font-size:9.5px;letter-spacing:.24em}
+  .hero .tag{font-size:10.5px;letter-spacing:.26em}
   .infogrid{gap:8px;padding:0 14px 4px;margin-top:6px}
-  .icard{padding:9px 11px}
-  .icard .lb{font-size:8.5px;letter-spacing:.16em}
-  .icard .lb .arl{font-size:10px}
-  .icard .vl{font-size:13.5px;margin-top:3px;padding-top:5px;line-height:1.35}
-  .icard .vl small{font-size:10px;line-height:1.35}
+  .icard{padding:10px 12px}
+  .icard .lb{font-size:9px;letter-spacing:.16em}
+  .icard .lb .arl{font-size:11px}
+  .icard .vl{font-size:14.5px;margin-top:3px;padding-top:5px;line-height:1.4}
+  .icard .vl small{font-size:11px;line-height:1.4}
   #tracker{top:50px}
-  .band .wrap{grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 12px 58px}
+  .band .wrap{grid-template-columns:repeat(4,1fr);gap:6px;padding:12px 12px 58px}
   #savebtn{right:12px;bottom:12px;width:46px;height:46px;padding:0;gap:0;justify-content:center;font-size:0;border-radius:50%}
   #savebtn .arl{display:none}
   #savebtn svg{width:17px;height:17px}
   #topbtn{right:12px;bottom:68px}
-  .bitem{padding:9px 3px;gap:3px;border-radius:10px}
+  .bitem{padding:12px 4px;gap:5px;border-radius:12px}
+  .bitem svg{width:21px;height:21px}
+  .bitem .n{font-size:23px}
+  .bitem .l{font-size:8.5px;letter-spacing:.12em}
+  .bitem .l .arl{font-size:11px;margin-top:1px}
+  #food table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
+/* short phone screens: fall back to the compact fold so nothing gets cut */
+@media (max-width:740px) and (max-height:719px){
+  .hero .kicker{font-size:9px}
+  .hero h1{font-size:clamp(40px,11.5vw,52px)}
+  .hero .scr{font-size:clamp(26px,7.5vw,34px);margin-top:-4px}
+  .hero .couple{font-size:11.5px;margin-top:4px}
+  .hero .arh{font-size:14.5px;margin-top:5px}
+  .hero .tag{font-size:9.5px}
+  .icard{padding:9px 11px}
+  .icard .vl{font-size:13.5px;line-height:1.35}
+  .icard .vl small{font-size:10px}
+  .icard .lb{font-size:8.5px}
+  .icard .lb .arl{font-size:10px}
+  .band .wrap{padding:10px 12px 58px}
+  .bitem{padding:9px 3px;gap:3px}
   .bitem svg{width:16px;height:16px}
   .bitem .n{font-size:17px}
-  .bitem .l{font-size:7.5px;letter-spacing:.1em}
-  .bitem .l .arl{font-size:9.5px;margin-top:1px}
-  #food table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .bitem .l{font-size:7.5px}
+  .bitem .l .arl{font-size:9.5px}
 }
 @media print{nav,#tracker,#savebtn,#topbtn,#toast{display:none}.day{break-inside:avoid;box-shadow:none}body{background:#fff}}
 </style>
@@ -1294,13 +1314,22 @@ $$("article.day").forEach(function(d){
   head.appendChild(ctl);
   var ck=ctl.querySelector("input");
   if(state.dayDone[id]){d.classList.add("dday-done");ck.checked=true;}
-  if(state.dayCollapsed[id]||state.dayDone[id]){d.classList.add("collapsed");}
+  /* default: collapsed like an index — expand only what the user explicitly opened */
+  var col=Object.prototype.hasOwnProperty.call(state.dayCollapsed,id)?!!state.dayCollapsed[id]:true;
+  if(state.dayDone[id])col=true;
+  d.classList.toggle("collapsed",col);
   ck.addEventListener("change",function(){
     d.classList.toggle("dday-done",ck.checked);
     d.classList.toggle("collapsed",ck.checked);
     dayprog(); autosave();
   });
   ctl.querySelector(".cbtn").addEventListener("click",function(){ d.classList.toggle("collapsed"); autosave(); });
+  /* tapping the day name / header toggles it open — not only the small chevron */
+  head.style.cursor="pointer";
+  head.addEventListener("click",function(e){
+    if(e.target.closest&&(e.target.closest(".dayctl")||e.target.closest(".acchip")||e.target.closest("button")||e.target.closest("a")||e.target.closest("input")||e.target.closest("label")))return;
+    d.classList.toggle("collapsed"); autosave();
+  });
 });
 function dayprog(){var done=$$("article.day.dday-done").length;
   $("#dayprog").innerHTML=done?('<svg width="13" height="13" viewBox="0 0 24 24" fill="#84855f" style="vertical-align:-2px"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg> '+done+" / 11 days done · أنجزتما "+done+" من ١١ يوماً"):"";}
@@ -1435,19 +1464,34 @@ function applySwap(dt){ var s=$('.slot[data-dt="'+dt+'"]'); if(!s||!PLACES[dt])r
     if(mapA)mapA.href=A.maps; if(note)note.innerHTML=A.why;
   }else{ var O=ORIGS[dt]; if(!O)return; if(tar)tar.textContent=O.tar; if(ten)ten.textContent=O.ten; if(mapA&&O.maps)mapA.href=O.maps; if(note)note.innerHTML=O.note; }
   markSlot(dt);}
-function fetchPhotos(q,box){ box.innerHTML='<div class="gph"></div><div class="gph"></div><div class="gph"></div>';
-  function show(urls){ if(!urls||!urls.length){box.style.display="none";return;} box.style.display="";
-    box.innerHTML=urls.slice(0,6).map(function(u,i){return '<img decoding="async" src="'+u.t+'" data-i="'+i+'" alt="">'}).join("");
-    box.onclick=function(e){var im=e.target.closest?e.target.closest("img"):null;if(!im)return;e.stopPropagation();openLB(urls.slice(0,6),+im.dataset.i||0);};}
-  if(pmCache[q])return show(pmCache[q]);
-  try{ fetch("https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch="+encodeURIComponent("filetype:bitmap "+q)+"&gsrlimit=9&gsrnamespace=6&prop=imageinfo&iiprop=url&iiurlwidth=640")
+function commonsFetch(q){ /* one Commons search -> [{t,f}] */
+  return fetch("https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch="+encodeURIComponent("filetype:bitmap "+q)+"&gsrlimit=12&gsrnamespace=6&prop=imageinfo&iiprop=url&iiurlwidth=640")
     .then(function(r){return r.json()}).then(function(j){
       var urls=[]; if(j&&j.query&&j.query.pages){Object.keys(j.query.pages).sort(function(a,b){return j.query.pages[a].index-j.query.pages[b].index}).forEach(function(k){
         var ii=j.query.pages[k].imageinfo; if(ii&&ii[0]&&/\.(jpe?g|png)$/i.test(ii[0].url||"")){
           var t=ii[0].thumburl||ii[0].url, f=t.replace(/\/(\d{2,4})px-/,"/1600px-"); if(f===t)f=ii[0].url||t;
           urls.push({t:t,f:f});}});}
-      pmCache[q]=urls; show(urls);
-    }).catch(function(){box.style.display="none";});
+      return urls;
+    }).catch(function(){return [];});}
+var PM_GEN={act:"Istanbul landmarks",food:"Turkish cuisine dishes",cafe:"Turkish desserts coffee shop",shop:"Istanbul bazaar market",move:"Istanbul Bosphorus ferry"};
+function fetchPhotos(q,box,fallbacks){ /* guarantees up to 6 photos via fallback query chain */
+  box.style.display=""; box.innerHTML='<div class="gph"></div><div class="gph"></div><div class="gph"></div><div class="gph"></div><div class="gph"></div><div class="gph"></div>';
+  var mySeq=(box._seq=(box._seq||0)+1); /* ignore stale responses after view switches */
+  function show(urls){ if(box._seq!==mySeq)return;
+    if(!urls||!urls.length){box.style.display="none";return;} box.style.display="";
+    box.innerHTML=urls.map(function(u,i){return '<img decoding="async" src="'+u.t+'" data-i="'+i+'" alt="">'}).join("");
+    box.onclick=function(e){var im=e.target.closest?e.target.closest("img"):null;if(!im)return;e.stopPropagation();openLB(urls,+im.dataset.i||0);};}
+  if(pmCache[q]&&pmCache[q].length>=6)return show(pmCache[q]);
+  try{
+    var queue=[q].concat(fallbacks||[]).filter(function(x,i,a){return x&&a.indexOf(x)===i;});
+    var acc=[],seen={};
+    (function next(i){
+      if(box._seq!==mySeq)return;
+      if(acc.length>=6||i>=queue.length){ pmCache[q]=acc.slice(0,6); show(pmCache[q]); return; }
+      commonsFetch(queue[i]).then(function(urls){
+        urls.forEach(function(u){ if(acc.length<6&&!seen[u.t]){seen[u.t]=1;acc.push(u);} });
+        next(i+1); });
+    })(0);
   }catch(e){box.style.display="none";}}
 /* photo lightbox */
 var LB=null,LBl=[],LBi=0;
@@ -1492,7 +1536,7 @@ function openPlaceModal(dt){ var P=PLACES[dt], s=$('.slot[data-dt="'+dt+'"]'); i
     function moreLbl(){more.textContent=deep.classList.contains("open")?"إخفاء التفاصيل ▴":"اقرأ المزيد — نبذة ومعلومات مهمة ▾";}
     deep.classList.remove("open"); more.hidden=false; moreLbl();
     more.onclick=function(){deep.classList.toggle("open");moreLbl();};
-    if(!n){ fetchPhotos(P.q,gal);
+    if(!n){ fetchPhotos(P.q,gal,[(O.ten?O.ten+" Istanbul":null),PM_GEN[s.dataset.cat]||"Istanbul city"]);
       ti.innerHTML="<b>"+O.tar+"</b><small>"+(O.ten||"")+(rate?" · "+rate.textContent.replace(/\s+/g," ").trim():"")+"</small>";
       ac.innerHTML=pmActions(O.maps,bookA?bookA.href:null);
       why.textContent=""; why.style.display="none";
@@ -1504,7 +1548,7 @@ function openPlaceModal(dt){ var P=PLACES[dt], s=$('.slot[data-dt="'+dt+'"]'); i
         ex.querySelector(".pm-yes").onclick=function(){ state.liked[dt]=1; markSlot(dt); autosave(); closePM(m); };
         ex.querySelector(".pm-no").onclick=function(){ view(1); }; }
     }else{ var A=P.alts[n-1], nxt=n%P.alts.length+1;
-      fetchPhotos(A.q,gal);
+      fetchPhotos(A.q,gal,[(A.en?A.en+" Istanbul":null),PM_GEN[s.dataset.cat]||"Istanbul city"]);
       ti.innerHTML="<b>"+A.ar+"</b><small>"+(A.en||"")+" · البديل "+n+" من "+P.alts.length+"</small>";
       ac.innerHTML=pmActions(A.maps,null);
       why.textContent=A.why; why.style.display="";
@@ -1561,7 +1605,7 @@ function tick(){
     }else{big.innerHTML="Day "+dayN+" in Istanbul <span class='arl'>· اليوم "+dayN+" في اسطنبول</span>";}
     sub.innerHTML=next?("Next · التالي: "+fmtT(istWall(next.t))+" — "+$(".ttl",next.el).childNodes[0].textContent.trim()):"Last item of the trip — safe travels · آخر بند في الرحلة";
     go.style.display="inline-block";
-    go.onclick=function(){var target=cur?cur.el:(next?next.el:null);if(target){var card=target.closest("article.day");if(card)card.classList.remove("collapsed");target.scrollIntoView({behavior:"smooth",block:"center"});}};
+    go.onclick=function(){var target=cur?cur.el:(next?next.el:null);if(target){var card=target.closest("article.day");if(card)card.classList.remove("collapsed");snapPause(1200);target.scrollIntoView({behavior:"smooth",block:"center"});}};
   }else{
     big.innerHTML="Trip complete <span class='arl'>· انتهت الرحلة — ذكريات سعيدة ✦</span>";
     sub.innerHTML="Keep this file — the notes and budget are your memory of it. <span class='arl'>احتفظا بالملف، ففيه ملاحظاتكما وذكرياتكما.</span>";
@@ -1714,10 +1758,22 @@ $$("input[data-ck]").forEach(function(b){b.addEventListener("change",ckcount);})
 /* ── budget totals ── */
 function btot(){var t=0;$$("input[data-b]").forEach(function(i){t+=Number(i.value)||0;});$("#btot").textContent=t.toLocaleString("en-US")+" SAR";}
 $$("input[data-b]").forEach(function(i){i.addEventListener("input",btot);}); btot();
+/* ── snap-safe anchor navigation: pause snapping while a jump animates, expand target days ── */
+function snapPause(ms){ var de=document.documentElement; de.style.scrollSnapType="none";
+  clearTimeout(snapPause._t); snapPause._t=setTimeout(function(){de.style.scrollSnapType="";},ms||1000); }
+document.addEventListener("click",function(e){
+  var a=e.target.closest?e.target.closest('a[href^="#"]'):null; if(!a)return;
+  var href=a.getAttribute("href"); if(!href||href.length<2)return;
+  var t=$(href); if(!t)return;
+  e.preventDefault();
+  if(t.classList&&t.classList.contains("day")&&t.classList.contains("collapsed")){t.classList.remove("collapsed");autosave();}
+  snapPause(1200);
+  t.scrollIntoView({behavior:"smooth",block:"start"});
+});
 /* ── nav highlight ── */
 var links=$$("nav a"),secs=links.map(function(l){return $(l.getAttribute("href"));});
 var tb=$("#topbtn");
-tb.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+tb.addEventListener("click",function(){snapPause(1200);window.scrollTo({top:0,behavior:"smooth"});});
 window.addEventListener("scroll",function(){var y=window.scrollY+140,idx=0;secs.forEach(function(s,i){if(s&&s.offsetTop<=y)idx=i;});links.forEach(function(l,i){l.classList.toggle("active",i===idx);});tb.classList.toggle("show",window.scrollY>500);},{passive:true});
 /* ── self-save: download this same file with state embedded ── */
 function collect(){var st={checks:{},notes:{},budget:{},savedAt:null};
@@ -1725,7 +1781,7 @@ function collect(){var st={checks:{},notes:{},budget:{},savedAt:null};
   $$("textarea[data-note]").forEach(function(t){if(t.value)st.notes[t.dataset.note]=t.value;});
   $$("input[data-b]").forEach(function(i){if(i.value!=="")st.budget[i.dataset.b]=i.value;});
   st.dayDone={};st.dayCollapsed={};
-  $$("article.day").forEach(function(d){ if(d.classList.contains("dday-done"))st.dayDone[d.id]=true; if(d.classList.contains("collapsed"))st.dayCollapsed[d.id]=true; });
+  $$("article.day").forEach(function(d){ if(d.classList.contains("dday-done"))st.dayDone[d.id]=true; st.dayCollapsed[d.id]=d.classList.contains("collapsed"); });
   st.liked=state.liked||{}; st.swapped=state.swapped||{}; st.daySwap=state.daySwap||{};
   var n=istWall(new Date());st.savedAt=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0")+" "+fmtT(n)+" (Istanbul time)";
   st.ts=Date.now();
