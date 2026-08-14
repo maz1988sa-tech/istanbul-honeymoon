@@ -413,6 +413,25 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 .gnum.gclick:hover{background:var(--gold);color:#fff}
 .gnum.gprev{width:44px;border-radius:99px;background:var(--gold);color:#fff;font-family:var(--ar);font-size:12.5px;animation:gpulse 1.1s ease infinite}
 .gnum.gzero{background:var(--olive);border-color:#fdfbf6;color:#fff;width:32px;height:32px;font-size:15px}
+.gnum.gdone{background:#0ca30c;border-color:#fdfbf6;color:#fff}
+.gnum.gnext{background:#fff6df;border-color:#c98500;color:#7a5a00;animation:gpulse 1.1s ease infinite}
+.leaflet-popup-content-wrapper{border-radius:14px}
+.leaflet-popup-content{font-family:var(--ar);direction:rtl;text-align:right;margin:11px 13px;line-height:1.75}
+.gpop b{display:block;font-family:var(--ar);font-size:14px;font-weight:700;color:#3a352c;margin-bottom:8px}
+.gpop-btns{display:flex;gap:7px;flex-wrap:wrap}
+.gpop-btns button{font-family:var(--ar);font-size:12.5px;font-weight:700;border-radius:99px;padding:6px 14px;cursor:pointer;border:1px solid #d8c9a4}
+.gpx-done{background:#0ca30c;color:#fff;border-color:#0ca30c}
+.gpx-done:hover{background:#0b8f0b}
+.gpx-undone{background:#f2ede2;color:#6b6c4c}
+.gpx-card{background:#fff;color:#57462f}
+.gpx-card:hover{background:#f6efdf}
+.gstl b{display:block;font-family:var(--ar);font-size:13.5px;font-weight:700;color:#3a352c;margin-bottom:7px}
+.gstl .si{display:flex;gap:8px;align-items:center;font-family:var(--ar);font-size:12.5px;color:#3a352c;margin:4px 0}
+.gstl .si i{width:11px;height:11px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px rgba(0,0,0,.2);flex:none}
+.gstl .si b2{font-weight:700}
+.geo-legend .geo-all{font-family:var(--ar);font-size:12px;font-weight:700;border:1px solid rgba(255,246,228,.6);background:rgba(255,246,228,.14);color:#fdf8ec;border-radius:99px;padding:4px 13px;cursor:pointer}
+.geo-legend .geo-all:hover{background:rgba(255,246,228,.3)}
+.geo-legend .geo-ct{font-weight:700;color:#f3d9a8}
 .glabel{display:inline-block;white-space:nowrap;transform:translate(-50%,-50%);font-family:var(--ar);font-size:11px;font-weight:700;background:#fdfbf6;border:1.5px solid rgba(58,53,44,.25);border-radius:99px;padding:2px 9px;color:#3a352c;box-shadow:0 2px 8px rgba(40,32,18,.28)}
 .glabel.gm-walk{color:#5d5744}
 .glabel.gm-tram{border-color:#d64545;color:#a52f2f}
@@ -1328,7 +1347,7 @@ try{EMB=JSON.parse($("#savestate").textContent||"{}")||{};}catch(e){EMB={}}
 try{if(store){var lraw=store.getItem(KEY);if(lraw)LS=JSON.parse(lraw);}}catch(e){LS=null}
 /* newer wins: embedded file-state vs this browser's memory */
 var state=(LS&&((LS.ts||0)>=(EMB.ts||0)))?LS:EMB;
-state=state||{};state.checks=state.checks||{};state.notes=state.notes||{};state.budget=state.budget||{};state.savedAt=state.savedAt||null;state.dayDone=state.dayDone||{};state.dayCollapsed=state.dayCollapsed||{};state.liked=state.liked||{};state.swapped=state.swapped||{};state.daySwap=state.daySwap||{};
+state=state||{};state.checks=state.checks||{};state.notes=state.notes||{};state.budget=state.budget||{};state.savedAt=state.savedAt||null;state.dayDone=state.dayDone||{};state.dayCollapsed=state.dayCollapsed||{};state.liked=state.liked||{};state.swapped=state.swapped||{};state.daySwap=state.daySwap||{};state.actDone=state.actDone||{};
 $$("input[data-ck]").forEach(function(b){b.checked=!!state.checks[b.dataset.ck];});
 $$("textarea[data-note]").forEach(function(t){if(state.notes[t.dataset.note])t.value=state.notes[t.dataset.note];});
 $$("input[data-b]").forEach(function(i){if(state.budget[i.dataset.b]!=null)i.value=state.budget[i.dataset.b];});
@@ -1813,7 +1832,7 @@ function loadLeaflet(){ if(LEAF)return LEAF;
   return LEAF;}
 function buildGeoModal(){ if($("#geoModal"))return $("#geoModal");
   var m=document.createElement("div"); m.id="geoModal"; m.className="cmodal"; m.hidden=true;
-  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass geo-glass"><div class="mhead"><button class="geo-fs" type="button" title="ملء الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="fs-out" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path class="fs-in" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button><div class="geo-title"></div><button class="cm-x" type="button">✕</button></div><div class="geo-map"></div><div class="geo-legend"></div><div class="geo-note">«0» نقطة الانطلاق من الفندق · كل لون وسيلة نقل · النقاط الملونة محطات الركوب والعبور والنزول (اضغطا عليها للأسماء) · الأرقام تفتح بطاقة الفعالية · كبّرا الخريطة لعرض بطاقات الوسائل</div></div>';
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass geo-glass"><div class="mhead"><button class="geo-fs" type="button" title="ملء الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="fs-out" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path class="fs-in" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button><div class="geo-title"></div><button class="cm-x" type="button">✕</button></div><div class="geo-map"></div><div class="geo-legend"></div><div class="geo-note">«0» الانطلاق من الفندق · الرقم الذهبي النابض هو وجهتكما التالية — اضغطا عليه ثم «✓ خلصناها» ليظهر الطريق الذي بعده · اضغطا على أي خط أو بطاقة وسيلة لعرض أسماء محطاتها · «المسار كامل» يعرض اليوم كله</div></div>';
   document.body.appendChild(m);
   function close(){ m.hidden=true; m.classList.remove("geo-full"); document.body.classList.remove("modal-open"); }
   m.querySelector(".cm-x").addEventListener("click",close);
@@ -1823,17 +1842,31 @@ function buildGeoModal(){ if($("#geoModal"))return $("#geoModal");
     setTimeout(function(){ if(geoMapObj){ geoMapObj.invalidateSize();
       if(geoLastFit&&geoLastFit.length>1)geoMapObj.fitBounds(geoLastFit,{padding:[36,36]}); } },180);
   });
+  /* step-flow controls: done-toggle & place-card buttons inside map popups + the view toggle */
+  m.addEventListener("click",function(e){
+    var b=e.target.closest?e.target.closest(".gpx-done,.gpx-undone,.gpx-card,.geo-all"):null; if(!b)return;
+    if(b.classList.contains("geo-all")){ geoShowAll=!geoShowAll; drawGeo(); return; }
+    var dt=b.getAttribute("data-dt");
+    if(b.classList.contains("gpx-card")){ if(geoMapObj&&geoMapObj.closePopup)geoMapObj.closePopup(); if(dt)openPlaceModal(dt); return; }
+    if(!dt)return;
+    state.actDone=state.actDone||{};
+    if(b.classList.contains("gpx-done"))state.actDone[dt]=1; else delete state.actDone[dt];
+    if(geoMapObj&&geoMapObj.closePopup)geoMapObj.closePopup();
+    autosave(); drawGeo();
+  });
   return m;}
 /* ══ TRANSIT LAYER: real routes between stops — mode colors, stations, walk minutes ══ */
+/* mode colors: validated per-day for contrast + color-blind separation on the light map (dataviz palette) */
 var MODES={
- walk:{c:"#7d745f",ar:"مشي",dash:"1 8",w:3.5},
- tram:{c:"#d64545",ar:"ترام",dash:"10 6",w:4},
- metro:{c:"#2f9e44",ar:"مترو",dash:"10 6",w:4},
- bus:{c:"#e8850c",ar:"باص",dash:"10 6",w:4},
- ferry:{c:"#1f6fb5",ar:"عبّارة",dash:"12 7",w:4},
- funi:{c:"#7048a8",ar:"فونيكولار",dash:"10 6",w:4},
- cable:{c:"#c2418f",ar:"تلفريك",dash:"10 6",w:4},
- taxi:{c:"#b8860b",ar:"تاكسي / أوبر",dash:"14 9",w:3.5}};
+ walk:{c:"#52514e",ar:"مشي",dash:"1 8",w:3.5},
+ tram:{c:"#e34948",ar:"ترام",dash:"10 6",w:4.5},
+ metro:{c:"#008300",ar:"مترو",dash:"10 6",w:4.5},
+ bus:{c:"#e87ba4",ar:"باص",dash:"10 6",w:4.5},
+ ferry:{c:"#2a78d6",ar:"عبّارة",dash:"12 7",w:4.5},
+ funi:{c:"#4a3aa7",ar:"فونيكولار",dash:"10 6",w:4.5},
+ cable:{c:"#4a3aa7",ar:"تلفريك",dash:"10 6",w:4.5},
+ taxi:{c:"#c98500",ar:"تاكسي / أوبر",dash:"14 9",w:4}};
+var DOT_B="#2a78d6",DOT_V="#eb6834",DOT_A="#008300"; /* boarding / via / alighting station dots */
 var STN={
 "عثمان بيه M2":[41.0489,28.9878],"تقسيم M2":[41.0369,28.9850],"شيشهانه M2":[41.0287,28.9740],"هاليتش M2":[41.0322,28.9655],"وزنجيلر M2":[41.0128,28.9547],
 "تقسيم F1":[41.0369,28.9850],"كاباتاش F1":[41.0330,28.9944],
@@ -1922,12 +1955,26 @@ d11:{start:null,home:false,legs:[
  [{m:"taxi",t:50}]]}};
 var HOME_OF={d10:HOTEL_W,d2:HOTEL_R,d3:HOTEL_R,d4:HOTEL_R,d5:HOTEL_R,d6:HOTEL_R,d7:HOTEL_R,d9:HOTEL_W};
 function trMid(a,b){return [(a[0]+b[0])/2,(a[1]+b[1])/2];}
-function trChip(Lf,ll,html,cls){ var ic=Lf.divIcon({className:"gnumw",html:'<div class="glabel '+(cls||"")+'">'+html+"</div>",iconSize:[10,10],iconAnchor:[5,5]});
-  return Lf.marker(ll,{icon:ic,interactive:false,zIndexOffset:600}); }
+function trChip(Lf,ll,html,cls,pop){ var ic=Lf.divIcon({className:"gnumw",html:'<div class="glabel '+(cls||"")+'">'+html+"</div>",iconSize:[10,10],iconAnchor:[5,5]});
+  var mk=Lf.marker(ll,{icon:ic,interactive:!!pop,zIndexOffset:600});
+  if(pop&&mk.bindPopup)mk.bindPopup(pop,{closeButton:true,offset:[0,-6]});
+  return mk; }
 function trDot(Lf,ll,color,name,role){ var mk=Lf.circleMarker(ll,{radius:6.5,color:"#fff",weight:2,fillColor:color,fillOpacity:1});
   mk.bindTooltip('<b dir="rtl">'+name+'</b><br><span dir="rtl" style="opacity:.85">'+role+"</span>",{direction:"top",offset:[0,-8]});
   return mk; }
-function drawTransit(Lf,map,pts,dayId,items){
+function trLine(Lf,map,path,color,weight,dash,items,pop){ /* white casing under every colored line: readable on any map tone */
+  var cas=Lf.polyline(path,{color:"#ffffff",weight:weight+3.5,opacity:.92}); cas.addTo(map); items.push(cas);
+  var pl=Lf.polyline(path,{color:color,weight:weight,opacity:.97,dashArray:dash}); pl.addTo(map); items.push(pl);
+  if(pop&&pl.bindPopup)pl.bindPopup(pop,{closeButton:true});
+  return pl; }
+function trStops(sub,M){ /* station-name list popup for a transit sub-leg */
+  var names=[sub.b].concat(sub.via||[]).concat([sub.a]);
+  var h='<div class="gstl" dir="rtl"><b>'+(sub.line?sub.line+" · ":"")+M.ar+" — "+names.length+' محطات</b>';
+  h+='<div class="si"><i style="background:'+DOT_B+'"></i>اركبا من: <b2>'+sub.b+"</b2></div>";
+  (sub.via||[]).forEach(function(v){ h+='<div class="si"><i style="background:'+DOT_V+'"></i>'+v+"</div>"; });
+  h+='<div class="si"><i style="background:'+DOT_A+'"></i>انزلا في: <b2>'+sub.a+"</b2></div></div>";
+  return h; }
+function drawTransit(Lf,map,pts,dayId,items,legLimit){
   var TR=TRANSIT[dayId]; if(!TR)return false;
   if(state.daySwap&&state.daySwap[dayId])return false; /* swapped day: no authored transit */
   var anchors=[]; if(TR.start)anchors.push(TR.start.ll);
@@ -1935,55 +1982,56 @@ function drawTransit(Lf,map,pts,dayId,items){
   var homeLL=null;
   if(TR.home){ homeLL=(TR.home===true)?(TR.start?TR.start.ll:(HOME_OF[dayId]?HOME_OF[dayId].ll:null)):TR.home.ll; if(homeLL)anchors.push(homeLL); }
   if(TR.legs.length!==anchors.length-1)return false; /* structure changed → fallback */
-  var bounds=anchors.slice();
+  var nLegs=Math.min(TR.legs.length,(legLimit==null?TR.legs.length:legLimit));
+  var bounds=[];
   /* hotel start marker "0" */
   if(TR.start){ var z=Lf.marker(TR.start.ll,{icon:Lf.divIcon({className:"gnumw",html:'<div class="gnum gzero">0</div>',iconSize:[32,32],iconAnchor:[16,16]}),zIndexOffset:500})
       .bindTooltip('<b dir="rtl">نقطة الانطلاق: '+TR.start.n+"</b>",{direction:"top",offset:[0,-16]});
-    z.addTo(map); items.push(z); }
-  if(TR.home&&TR.home!==true&&homeLL){ var zh=Lf.marker(homeLL,{icon:Lf.divIcon({className:"gnumw",html:'<div class="gnum gzero">⌂</div>',iconSize:[32,32],iconAnchor:[16,16]}),zIndexOffset:500})
+    z.addTo(map); items.push(z); bounds.push(TR.start.ll); }
+  var homeLegDrawn=TR.home&&homeLL&&nLegs>=TR.legs.length;
+  if(TR.home&&TR.home!==true&&homeLL&&homeLegDrawn){ var zh=Lf.marker(homeLL,{icon:Lf.divIcon({className:"gnumw",html:'<div class="gnum gzero">⌂</div>',iconSize:[32,32],iconAnchor:[16,16]}),zIndexOffset:500})
       .bindTooltip('<b dir="rtl">نهاية اليوم: '+TR.home.n+"</b>",{direction:"top",offset:[0,-16]});
     zh.addTo(map); items.push(zh); }
   var modesUsed={};
+  TR.legs.forEach(function(subs){ subs.forEach(function(sub){ modesUsed[sub.m]=1; }); }); /* full-day legend, stable while revealing */
   TR.legs.forEach(function(subs,i){
+    if(i>=nLegs)return;
     var cur=anchors[i], legEnd=anchors[i+1];
+    bounds.push(cur); bounds.push(legEnd);
     subs.forEach(function(sub,si){
-      var M=MODES[sub.m]||MODES.walk; modesUsed[sub.m]=1;
-      var segEnd;
+      var M=MODES[sub.m]||MODES.walk;
       if(sub.b&&sub.a){ /* transit sub: cur→board (implicit), board→via→alight */
         var bll=STN[sub.b]||cur, all=STN[sub.a]||legEnd;
         if(Math.abs(cur[0]-bll[0])+Math.abs(cur[1]-bll[1])>0.0004){ /* connector to the boarding point */
-          var cw=Lf.polyline([cur,bll],{color:MODES.walk.c,weight:2.5,opacity:.8,dashArray:MODES.walk.dash}); cw.addTo(map); items.push(cw); }
+          trLine(Lf,map,[cur,bll],MODES.walk.c,2.5,MODES.walk.dash,items); }
         var path=[bll]; (sub.via||[]).forEach(function(v){ if(STN[v])path.push(STN[v]); }); path.push(all);
-        var pl=Lf.polyline(path,{color:M.c,weight:M.w,opacity:.95,dashArray:M.dash}); pl.addTo(map); items.push(pl);
+        var pop=trStops(sub,M);
+        trLine(Lf,map,path,M.c,M.w,M.dash,items,pop);
         path.forEach(function(x){bounds.push(x);});
-        var stops=(sub.via||[]).length+1;
-        var lbl=(sub.line?sub.line+" · ":"")+M.ar+" · "+stops+(stops>2?" محطات":" محطة");
-        var lc=trChip(Lf,trMid(bll,all),lbl,"gm-"+sub.m); lc.addTo(map); items.push(lc);
-        var bd=trDot(Lf,bll,"#1f6fb5",sub.b,"محطة الركوب — "+(sub.line||M.ar)); bd.addTo(map); items.push(bd);
-        (sub.via||[]).forEach(function(v){ if(STN[v]){ var vd=trDot(Lf,STN[v],"#e8850c",v,"محطة عبور"); vd.addTo(map); items.push(vd);} });
-        var ad=trDot(Lf,all,"#2f9e44",sub.a,"محطة النزول"); ad.addTo(map); items.push(ad);
-        cur=all; segEnd=all;
+        var stops=(sub.via||[]).length+2;
+        var lbl=(sub.line?sub.line+" · ":"")+M.ar+" · "+stops+" محطات";
+        var lc=trChip(Lf,trMid(bll,all),lbl,"gm-"+sub.m,pop); lc.addTo(map); items.push(lc);
+        var bd=trDot(Lf,bll,DOT_B,sub.b,"محطة الركوب — "+(sub.line||M.ar)); bd.addTo(map); items.push(bd);
+        (sub.via||[]).forEach(function(v){ if(STN[v]){ var vd=trDot(Lf,STN[v],DOT_V,v,"محطة عبور"); vd.addTo(map); items.push(vd);} });
+        var ad=trDot(Lf,all,DOT_A,sub.a,"محطة النزول"); ad.addTo(map); items.push(ad);
+        cur=all;
       }else{ /* walk / taxi sub toward next fixed point */
         var nxt=legEnd;
         for(var k=si+1;k<subs.length;k++){ if(subs[k].b&&STN[subs[k].b]){nxt=STN[subs[k].b];break;} }
-        var pl2=Lf.polyline([cur,nxt],{color:M.c,weight:M.w,opacity:.9,dashArray:M.dash}); pl2.addTo(map); items.push(pl2);
+        var pop2='<div class="gstl" dir="rtl"><b>'+M.ar+(sub.t?" — "+sub.t+" دقيقة تقريباً":"")+"</b></div>";
+        trLine(Lf,map,[cur,nxt],M.c,M.w,M.dash,items,pop2);
         var lbl2=M.ar+(sub.t?" "+sub.t+" د":"");
-        var lc2=trChip(Lf,trMid(cur,nxt),lbl2,"gm-"+sub.m); lc2.addTo(map); items.push(lc2);
+        var lc2=trChip(Lf,trMid(cur,nxt),lbl2,"gm-"+sub.m,pop2); lc2.addTo(map); items.push(lc2);
         cur=nxt;
       }
     });
     /* close any gap to the leg end */
     if(Math.abs(cur[0]-legEnd[0])+Math.abs(cur[1]-legEnd[1])>0.0004){
-      var gp=Lf.polyline([cur,legEnd],{color:MODES.walk.c,weight:2.5,opacity:.8,dashArray:MODES.walk.dash}); gp.addTo(map); items.push(gp); }
+      trLine(Lf,map,[cur,legEnd],MODES.walk.c,2.5,MODES.walk.dash,items); }
   });
-  /* legend */
-  var lg=$("#geoModal .geo-legend");
-  if(lg){ lg.innerHTML=Object.keys(modesUsed).map(function(k){var M=MODES[k];
-    return '<span class="lgi"><i style="background:'+M.c+'"></i>'+M.ar+"</span>"; }).join("")+
-    '<span class="lgi"><i class="lgdot" style="background:#1f6fb5"></i>ركوب</span><span class="lgi"><i class="lgdot" style="background:#e8850c"></i>عبور</span><span class="lgi"><i class="lgdot" style="background:#2f9e44"></i>نزول</span>'; }
-  return {bounds:bounds};
+  return {bounds:bounds,modes:modesUsed};
 }
-var geoMapObj=null,geoLfRef=null,geoDayId=null,geoItems=[],geoPrevMark=null,geoLastFit=null;
+var geoMapObj=null,geoLfRef=null,geoDayId=null,geoItems=[],geoPrevMark=null,geoLastFit=null,geoShowAll=false;
 function geoDayPts(){ var d=geoDayId?$("#"+geoDayId):null; if(!d)return [];
   var pts=[]; $$(".slot[data-ll]",d).forEach(function(s){
     var p=s.dataset.ll.split(","); var tar=s.querySelector(".ttl .tar"); var tm=s.querySelector(".time");
@@ -1994,23 +2042,45 @@ function drawGeo(){ var gm=$("#geoModal"); if(!geoMapObj||!geoLfRef||!gm||gm.hid
   var Lf=geoLfRef, pts=geoDayPts(); if(!pts.length)return;
   geoItems.forEach(function(it){ try{geoMapObj.removeLayer(it);}catch(e){} }); geoItems=[];
   geoPreviewClear();
+  /* step-by-step reveal: done stops + the next target only — «المسار كامل» shows the whole day */
+  var doneMap=state.actDone||{}, doneCt=0;
+  pts.forEach(function(p){ if(doneMap[p.dt])doneCt++; });
+  var frontier=0; while(frontier<pts.length&&doneMap[pts[frontier].dt])frontier++;
+  var showAll=geoShowAll||frontier>=pts.length;
+  var visN=showAll?pts.length:Math.min(frontier+1,pts.length);
   var latlngs=[];
-  pts.forEach(function(p,i){ latlngs.push([p.lat,p.lng]);
-    var ic=Lf.divIcon({className:"gnumw",html:'<div class="gnum'+(PLACES[p.dt]?" gclick":"")+'">'+(i+1)+"</div>",iconSize:[30,30],iconAnchor:[15,15]});
-    var mk=Lf.marker([p.lat,p.lng],{icon:ic}).addTo(geoMapObj)
-      .bindTooltip('<b dir="rtl">'+(i+1)+". "+p.name+'</b><br><span dir="ltr">'+p.t+"</span>"+(PLACES[p.dt]?'<br><span dir="rtl" style="opacity:.8">اضغطا لفتح البطاقة</span>':""),{direction:"top",offset:[0,-16]});
-    if(PLACES[p.dt])mk.on("click",function(){ openPlaceModal(p.dt); });
+  pts.forEach(function(p,i){ if(i>=visN)return;
+    latlngs.push([p.lat,p.lng]);
+    var isDone=!!doneMap[p.dt], isNext=(i===frontier&&frontier<pts.length);
+    var cls="gnum gclick"+(isDone?" gdone":"")+(isNext?" gnext":"");
+    var ic=Lf.divIcon({className:"gnumw",html:'<div class="'+cls+'">'+(i+1)+"</div>",iconSize:[30,30],iconAnchor:[15,15]});
+    var st=isDone?'<br><span dir="rtl" style="color:#0ca30c;font-weight:700">✓ منجزة</span>':(isNext?'<br><span dir="rtl" style="opacity:.85">وجهتكما التالية — اضغطا للتأكيد</span>':"");
+    var mk=Lf.marker([p.lat,p.lng],{icon:ic,zIndexOffset:700}).addTo(geoMapObj)
+      .bindTooltip('<b dir="rtl">'+(i+1)+". "+p.name+'</b><br><span dir="ltr">'+p.t+"</span>"+st,{direction:"top",offset:[0,-16]});
+    var pop='<div class="gpop" dir="rtl"><b>'+(i+1)+". "+p.name+'</b><div class="gpop-btns">'
+      +'<button type="button" class="'+(isDone?"gpx-undone":"gpx-done")+'" data-dt="'+p.dt+'">'+(isDone?"إرجاعها غير منجزة":"✓ خلصناها")+"</button>"
+      +(PLACES[p.dt]?'<button type="button" class="gpx-card" data-dt="'+p.dt+'">بطاقة الفعالية</button>':"")+"</div></div>";
+    if(mk.bindPopup)mk.bindPopup(pop,{closeButton:false,offset:[0,-12]});
+    else if(PLACES[p.dt]&&mk.on)mk.on("click",function(){ openPlaceModal(p.dt); });
     geoItems.push(mk);
   });
-  var tr=drawTransit(Lf,geoMapObj,pts,geoDayId,geoItems);
+  var startOffset=(TRANSIT[geoDayId]&&TRANSIT[geoDayId].start)?1:0;
+  var legLimit=showAll?null:Math.min(frontier+startOffset,1e9);
+  var tr=drawTransit(Lf,geoMapObj,pts,geoDayId,geoItems,legLimit);
   if(!tr){ /* no authored transit for this day (or day swapped): simple route line */
-    var pl=Lf.polyline(latlngs,{color:"#84855f",weight:3,opacity:.85,dashArray:"7 7"}).addTo(geoMapObj);
-    geoItems.push(pl);
-    var lg=$("#geoModal .geo-legend"); if(lg)lg.innerHTML="";
+    if(latlngs.length>1){ trLine(Lf,geoMapObj,latlngs,"#84855f",3,"7 7",geoItems); }
   }
-  var fitLls=tr&&tr.bounds?tr.bounds:latlngs;
+  /* legend: view toggle + progress + modes + station-dot key */
+  var lg=$("#geoModal .geo-legend");
+  if(lg){ var h='<button type="button" class="geo-all">'+(geoShowAll?"◉ خطوة بخطوة":"👁 المسار كامل")+"</button>";
+    h+='<span class="lgi geo-ct">أنجزتما '+doneCt+" من "+pts.length+"</span>";
+    if(tr&&tr.modes){ h+=Object.keys(tr.modes).map(function(k){var M=MODES[k];
+        return '<span class="lgi"><i style="background:'+M.c+'"></i>'+M.ar+"</span>"; }).join("")+
+      '<span class="lgi"><i class="lgdot" style="background:'+DOT_B+'"></i>ركوب</span><span class="lgi"><i class="lgdot" style="background:'+DOT_V+'"></i>عبور</span><span class="lgi"><i class="lgdot" style="background:'+DOT_A+'"></i>نزول</span>'; }
+    lg.innerHTML=h; }
+  var fitLls=(tr&&tr.bounds&&tr.bounds.length)?tr.bounds:latlngs;
   geoLastFit=fitLls;
-  if(fitLls.length>1)geoMapObj.fitBounds(fitLls,{padding:[36,36]}); else geoMapObj.setView(fitLls[0],14);
+  if(fitLls.length>1)geoMapObj.fitBounds(fitLls,{padding:[42,42]}); else if(fitLls.length)geoMapObj.setView(fitLls[0],15);
   geoZoomClasses();
 }
 function geoZoomClasses(){ var gm=$("#geoModal"); if(!geoMapObj||!gm)return;
@@ -2033,11 +2103,11 @@ function geoPreview(dt,n){ var gm=$("#geoModal");
   if(lls.length>1)geoMapObj.fitBounds(lls,{padding:[40,40]});
 }
 function openDayMap(dayId){ var d=$("#"+dayId); if(!d)return;
-  geoDayId=dayId;
+  geoDayId=dayId; geoShowAll=false;
   var pts=geoDayPts(); if(!pts.length)return;
   var m=buildGeoModal(); m.hidden=false; document.body.classList.add("modal-open");
   var base=$(".day-head h3",d), baseTxt=base?base.childNodes[0].textContent.trim():"";
-  m.querySelector(".geo-title").innerHTML='<b>'+$(".dnum",d).textContent+" — "+baseTxt+'</b><small>'+pts.length+" محطات · خط سير اليوم بالترتيب — اضغطا على أي رقم لفتح بطاقة الفعالية</small>";
+  m.querySelector(".geo-title").innerHTML='<b>'+$(".dnum",d).textContent+" — "+baseTxt+'</b><small>'+pts.length+" محطات · تظهر خطوة بخطوة — اضغطا على الرقم الذهبي وأكّدا «خلصناها» ليظهر الطريق التالي</small>";
   var box=m.querySelector(".geo-map");
   box.innerHTML='<div class="geo-load">جارٍ تحميل الخريطة…</div>';
   loadLeaflet().then(function(Lf){
@@ -2101,7 +2171,7 @@ function collect(){var st={checks:{},notes:{},budget:{},savedAt:null};
   $$("input[data-b]").forEach(function(i){if(i.value!=="")st.budget[i.dataset.b]=i.value;});
   st.dayDone={};st.dayCollapsed={};
   $$("article.day").forEach(function(d){ if(d.classList.contains("dday-done"))st.dayDone[d.id]=true; st.dayCollapsed[d.id]=d.classList.contains("collapsed"); });
-  st.liked=state.liked||{}; st.swapped=state.swapped||{}; st.daySwap=state.daySwap||{};
+  st.liked=state.liked||{}; st.swapped=state.swapped||{}; st.daySwap=state.daySwap||{}; st.actDone=state.actDone||{};
   var n=istWall(new Date());st.savedAt=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0")+" "+fmtT(n)+" (Istanbul time)";
   st.ts=Date.now();
   return st;}
