@@ -414,9 +414,9 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 .gnum.gprev{width:44px;border-radius:99px;background:var(--gold);color:#fff;font-family:var(--ar);font-size:12.5px;animation:gpulse 1.1s ease infinite}
 .gnum.gzero{background:var(--olive);border-color:#fdfbf6;color:#fff;width:32px;height:32px;font-size:15px}
 .gnum.gdone{background:#efece6;border-color:#b9b3a7;color:#9a948a;box-shadow:0 2px 6px rgba(40,32,18,.18)}
-.geo-rst{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,246,228,.5);background:rgba(255,246,228,.12);color:#fdf8ec;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.geo-rst:hover{background:rgba(255,246,228,.3)}
-.geo-rst svg{width:16px;height:16px}
+.geo-rst,.geo-fit{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,246,228,.5);background:rgba(255,246,228,.12);color:#fdf8ec;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.geo-rst:hover,.geo-fit:hover{background:rgba(255,246,228,.3)}
+.geo-rst svg,.geo-fit svg{width:16px;height:16px}
 .gnum.gnext{background:#fff6df;border-color:#c98500;color:#7a5a00;animation:gpulse 1.1s ease infinite}
 .leaflet-popup-content-wrapper{border-radius:14px}
 .leaflet-popup-content{font-family:var(--ar);direction:rtl;text-align:right;margin:11px 13px;line-height:1.75}
@@ -1835,28 +1835,31 @@ function loadLeaflet(){ if(LEAF)return LEAF;
   return LEAF;}
 function buildGeoModal(){ if($("#geoModal"))return $("#geoModal");
   var m=document.createElement("div"); m.id="geoModal"; m.className="cmodal"; m.hidden=true;
-  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass geo-glass"><div class="mhead"><button class="geo-fs" type="button" title="ملء الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="fs-out" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path class="fs-in" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button><button class="geo-rst" type="button" title="إعادة تعيين مسار اليوم من البداية"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button><div class="geo-title"></div><button class="cm-x" type="button">✕</button></div><div class="geo-map"></div><div class="geo-legend"></div><div class="geo-note">«0» الانطلاق من الفندق · الرقم الذهبي النابض هو وجهتكما التالية — اضغطا عليه ثم «✓ خلصناها» ليظهر الطريق الذي بعده، ويبقى ما أنجزتماه رمادياً باهتاً · اضغطا على أي خط أو بطاقة وسيلة لعرض أسماء محطاتها · زر ↺ في الأعلى يعيد اليوم من نقطة البداية</div></div>';
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass geo-glass"><div class="mhead"><button class="geo-fs" type="button" title="ملء الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="fs-out" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path class="fs-in" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button><button class="geo-rst" type="button" title="إعادة تعيين مسار اليوم من البداية"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button><button class="geo-fit" type="button" title="ملاءمة المسار للشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="12" cy="12" r="2.6"/></svg></button><div class="geo-title"></div><button class="cm-x" type="button">✕</button></div><div class="geo-map"></div><div class="geo-legend"></div><div class="geo-note">«0» الانطلاق من الفندق · الرقم الذهبي النابض هو وجهتكما التالية — اضغطا عليه ثم «✓ خلصناها» ليظهر الطريق الذي بعده، ويبقى ما أنجزتماه رمادياً باهتاً · اضغطا على أي خط أو بطاقة وسيلة لعرض أسماء محطاتها · الخريطة لا تغيّر التقريب من نفسها — زر ◎ يلائم المسار للشاشة، وزر ↺ يعيد اليوم من نقطة البداية</div></div>';
   document.body.appendChild(m);
   function close(){ m.hidden=true; m.classList.remove("geo-full"); document.body.classList.remove("modal-open"); }
   m.querySelector(".cm-x").addEventListener("click",close);
   m.querySelector(".cm-backdrop").addEventListener("click",close);
   m.querySelector(".geo-fs").addEventListener("click",function(){
     m.classList.toggle("geo-full");
-    setTimeout(function(){ if(geoMapObj){ geoMapObj.invalidateSize();
-      if(geoLastFit&&geoLastFit.length>1)geoMapObj.fitBounds(geoLastFit,{padding:[36,36]}); } },180);
+    setTimeout(function(){ if(geoMapObj)geoMapObj.invalidateSize(); },180); /* keep the couple's zoom — no auto-refit */
+  });
+  m.querySelector(".geo-fit").addEventListener("click",function(){
+    if(!geoMapObj||!geoLastFit||!geoLastFit.length)return;
+    if(geoLastFit.length>1)geoMapObj.fitBounds(geoLastFit,{padding:[42,42]}); else geoMapObj.setView(geoLastFit[0],15);
   });
   m.querySelector(".geo-rst").addEventListener("click",function(){
     if(!geoDayId)return;
     var had=false;
     geoDayPts().forEach(function(p){ if(state.actDone&&state.actDone[p.dt]){delete state.actDone[p.dt];had=true;} });
-    geoShowAll=false;
+    geoShowAll=false; geoFitNext=true;
     autosave(); drawGeo();
     toast(had?"↺ أُعيد ضبط مسار اليوم — تبدآن من نقطة الانطلاق":"المسار عند نقطة البداية أصلاً ✓");
   });
   /* step-flow controls: done-toggle & place-card buttons inside map popups + the view toggle */
   m.addEventListener("click",function(e){
     var b=e.target.closest?e.target.closest(".gpx-done,.gpx-undone,.gpx-card,.geo-all"):null; if(!b)return;
-    if(b.classList.contains("geo-all")){ geoShowAll=!geoShowAll; drawGeo(); return; }
+    if(b.classList.contains("geo-all")){ geoShowAll=!geoShowAll; geoFitNext=true; drawGeo(); return; }
     var dt=b.getAttribute("data-dt");
     if(b.classList.contains("gpx-card")){ if(geoMapObj&&geoMapObj.closePopup)geoMapObj.closePopup(); if(dt)openPlaceModal(dt); return; }
     if(!dt)return;
@@ -2052,7 +2055,7 @@ function drawTransit(Lf,map,pts,dayId,items,legLimit,frontier){
   });
   return {bounds:bounds,modes:modesUsed};
 }
-var geoMapObj=null,geoLfRef=null,geoDayId=null,geoItems=[],geoPrevMark=null,geoLastFit=null,geoShowAll=false;
+var geoMapObj=null,geoLfRef=null,geoDayId=null,geoItems=[],geoPrevMark=null,geoLastFit=null,geoShowAll=false,geoFitNext=false;
 function geoDayPts(){ var d=geoDayId?$("#"+geoDayId):null; if(!d)return [];
   var pts=[]; $$(".slot[data-ll]",d).forEach(function(s){
     var p=s.dataset.ll.split(","); var tar=s.querySelector(".ttl .tar"); var tm=s.querySelector(".time");
@@ -2105,7 +2108,9 @@ function drawGeo(){ var gm=$("#geoModal"); if(!geoMapObj||!geoLfRef||!gm||gm.hid
     lg.innerHTML=h; }
   var fitLls=(tr&&tr.bounds&&tr.bounds.length)?tr.bounds:latlngs;
   geoLastFit=fitLls;
-  if(fitLls.length>1)geoMapObj.fitBounds(fitLls,{padding:[42,42]}); else if(fitLls.length)geoMapObj.setView(fitLls[0],15);
+  /* the map NEVER re-zooms on its own — it fits only on open / «المسار كامل» / ↺ / زر الملاءمة */
+  if(geoFitNext){ geoFitNext=false;
+    if(fitLls.length>1)geoMapObj.fitBounds(fitLls,{padding:[42,42]}); else if(fitLls.length)geoMapObj.setView(fitLls[0],15); }
   geoZoomClasses();
 }
 function geoZoomClasses(){ var gm=$("#geoModal"); if(!geoMapObj||!gm)return;
@@ -2128,7 +2133,7 @@ function geoPreview(dt,n){ var gm=$("#geoModal");
   if(lls.length>1)geoMapObj.fitBounds(lls,{padding:[40,40]});
 }
 function openDayMap(dayId){ var d=$("#"+dayId); if(!d)return;
-  geoDayId=dayId; geoShowAll=false;
+  geoDayId=dayId; geoShowAll=false; geoFitNext=true;
   var pts=geoDayPts(); if(!pts.length)return;
   var m=buildGeoModal(); m.hidden=false; document.body.classList.add("modal-open");
   var base=$(".day-head h3",d), baseTxt=base?base.childNodes[0].textContent.trim():"";
