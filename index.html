@@ -413,7 +413,10 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 .gnum.gclick:hover{background:var(--gold);color:#fff}
 .gnum.gprev{width:44px;border-radius:99px;background:var(--gold);color:#fff;font-family:var(--ar);font-size:12.5px;animation:gpulse 1.1s ease infinite}
 .gnum.gzero{background:var(--olive);border-color:#fdfbf6;color:#fff;width:32px;height:32px;font-size:15px}
-.gnum.gdone{background:#0ca30c;border-color:#fdfbf6;color:#fff}
+.gnum.gdone{background:#efece6;border-color:#b9b3a7;color:#9a948a;box-shadow:0 2px 6px rgba(40,32,18,.18)}
+.geo-rst{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,246,228,.5);background:rgba(255,246,228,.12);color:#fdf8ec;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.geo-rst:hover{background:rgba(255,246,228,.3)}
+.geo-rst svg{width:16px;height:16px}
 .gnum.gnext{background:#fff6df;border-color:#c98500;color:#7a5a00;animation:gpulse 1.1s ease infinite}
 .leaflet-popup-content-wrapper{border-radius:14px}
 .leaflet-popup-content{font-family:var(--ar);direction:rtl;text-align:right;margin:11px 13px;line-height:1.75}
@@ -1832,7 +1835,7 @@ function loadLeaflet(){ if(LEAF)return LEAF;
   return LEAF;}
 function buildGeoModal(){ if($("#geoModal"))return $("#geoModal");
   var m=document.createElement("div"); m.id="geoModal"; m.className="cmodal"; m.hidden=true;
-  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass geo-glass"><div class="mhead"><button class="geo-fs" type="button" title="ملء الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="fs-out" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path class="fs-in" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button><div class="geo-title"></div><button class="cm-x" type="button">✕</button></div><div class="geo-map"></div><div class="geo-legend"></div><div class="geo-note">«0» الانطلاق من الفندق · الرقم الذهبي النابض هو وجهتكما التالية — اضغطا عليه ثم «✓ خلصناها» ليظهر الطريق الذي بعده · اضغطا على أي خط أو بطاقة وسيلة لعرض أسماء محطاتها · «المسار كامل» يعرض اليوم كله</div></div>';
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass geo-glass"><div class="mhead"><button class="geo-fs" type="button" title="ملء الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="fs-out" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path class="fs-in" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button><button class="geo-rst" type="button" title="إعادة تعيين مسار اليوم من البداية"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button><div class="geo-title"></div><button class="cm-x" type="button">✕</button></div><div class="geo-map"></div><div class="geo-legend"></div><div class="geo-note">«0» الانطلاق من الفندق · الرقم الذهبي النابض هو وجهتكما التالية — اضغطا عليه ثم «✓ خلصناها» ليظهر الطريق الذي بعده، ويبقى ما أنجزتماه رمادياً باهتاً · اضغطا على أي خط أو بطاقة وسيلة لعرض أسماء محطاتها · زر ↺ في الأعلى يعيد اليوم من نقطة البداية</div></div>';
   document.body.appendChild(m);
   function close(){ m.hidden=true; m.classList.remove("geo-full"); document.body.classList.remove("modal-open"); }
   m.querySelector(".cm-x").addEventListener("click",close);
@@ -1841,6 +1844,14 @@ function buildGeoModal(){ if($("#geoModal"))return $("#geoModal");
     m.classList.toggle("geo-full");
     setTimeout(function(){ if(geoMapObj){ geoMapObj.invalidateSize();
       if(geoLastFit&&geoLastFit.length>1)geoMapObj.fitBounds(geoLastFit,{padding:[36,36]}); } },180);
+  });
+  m.querySelector(".geo-rst").addEventListener("click",function(){
+    if(!geoDayId)return;
+    var had=false;
+    geoDayPts().forEach(function(p){ if(state.actDone&&state.actDone[p.dt]){delete state.actDone[p.dt];had=true;} });
+    geoShowAll=false;
+    autosave(); drawGeo();
+    toast(had?"↺ أُعيد ضبط مسار اليوم — تبدآن من نقطة الانطلاق":"المسار عند نقطة البداية أصلاً ✓");
   });
   /* step-flow controls: done-toggle & place-card buttons inside map popups + the view toggle */
   m.addEventListener("click",function(e){
@@ -1962,6 +1973,8 @@ function trChip(Lf,ll,html,cls,pop){ var ic=Lf.divIcon({className:"gnumw",html:'
 function trDot(Lf,ll,color,name,role){ var mk=Lf.circleMarker(ll,{radius:6.5,color:"#fff",weight:2,fillColor:color,fillOpacity:1});
   mk.bindTooltip('<b dir="rtl">'+name+'</b><br><span dir="rtl" style="opacity:.85">'+role+"</span>",{direction:"top",offset:[0,-8]});
   return mk; }
+function grayLine(Lf,map,path,items){ /* completed segments: faint gray context, no decor */
+  var pl=Lf.polyline(path,{color:"#aba69c",weight:3,opacity:.55,dashArray:"5 8"}); pl.addTo(map); items.push(pl); return pl; }
 function trLine(Lf,map,path,color,weight,dash,items,pop){ /* white casing under every colored line: readable on any map tone */
   var cas=Lf.polyline(path,{color:"#ffffff",weight:weight+3.5,opacity:.92}); cas.addTo(map); items.push(cas);
   var pl=Lf.polyline(path,{color:color,weight:weight,opacity:.97,dashArray:dash}); pl.addTo(map); items.push(pl);
@@ -1974,7 +1987,7 @@ function trStops(sub,M){ /* station-name list popup for a transit sub-leg */
   (sub.via||[]).forEach(function(v){ h+='<div class="si"><i style="background:'+DOT_V+'"></i>'+v+"</div>"; });
   h+='<div class="si"><i style="background:'+DOT_A+'"></i>انزلا في: <b2>'+sub.a+"</b2></div></div>";
   return h; }
-function drawTransit(Lf,map,pts,dayId,items,legLimit){
+function drawTransit(Lf,map,pts,dayId,items,legLimit,frontier){
   var TR=TRANSIT[dayId]; if(!TR)return false;
   if(state.daySwap&&state.daySwap[dayId])return false; /* swapped day: no authored transit */
   var anchors=[]; if(TR.start)anchors.push(TR.start.ll);
@@ -1994,8 +2007,10 @@ function drawTransit(Lf,map,pts,dayId,items,legLimit){
     zh.addTo(map); items.push(zh); }
   var modesUsed={};
   TR.legs.forEach(function(subs){ subs.forEach(function(sub){ modesUsed[sub.m]=1; }); }); /* full-day legend, stable while revealing */
+  var so=(TR.start?1:0), fr=(frontier==null?1e9:frontier);
   TR.legs.forEach(function(subs,i){
     if(i>=nLegs)return;
+    var legDone=(i+1-so)<fr; /* its destination is already completed → faint gray context */
     var cur=anchors[i], legEnd=anchors[i+1];
     bounds.push(cur); bounds.push(legEnd);
     subs.forEach(function(sub,si){
@@ -2003,31 +2018,37 @@ function drawTransit(Lf,map,pts,dayId,items,legLimit){
       if(sub.b&&sub.a){ /* transit sub: cur→board (implicit), board→via→alight */
         var bll=STN[sub.b]||cur, all=STN[sub.a]||legEnd;
         if(Math.abs(cur[0]-bll[0])+Math.abs(cur[1]-bll[1])>0.0004){ /* connector to the boarding point */
-          trLine(Lf,map,[cur,bll],MODES.walk.c,2.5,MODES.walk.dash,items); }
+          if(legDone)grayLine(Lf,map,[cur,bll],items); else trLine(Lf,map,[cur,bll],MODES.walk.c,2.5,MODES.walk.dash,items); }
         var path=[bll]; (sub.via||[]).forEach(function(v){ if(STN[v])path.push(STN[v]); }); path.push(all);
-        var pop=trStops(sub,M);
-        trLine(Lf,map,path,M.c,M.w,M.dash,items,pop);
         path.forEach(function(x){bounds.push(x);});
-        var stops=(sub.via||[]).length+2;
-        var lbl=(sub.line?sub.line+" · ":"")+M.ar+" · "+stops+" محطات";
-        var lc=trChip(Lf,trMid(bll,all),lbl,"gm-"+sub.m,pop); lc.addTo(map); items.push(lc);
-        var bd=trDot(Lf,bll,DOT_B,sub.b,"محطة الركوب — "+(sub.line||M.ar)); bd.addTo(map); items.push(bd);
-        (sub.via||[]).forEach(function(v){ if(STN[v]){ var vd=trDot(Lf,STN[v],DOT_V,v,"محطة عبور"); vd.addTo(map); items.push(vd);} });
-        var ad=trDot(Lf,all,DOT_A,sub.a,"محطة النزول"); ad.addTo(map); items.push(ad);
+        if(legDone){ grayLine(Lf,map,path,items); }
+        else{
+          var pop=trStops(sub,M);
+          trLine(Lf,map,path,M.c,M.w,M.dash,items,pop);
+          var stops=(sub.via||[]).length+2;
+          var lbl=(sub.line?sub.line+" · ":"")+M.ar+" · "+stops+" محطات";
+          var lc=trChip(Lf,trMid(bll,all),lbl,"gm-"+sub.m,pop); lc.addTo(map); items.push(lc);
+          var bd=trDot(Lf,bll,DOT_B,sub.b,"محطة الركوب — "+(sub.line||M.ar)); bd.addTo(map); items.push(bd);
+          (sub.via||[]).forEach(function(v){ if(STN[v]){ var vd=trDot(Lf,STN[v],DOT_V,v,"محطة عبور"); vd.addTo(map); items.push(vd);} });
+          var ad=trDot(Lf,all,DOT_A,sub.a,"محطة النزول"); ad.addTo(map); items.push(ad);
+        }
         cur=all;
       }else{ /* walk / taxi sub toward next fixed point */
         var nxt=legEnd;
         for(var k=si+1;k<subs.length;k++){ if(subs[k].b&&STN[subs[k].b]){nxt=STN[subs[k].b];break;} }
-        var pop2='<div class="gstl" dir="rtl"><b>'+M.ar+(sub.t?" — "+sub.t+" دقيقة تقريباً":"")+"</b></div>";
-        trLine(Lf,map,[cur,nxt],M.c,M.w,M.dash,items,pop2);
-        var lbl2=M.ar+(sub.t?" "+sub.t+" د":"");
-        var lc2=trChip(Lf,trMid(cur,nxt),lbl2,"gm-"+sub.m,pop2); lc2.addTo(map); items.push(lc2);
+        if(legDone){ grayLine(Lf,map,[cur,nxt],items); }
+        else{
+          var pop2='<div class="gstl" dir="rtl"><b>'+M.ar+(sub.t?" — "+sub.t+" دقيقة تقريباً":"")+"</b></div>";
+          trLine(Lf,map,[cur,nxt],M.c,M.w,M.dash,items,pop2);
+          var lbl2=M.ar+(sub.t?" "+sub.t+" د":"");
+          var lc2=trChip(Lf,trMid(cur,nxt),lbl2,"gm-"+sub.m,pop2); lc2.addTo(map); items.push(lc2);
+        }
         cur=nxt;
       }
     });
     /* close any gap to the leg end */
     if(Math.abs(cur[0]-legEnd[0])+Math.abs(cur[1]-legEnd[1])>0.0004){
-      trLine(Lf,map,[cur,legEnd],MODES.walk.c,2.5,MODES.walk.dash,items); }
+      if(legDone)grayLine(Lf,map,[cur,legEnd],items); else trLine(Lf,map,[cur,legEnd],MODES.walk.c,2.5,MODES.walk.dash,items); }
   });
   return {bounds:bounds,modes:modesUsed};
 }
@@ -2054,7 +2075,7 @@ function drawGeo(){ var gm=$("#geoModal"); if(!geoMapObj||!geoLfRef||!gm||gm.hid
     var isDone=!!doneMap[p.dt], isNext=(i===frontier&&frontier<pts.length);
     var cls="gnum gclick"+(isDone?" gdone":"")+(isNext?" gnext":"");
     var ic=Lf.divIcon({className:"gnumw",html:'<div class="'+cls+'">'+(i+1)+"</div>",iconSize:[30,30],iconAnchor:[15,15]});
-    var st=isDone?'<br><span dir="rtl" style="color:#0ca30c;font-weight:700">✓ منجزة</span>':(isNext?'<br><span dir="rtl" style="opacity:.85">وجهتكما التالية — اضغطا للتأكيد</span>':"");
+    var st=isDone?'<br><span dir="rtl" style="color:#9a948a;font-weight:700">✓ منجزة</span>':(isNext?'<br><span dir="rtl" style="opacity:.85">وجهتكما التالية — اضغطا للتأكيد</span>':"");
     var mk=Lf.marker([p.lat,p.lng],{icon:ic,zIndexOffset:700}).addTo(geoMapObj)
       .bindTooltip('<b dir="rtl">'+(i+1)+". "+p.name+'</b><br><span dir="ltr">'+p.t+"</span>"+st,{direction:"top",offset:[0,-16]});
     var pop='<div class="gpop" dir="rtl"><b>'+(i+1)+". "+p.name+'</b><div class="gpop-btns">'
@@ -2066,14 +2087,18 @@ function drawGeo(){ var gm=$("#geoModal"); if(!geoMapObj||!geoLfRef||!gm||gm.hid
   });
   var startOffset=(TRANSIT[geoDayId]&&TRANSIT[geoDayId].start)?1:0;
   var legLimit=showAll?null:Math.min(frontier+startOffset,1e9);
-  var tr=drawTransit(Lf,geoMapObj,pts,geoDayId,geoItems,legLimit);
-  if(!tr){ /* no authored transit for this day (or day swapped): simple route line */
-    if(latlngs.length>1){ trLine(Lf,geoMapObj,latlngs,"#84855f",3,"7 7",geoItems); }
+  var tr=drawTransit(Lf,geoMapObj,pts,geoDayId,geoItems,legLimit,frontier);
+  if(!tr){ /* no authored transit for this day (or day swapped): simple route line, done part faint gray */
+    var grayPart=latlngs.slice(0,Math.min(frontier,latlngs.length));
+    var livePart=latlngs.slice(Math.max(0,Math.min(frontier,latlngs.length)-1));
+    if(grayPart.length>1)grayLine(Lf,geoMapObj,grayPart,geoItems);
+    if(livePart.length>1)trLine(Lf,geoMapObj,livePart,"#84855f",3,"7 7",geoItems);
   }
   /* legend: view toggle + progress + modes + station-dot key */
   var lg=$("#geoModal .geo-legend");
   if(lg){ var h='<button type="button" class="geo-all">'+(geoShowAll?"◉ خطوة بخطوة":"👁 المسار كامل")+"</button>";
     h+='<span class="lgi geo-ct">أنجزتما '+doneCt+" من "+pts.length+"</span>";
+    if(doneCt>0)h+='<span class="lgi"><i style="background:#aba69c;opacity:.75"></i>مقاطع منجزة</span>';
     if(tr&&tr.modes){ h+=Object.keys(tr.modes).map(function(k){var M=MODES[k];
         return '<span class="lgi"><i style="background:'+M.c+'"></i>'+M.ar+"</span>"; }).join("")+
       '<span class="lgi"><i class="lgdot" style="background:'+DOT_B+'"></i>ركوب</span><span class="lgi"><i class="lgdot" style="background:'+DOT_V+'"></i>عبور</span><span class="lgi"><i class="lgdot" style="background:'+DOT_A+'"></i>نزول</span>'; }
