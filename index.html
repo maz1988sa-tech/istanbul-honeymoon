@@ -381,6 +381,22 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 .dp-row span{font-family:var(--ar);font-size:13.5px;opacity:.9}
 .dp-row.cur{border-color:#f3d9a8;background:rgba(243,217,168,.18)}
 .dp-row.rm{border-style:dashed;border-color:#e8b0a0;color:#ffe9e0}
+/* day route map */
+.daymap-btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--ar);font-size:12.5px;font-weight:700;border:1px solid var(--gold);border-radius:99px;padding:5px 14px;margin-top:8px;background:var(--page);color:var(--olive-deep);cursor:pointer;vertical-align:middle}
+.daymap-btn:hover{background:var(--gold);color:#fff}
+.daymap-btn svg{width:15px;height:15px}
+.day.collapsed .daymap-btn{margin-top:4px}
+.geo-glass{width:min(780px,96vw);max-height:90vh}
+.geo-title{direction:rtl;text-align:right;font-family:var(--ar);margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.geo-title .gt-ico{width:22px;height:22px;color:#f3d9a8;flex:none}
+.geo-title b{font-size:16.5px}
+.geo-title small{display:block;width:100%;font-size:12.5px;opacity:.85;margin-top:-2px}
+.geo-map{height:min(58vh,480px);border-radius:14px;overflow:hidden;direction:ltr;background:rgba(255,246,228,.08)}
+.geo-load{display:flex;align-items:center;justify-content:center;height:100%;font-family:var(--ar);font-size:14.5px;color:#f6eeda;direction:rtl}
+.geo-note{direction:rtl;text-align:right;font-family:var(--ar);font-size:12.5px;opacity:.85;margin-top:10px;line-height:1.9}
+.gnumw{background:none;border:none}
+.gnum{width:30px;height:30px;border-radius:50%;background:#fdfbf6;border:2px solid var(--gold);color:#6b6c4c;font-family:var(--sans);font-weight:700;font-size:13.5px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(40,32,18,.35)}
+.leaflet-tooltip{font-family:var(--ar)}
 #photoLB{position:fixed;inset:0;z-index:120;background:rgba(24,18,10,.94);display:flex;align-items:center;justify-content:center}
 #photoLB[hidden]{display:none}
 #photoLB img{max-width:94vw;max-height:86vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
@@ -474,6 +490,7 @@ body.modal-open{overflow:hidden}
 <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></symbol>
 <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M8 3v4m8-4v4M3.5 10h17M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></symbol>
 <symbol id="i-walk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4.5" r="1.6"/><path d="M10 20.5l1.5-5L9 13l1-4.5 3-1 2.5 3 2.5 1M9.8 8.6L7 10l-1 3.5M13.5 15.5l2 2 .8 3"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M3.4 12h17.2M12 3.4c2.7 2.5 4.1 5.4 4.1 8.6s-1.4 6.1-4.1 8.6M12 3.4C9.3 5.9 7.9 8.8 7.9 12s1.4 6.1 4.1 8.6"/></g></symbol>
 </defs></svg>
 
 <nav><div class="wrap">
@@ -594,7 +611,7 @@ body.modal-open{overflow:hidden}
 </div>
 <div class="day-body">
 <div class="grp"><h5>Evening <span class="arl">المساء</span></h5>
-<div class="slot" data-dt="2026-09-20T19:55+03:00" data-cat="move" data-icon="plane">
+<div class="slot" data-dt="2026-09-20T19:55+03:00" data-ll="41.2753,28.7519" data-cat="move" data-icon="plane">
 <div class="time">7:55 PM</div><div class="ic"><svg><use href="#i-plane"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">الوصول إلى مطار اسطنبول</span><span class="ten">Istanbul Airport (IST)</span></div>
 <div class="meta"><span class="pill">Visa-free for Saudis · 90 days</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Istanbul+Airport"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
@@ -604,12 +621,12 @@ body.modal-open{overflow:hidden}
 <div class="wh"><div class="ttl"><span class="tar">تاكسي أصفر إلى شيشلي</span></div>
 <div class="meta"><span class="pill price">₺1,500–2,000 (~SAR 130–175)</span></div>
 <div class="note">من الموقف الرسمي أمام صالة القدوم — خذا الأصفر العادي (التركوازي +١٥٪ والأسود ضعف السعر تقريباً). نحو ٤٥–٦٠ دقيقة مساء الأحد. شغّلا العداد وتابعا المسار على الخريطة.</div></div></div>
-<div class="slot" data-dt="2026-09-20T22:00+03:00" data-cat="move" data-icon="bed">
+<div class="slot" data-dt="2026-09-20T22:00+03:00" data-ll="41.05,28.9873" data-cat="move" data-icon="bed">
 <div class="time">10:00 PM</div><div class="ic"><svg><use href="#i-bed"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">تسجيل الدخول — رمادا بلازا سيتي سنتر</span><span class="ten">Ramada Plaza City Center</span></div>
 <div class="meta"><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Ramada+Plaza+By+Wyndham+Istanbul+City+Center"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">على بعد ٣٠٠ متر من محطة عثمان بيه (M2)، ونيشانتاشي على بعد ١٠ دقائق مشياً.</div></div></div>
-<div class="slot" data-dt="2026-09-20T22:30+03:00" data-cat="food" data-icon="food">
+<div class="slot" data-dt="2026-09-20T22:30+03:00" data-ll="41.0492,28.9866" data-cat="food" data-icon="food">
 <div class="time">10:30 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">عشاء أول خفيف</span></div>
 <div class="meta"><span class="pill price">$</span></div>
@@ -632,46 +649,46 @@ body.modal-open{overflow:hidden}
 </div>
 <div class="day-body">
 <div class="grp"><h5>Morning <span class="arl">الصباح</span></h5>
-<div class="slot" data-dt="2026-09-21T09:00+03:00" data-cat="act" data-icon="mosque" data-must="1">
+<div class="slot" data-dt="2026-09-21T09:00+03:00" data-ll="41.0086,28.9802" data-cat="act" data-icon="mosque" data-must="1">
 <div class="time">9:00 AM</div><div class="ic"><svg><use href="#i-mosque"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">آيا صوفيا — عند الافتتاح</span><span class="ten">Hagia Sophia</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.6/10 <small>(133k)</small></span><span class="pill price">€25 pp — gallery</span><a class="act" href="https://muze.gen.tr/muze-detay/ayasofya"><svg><use href="#i-book"/></svg>Tickets<span class="arl">التذاكر</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Hagia+Sophia+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">تذكرة الـ€25 لشرفة السياح العلوية؛ قاعة الصلاة الرئيسية <b>مجانية للمصلين</b> — تقدران تصليان بالأسفل حيث لا يصل السياح. سقالات ترميم القبة قائمة بالداخل والزيارة ما زالت تستحق. لباس محتشم وغطاء رأس لها.</div></div></div>
-<div class="slot" data-dt="2026-09-21T10:45+03:00" data-cat="act" data-icon="mosque" data-must="1">
+<div class="slot" data-dt="2026-09-21T10:45+03:00" data-ll="41.0054,28.9768" data-cat="act" data-icon="mosque" data-must="1">
 <div class="time">10:45 AM</div><div class="ic"><svg><use href="#i-mosque"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">الجامع الأزرق (جامع السلطان أحمد)</span><span class="ten">Blue Mosque</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.4/10 <small>(119k)</small></span><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Blue+Mosque+Sultanahmet+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">نافذة الزيارة تُغلق نحو ١٢:٣٠ لصلاة الظهر — قبل ١١:٠٠ يكون هادئاً. عباءات مجانية عند الباب.</div></div></div>
-<div class="slot" data-dt="2026-09-21T11:45+03:00" data-cat="act" data-icon="camera">
+<div class="slot" data-dt="2026-09-21T11:45+03:00" data-ll="41.0058,28.9755" data-cat="act" data-icon="camera">
 <div class="time">11:45 AM</div><div class="ic"><svg><use href="#i-camera"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">ميدان سباق الخيل والنافورة الألمانية</span><span class="ten">Hippodrome</span></div>
 <div class="meta"><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Hippodrome+Sultanahmet+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">المسلات وعمود الأفعى — ثلاثون دقيقة مريحة بين الجامعين.</div></div></div>
 </div>
 <div class="grp"><h5>Afternoon <span class="arl">بعد الظهر</span></h5>
-<div class="slot" data-dt="2026-09-21T12:30+03:00" data-cat="food" data-icon="food">
+<div class="slot" data-dt="2026-09-21T12:30+03:00" data-ll="41.0093,28.9745" data-cat="food" data-icon="food">
 <div class="time">12:30 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">الغداء — كفتة سليم أوسطا</span><span class="ten">Sultanahmet Köftecisi</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.2/10 <small>(10k)</small></span><span class="pill price">$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Sultanahmet+Koftecisi+Selim+Usta"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">كفتة مشوية مع سلطة الفاصوليا (بياز) منذ ١٩٢٠. الطابور سريع ولا حجز — وهذا سرّ المكان.</div></div></div>
-<div class="slot" data-dt="2026-09-21T14:00+03:00" data-cat="act" data-icon="landmark" data-must="1">
+<div class="slot" data-dt="2026-09-21T14:00+03:00" data-ll="41.0084,28.9779" data-cat="act" data-icon="landmark" data-must="1">
 <div class="time">2:00 PM</div><div class="ic"><svg><use href="#i-landmark"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">صهريج البازيليك</span><span class="ten">Basilica Cistern</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.2/10 <small>(91k)</small></span><span class="pill price">₺1,950</span><a class="act" href="https://www.yerebatan.com/en"><svg><use href="#i-book"/></svg>Book<span class="arl">احجز</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Basilica+Cistern+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">اشتريا التذكرة الموقوتة أونلاين لتجاوز طابور الظهيرة — ٤٥ دقيقة بين الأعمدة ورأسَي ميدوسا. وإن فضّلتما الليل: جلسة «Night Shift» بـ₺3,000 من ٧:٣٠ حتى ١٠:٠٠ مساءً.</div></div></div>
-<div class="slot" data-dt="2026-09-21T15:30+03:00" data-cat="shop" data-icon="shop">
+<div class="slot" data-dt="2026-09-21T15:30+03:00" data-ll="41.0046,28.9782" data-cat="shop" data-icon="shop">
 <div class="time">3:30 PM</div><div class="ic"><svg><use href="#i-shop"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">سوق أراستا واستراحة شاي</span><span class="ten">Arasta Bazaar</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.6/10 <small>(3.8k)</small></span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Arasta+Bazaar+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">سوق صغير هادئ خلف الجامع الأزرق — خزفٌ وأقمشة بلا زحام. ثم شاي في ساحة <a href="https://www.google.com/maps/search/?api=1&query=Corlulu+Ali+Pasa+Medresesi+Istanbul">مدرسة تشورلولو علي باشا</a> في طريق العودة.</div></div></div>
 </div>
 <div class="grp"><h5>Evening <span class="arl">المساء</span></h5>
-<div class="slot" data-dt="2026-09-21T17:45+03:00" data-cat="act" data-icon="sunset" data-must="1">
+<div class="slot" data-dt="2026-09-21T17:45+03:00" data-ll="41.0161,28.9639" data-cat="act" data-icon="sunset" data-must="1">
 <div class="time">5:45 PM</div><div class="ic"><svg><use href="#i-sunset"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">جامع السليمانية — الساعة الذهبية</span><span class="ten">Süleymaniye Mosque</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.8/10 <small>(65k)</small></span><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Suleymaniye+Mosque+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">أعلى تقييم في الرحلة كلها. تحفة المعماري سنان — والشرفة خلفه أجمل غروب في المدينة: القرن الذهبي كله تحتكما عند ٧:٠٣ مساءً. هادئ ومحلي ورومانسي.</div></div></div>
-<div class="slot" data-dt="2026-09-21T19:45+03:00" data-cat="food" data-icon="food">
+<div class="slot" data-dt="2026-09-21T19:45+03:00" data-ll="41.0318,28.9738" data-cat="food" data-icon="food">
 <div class="time">7:45 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">العشاء — جانم جيريم</span><span class="ten">Canım Ciğerim</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.8/10 <small>(1.7k)</small></span><span class="pill">Alcohol-free · بدون كحول</span><span class="pill price">$$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Canim+Cigerim+Asmalimescit+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
@@ -694,31 +711,31 @@ body.modal-open{overflow:hidden}
 </div>
 <div class="day-body">
 <div class="grp"><h5>Morning <span class="arl">الصباح</span></h5>
-<div class="slot" data-dt="2026-09-22T09:30+03:00" data-cat="act" data-icon="landmark" data-must="1">
+<div class="slot" data-dt="2026-09-22T09:30+03:00" data-ll="41.0392,29.0" data-cat="act" data-icon="landmark" data-must="1">
 <div class="time">9:30 AM</div><div class="ic"><svg><use href="#i-landmark"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">قصر دولمة بهجة</span><span class="ten">Dolmabahçe Palace</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.4/10 <small>(91k)</small></span><span class="pill price">₺2,000 combined</span><a class="act" href="https://www.millisaraylar.gov.tr/"><svg><use href="#i-book"/></svg>Tickets<span class="arl">التذاكر</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Dolmabahce+Palace+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">فرساي العثمانيين — الدرج البلوري وثريا الـ٤.٥ طن وجناح الحرملك. مفتوح اليوم (يُغلق الاثنين). التذكرة الموحدة من موقع القصور الوطنية، والجولة نحو ساعتين ونصف مع المرشد الصوتي. التاكسي من الفندق ~١٥ دقيقة.</div></div></div>
 </div>
 <div class="grp"><h5>Afternoon <span class="arl">بعد الظهر</span></h5>
-<div class="slot" data-dt="2026-09-22T12:15+03:00" data-cat="food" data-icon="food">
+<div class="slot" data-dt="2026-09-22T12:15+03:00" data-ll="41.0424,29.0053" data-cat="food" data-icon="food">
 <div class="time">12:15 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">الغداء — دونر عاصم أوسطا</span><span class="ten">Karadeniz Döner Asım Usta</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.4/10 <small>(4.6k)</small></span><span class="pill price">$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Karadeniz+Doner+Asim+Usta+Besiktas"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">دونر بشكتاش الأسطوري. توقعا طابور ٢٠–٤٠ دقيقة يتحرك بسرعة — يستحق طابوراً واحداً في الرحلة. البديل: أي مطعم إسناف داخل سوق بشكتاش.</div></div></div>
-<div class="slot" data-dt="2026-09-22T14:30+03:00" data-cat="act" data-icon="mosque">
+<div class="slot" data-dt="2026-09-22T14:30+03:00" data-ll="41.0473,29.0268" data-cat="act" data-icon="mosque">
 <div class="time">2:30 PM</div><div class="ic"><svg><use href="#i-mosque"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">أورتاكوي — الجامع والساحة والكومبير</span><span class="ten">Ortaköy</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.6/10 <small>(44k)</small></span><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Ortakoy+Mosque+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">الجامع «البطاقة البريدية» على الماء مباشرة. تقاسما كومبير (البطاطس المحشوة الشهيرة) في الساحة، ثم تمشّيا على الواجهة نحو كوروتشيشمة.</div></div></div>
 </div>
 <div class="grp"><h5>Evening <span class="arl">المساء</span></h5>
-<div class="slot" data-dt="2026-09-22T17:00+03:00" data-cat="act" data-icon="boat" data-must="1">
+<div class="slot" data-dt="2026-09-22T17:00+03:00" data-ll="41.033,28.995" data-cat="act" data-icon="boat" data-must="1">
 <div class="time">5:00 PM</div><div class="ic"><svg><use href="#i-boat"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">يخت خاص وقت الغروب — لحظة شهر العسل</span><span class="ten">Private Bosphorus Cruise</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill price">from ~€280 / boat</span><a class="act" href="https://www.getmyboat.com"><svg><use href="#i-book"/></svg>Book<span class="arl">احجز</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Kurucesme+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">يخت خاص لكما ساعتين من كوروتشيشمة/بيبيك بتوقيتٍ يجعلكما وسط البوسفور عند ٧:٠٢ — الجسور مضاءة وأورتاكوي خلفكما. احجزا قبل أسبوع وأكّدا نقطة الصعود كتابياً. البديل الاقتصادي: جولة Dentur الجماعية من كاباتاش ~₺300 للفرد.</div></div></div>
-<div class="slot" data-dt="2026-09-22T20:00+03:00" data-cat="food" data-icon="food">
+<div class="slot" data-dt="2026-09-22T20:00+03:00" data-ll="41.0527,29.0335" data-cat="food" data-icon="food">
 <div class="time">8:00 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">العشاء — هوقا كوروتشيشمة</span><span class="ten">Huqqa</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.6/10 <small>(20k)</small></span><span class="pill">Alcohol-free · بدون كحول</span><span class="pill price">$$$</span><a class="act" href="https://www.huqqa.com/"><svg><use href="#i-book"/></svg>Reserve<span class="arl">احجز</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Huqqa+Kurucesme+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
@@ -740,36 +757,36 @@ body.modal-open{overflow:hidden}
 </div>
 <div class="day-body">
 <div class="grp"><h5>Morning <span class="arl">الصباح</span></h5>
-<div class="slot" data-dt="2026-09-23T09:00+03:00" data-cat="act" data-icon="landmark" data-must="1">
+<div class="slot" data-dt="2026-09-23T09:00+03:00" data-ll="41.0115,28.9834" data-cat="act" data-icon="landmark" data-must="1">
 <div class="time">9:00 AM</div><div class="ic"><svg><use href="#i-landmark"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">قصر توبكابي مع الحرملك — عند الافتتاح</span><span class="ten">Topkapı Palace</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.2/10 <small>(114k)</small></span><span class="pill price">₺2,750 combined</span><a class="act" href="https://www.millisaraylar.gov.tr/"><svg><use href="#i-book"/></svg>Tickets<span class="arl">التذاكر</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Topkapi+Palace+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">أربعمئة سنة من الحكم العثماني: الخزنة الإمبراطورية والأمانات المقدسة للنبي ﷺ وجناح الحرملك (يستحق التذكرة الموحدة). الفناء الرابع مطلٌّ على البوسفور. خانة الصباح أونلاين — نحو ٣ ساعات بالداخل.</div></div></div>
 </div>
 <div class="grp"><h5>Afternoon <span class="arl">بعد الظهر</span></h5>
-<div class="slot" data-dt="2026-09-23T12:45+03:00" data-cat="food" data-icon="food">
+<div class="slot" data-dt="2026-09-23T12:45+03:00" data-ll="41.0139,28.9767" data-cat="food" data-icon="food">
 <div class="time">12:45 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">الغداء — اختارا قرنكما</span><span class="ten">Şehzade Cağ Kebabı · Pandeli</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.6 / 8.4</span><span class="pill price">$ / $$$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Sehzade+Cag+Kebabi+Sirkeci"><svg><use href="#i-pin"/></svg>Şehzade<span class="arl">الموقع</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Pandeli+Restaurant+Eminonu"><svg><use href="#i-pin"/></svg>Pandeli<span class="arl">الموقع</span></a></div>
 <div class="note">«شهزاده جاغ كباب» (٨.٦/١٠) كباب أرضروم على السيخ الأفقي — أو «بانديلي» (٨.٤/١٠) قاعة ١٩٠١ الفيروزية فوق السوق المصري، غداء فقط.</div></div></div>
-<div class="slot" data-dt="2026-09-23T14:15+03:00" data-cat="shop" data-icon="shop" data-must="1">
+<div class="slot" data-dt="2026-09-23T14:15+03:00" data-ll="41.0106,28.9681" data-cat="shop" data-icon="shop" data-must="1">
 <div class="time">2:15 PM</div><div class="ic"><svg><use href="#i-shop"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">البازار الكبير</span><span class="ten">Grand Bazaar</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.8/10 <small>(184k)</small></span><span class="pill price">Free entry</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Grand+Bazaar+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">مفتوح اليوم حتى ٧ مساءً (يُغلق الأحد). ادخلا من بوابة نور عثمانية واقصدا القلب القديم «إيچ بدستان» للأنتيكات. اشربا الشاي وساوما بابتسامة وانسحبا مرة واحدة — السعر سيلحق بكما.</div></div></div>
-<div class="slot" data-dt="2026-09-23T16:30+03:00" data-cat="act" data-icon="mosque">
+<div class="slot" data-dt="2026-09-23T16:30+03:00" data-ll="41.0176,28.9686" data-cat="act" data-icon="mosque">
 <div class="time">4:30 PM</div><div class="ic"><svg><use href="#i-mosque"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">جامع رستم باشا والسوق المصري</span><span class="ten">Rüstem Paşa · Spice Bazaar</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.4 / 9.0</span><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Rustem+Pasha+Mosque+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">انزلا مشياً إلى إمينونو: رستم باشا (٩.٤/١٠) جوهرة البلاط الإزنيقي فوق درج حجري يفوّتها معظم الزوار. ثم السوق المصري (حتى ٧:٣٠ مساءً): بنّ «محمد أفندي» وراحة حلقوم «حاجي بكر» (منذ ١٧٧٧) — وخلصت الهدايا.</div></div></div>
 </div>
 <div class="grp"><h5>Evening <span class="arl">المساء</span></h5>
-<div class="slot" data-dt="2026-09-23T18:30+03:00" data-cat="act" data-icon="sunset">
+<div class="slot" data-dt="2026-09-23T18:30+03:00" data-ll="41.0197,28.9724" data-cat="act" data-icon="sunset">
 <div class="time">6:30 PM</div><div class="ic"><svg><use href="#i-sunset"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">جسر غلطة عند الغسق</span><span class="ten">Galata Bridge</span></div>
 <div class="meta"><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Galata+Bridge+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">امشيا على الطابق السفلي بين الصيادين والجوامع تُضاء (الغروب ٧:٠٠)، ثم تاكسي إلى الفندق.</div></div></div>
-<div class="slot" data-dt="2026-09-23T20:00+03:00" data-cat="food" data-icon="food">
+<div class="slot" data-dt="2026-09-23T20:00+03:00" data-ll="41.019,28.945" data-cat="food" data-icon="food">
 <div class="time">8:00 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">العشاء — شرف بريان في سوق النساء</span><span class="ten">Siirt Şeref Büryan</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.6/10 <small>(8k)</small></span><span class="pill">Alcohol-free · بدون كحول</span><span class="pill price">$$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Siirt+Seref+Buryan+Kebap+Kadinlar+Pazari"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
@@ -791,36 +808,36 @@ body.modal-open{overflow:hidden}
 </div>
 <div class="day-body">
 <div class="grp"><h5>Morning <span class="arl">الصباح</span></h5>
-<div class="slot" data-dt="2026-09-24T09:30+03:00" data-cat="act" data-icon="mosque">
+<div class="slot" data-dt="2026-09-24T09:30+03:00" data-ll="41.0311,28.9391" data-cat="act" data-icon="mosque">
 <div class="time">9:30 AM</div><div class="ic"><svg><use href="#i-mosque"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">مسجد كاريه (كنيسة تشورا)</span><span class="ten">Chora — Kariye Mosque</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.0/10 <small>(12k)</small></span><span class="pill price">€20</span><a class="act" href="https://muze.gen.tr/muze-detay/kariye"><svg><use href="#i-book"/></svg>Tickets<span class="arl">التذاكر</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Kariye+Mosque+Chora+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">أجمل فسيفساء بيزنطية في المدينة، أُعيد افتتاحه ٢٠٢٤. يُغلق للزوار وقت الصلوات، وتجنّبا الجمعة (اليوم خميس). التاكسي من الفندق ~٢٠ دقيقة، وغطاء رأس لها.</div></div></div>
-<div class="slot" data-dt="2026-09-24T11:00+03:00" data-cat="act" data-icon="camera" data-must="1">
+<div class="slot" data-dt="2026-09-24T11:00+03:00" data-ll="41.0294,28.949" data-cat="act" data-icon="camera" data-must="1">
 <div class="time">11:00 AM</div><div class="ic"><svg><use href="#i-camera"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">جولة بلاط وفنر</span><span class="ten">Balat & Fener</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.0/10</span><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Balat+Colorful+Houses+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">أكثر شوارع اسطنبول تصويراً: بيوت «كيرميت» الملونة والدرج الشهير والأنتيكات والمدرسة اليونانية الحمراء على التلة. تسكّع بطيء بلا خطة — وهذا هو المطلوب بالضبط.</div></div></div>
 </div>
 <div class="grp"><h5>Afternoon <span class="arl">بعد الظهر</span></h5>
-<div class="slot" data-dt="2026-09-24T13:00+03:00" data-cat="food" data-icon="food">
+<div class="slot" data-dt="2026-09-24T13:00+03:00" data-ll="41.03,28.9489" data-cat="food" data-icon="food">
 <div class="time">1:00 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">الغداء — فورنو بلاط</span><span class="ten">Forno Balat</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.6/10 <small>(2.4k)</small></span><span class="pill price">$$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Forno+Balat+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">بيدا ولحم بعجين من الفرن الحجري في قلب بلاط. نهاراً فقط — والتوقيت الآن مثالي.</div></div></div>
-<div class="slot" data-dt="2026-09-24T15:30+03:00" data-cat="act" data-icon="sunset">
+<div class="slot" data-dt="2026-09-24T15:30+03:00" data-ll="41.0546,28.9337" data-cat="act" data-icon="sunset">
 <div class="time">3:30 PM</div><div class="ic"><svg><use href="#i-sunset"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">تلة بيير لوتي — التلفريك وشاي العصر</span><span class="ten">Pierre Loti Hill</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.6/10 <small>(48k)</small></span><span class="pill price">Istanbulkart fare</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Pierre+Loti+Tepesi+Eyup"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">تاكسي قصير إلى أيوب ثم التلفريك الصغير صعوداً: شايٌ فوق القرن الذهبي كله. مشروبات بلا كافيين في كل مكان: زيزفون ونعناع-ليمون ورمان طازج. ابقيا للضوء الذهبي وانزلا نحو ٥:٣٠.</div></div></div>
 </div>
 <div class="grp"><h5>Evening <span class="arl">المساء</span></h5>
-<div class="slot" data-dt="2026-09-24T19:00+03:00" data-cat="cafe" data-icon="coffee">
+<div class="slot" data-dt="2026-09-24T19:00+03:00" data-ll="41.0334,28.9776" data-cat="cafe" data-icon="coffee">
 <div class="time">7:00 PM</div><div class="ic"><svg><use href="#i-coffee"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">شارع الاستقلال وقهوة ماندا باتماز</span><span class="ten">İstiklal · Mandabatmaz</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.2/10 <small>(3.9k)</small></span><span class="pill price">$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Mandabatmaz+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">انزلا مع الترام النوستالجي، ثم الزقاق الشهير: كثيرون يعدّون <a href="https://www.google.com/maps/search/?api=1&query=Mandabatmaz+Istanbul">ماندا باتماز</a> أفضل قهوة تركية في المدينة — وعصير طازج أو أعشاب لغير شارب القهوة.</div></div></div>
-<div class="slot" data-dt="2026-09-24T20:30+03:00" data-cat="food" data-icon="food">
+<div class="slot" data-dt="2026-09-24T20:30+03:00" data-ll="41.0367,28.9816" data-cat="food" data-icon="food">
 <div class="time">8:30 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">العشاء — حاجي عبدالله (منذ ١٨٨٨)</span><span class="ten">Hacı Abdullah Lokantası</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.8/10 <small>(2.3k)</small></span><span class="pill">Alcohol-free · بدون كحول</span><span class="pill price">$$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Haci+Abdullah+Lokantasi+Beyoglu"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
@@ -843,41 +860,41 @@ body.modal-open{overflow:hidden}
 </div>
 <div class="day-body">
 <div class="grp"><h5>Morning <span class="arl">الصباح</span></h5>
-<div class="slot" data-dt="2026-09-25T10:00+03:00" data-cat="act" data-icon="boat">
+<div class="slot" data-dt="2026-09-25T10:00+03:00" data-ll="41.0225,28.9769" data-cat="act" data-icon="boat">
 <div class="time">10:00 AM</div><div class="ic"><svg><use href="#i-boat"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">العبّارة إلى قاضي كوي</span><span class="ten">Kadıköy Ferry</span></div>
 <div class="meta"><span class="pill price">~₺65 pp</span><a class="act" href="https://sehirhatlari.istanbul/en"><svg><use href="#i-book"/></svg>Timetable<span class="arl">المواعيد</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Besiktas+Ferry+Pier"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">تاكسي إلى رصيف بشكتاش (أو المترو والفونيكولار إلى كاباتاش) ثم العبّارة البيضاء الكلاسيكية — ٢٠ دقيقة. اجلسا في الخارج واشتريا سميت وأطعما النورس: أرخص متعة عظيمة في اسطنبول.</div></div></div>
-<div class="slot" data-dt="2026-09-25T10:45+03:00" data-cat="shop" data-icon="shop">
+<div class="slot" data-dt="2026-09-25T10:45+03:00" data-ll="40.9903,29.0257" data-cat="shop" data-icon="shop">
 <div class="time">10:45 AM</div><div class="ic"><svg><use href="#i-shop"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">شوارع سوق قاضي كوي</span><span class="ten">Kadıköy Market</span></div>
 <div class="meta"><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Kadikoy+Carsi+Market+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">سوق السمك ومحلات المخللات وأنتيكات شارع تلال زاده — هنا تأكل المدينة فعلياً.</div></div></div>
 </div>
 <div class="grp"><h5>Afternoon <span class="arl">بعد الظهر</span></h5>
-<div class="slot" data-dt="2026-09-25T12:00+03:00" data-cat="food" data-icon="food" data-must="1">
+<div class="slot" data-dt="2026-09-25T12:00+03:00" data-ll="40.9897,29.026" data-cat="food" data-icon="food" data-must="1">
 <div class="time">12:00 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">الغداء — تشيا صوفراسي</span><span class="ten">Çiya Sofrası</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.0/10 <small>(12k)</small></span><span class="pill price">$$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Ciya+Sofrasi+Kadikoy"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">مطبخ الأناضول الأسطوري — أشيرا على صواني اليوم المتغيرة: يخناتٌ وكباب وأعشاب لم تجرّبا مثلها. مقصد الذوّاقة أكثر منه محطة سياح؛ اذهبا عند الظهر قبل الزحمة. وقهوة تركية بعده عند «فاضل بيه» (٩/١٠).</div></div></div>
-<div class="slot" data-dt="2026-09-25T14:15+03:00" data-cat="act" data-icon="walk">
+<div class="slot" data-dt="2026-09-25T14:15+03:00" data-ll="40.9808,29.026" data-cat="act" data-icon="walk">
 <div class="time">2:15 PM</div><div class="ic"><svg><use href="#i-walk"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">كورنيش مودا</span><span class="ten">Moda</span></div>
 <div class="meta"><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Moda+Sahili+Kadikoy"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">ممشى الحديقة الساحلية ودوندرما مشتركة وجلسة على العشب والمرمرة أمامكما. بلا أي استعجال.</div></div></div>
-<div class="slot" data-dt="2026-09-25T16:30+03:00" data-cat="act" data-icon="camera">
+<div class="slot" data-dt="2026-09-25T16:30+03:00" data-ll="41.0344,29.032" data-cat="act" data-icon="camera">
 <div class="time">4:30 PM</div><div class="ic"><svg><use href="#i-camera"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">كوزغونجوك — القرية المخفية</span><span class="ten">Kuzguncuk</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.4/10 <small>(TripAdvisor)</small></span><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Kuzguncuk+Icadiye+Caddesi"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">تاكسي ١٥ دقيقة على الساحل: بيوت عثمانية خشبية وجهنمية متسلقة ومخابز ومعارض شارع إجاديه — الحي الذي يحلم أهل اسطنبول أنفسهم بالسكن فيه.</div></div></div>
 </div>
 <div class="grp"><h5>Evening <span class="arl">المساء</span></h5>
-<div class="slot" data-dt="2026-09-25T17:45+03:00" data-cat="act" data-icon="sunset" data-must="1">
+<div class="slot" data-dt="2026-09-25T17:45+03:00" data-ll="41.0186,29.0117" data-cat="act" data-icon="sunset" data-must="1">
 <div class="time">5:45 PM</div><div class="ic"><svg><use href="#i-sunset"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">غروب برج الفتاة من شاطئ سلاجاك</span><span class="ten">Maiden's Tower · Salacak</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.4/10 <small>(27k)</small></span><span class="pill price">Free from shore</span><a class="act" href="https://muze.gen.tr/muze-detay/kizkulesi"><svg><use href="#i-book"/></svg>Tower tickets<span class="arl">التذاكر</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Salacak+Sahili+Uskudar"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">شاطئ أوسكودار يواجه برج الفتاة والمدينة القديمة ظلٌّ خلفه — البطاقة البريدية الأشهر عند ٦:٥٦ والشاي بيدكما. (العبور إلى البرج نحو €35 للفرد؛ والصورة الأجمل تبقى من الشاطئ.)</div></div></div>
-<div class="slot" data-dt="2026-09-25T19:30+03:00" data-cat="move" data-icon="boat">
+<div class="slot" data-dt="2026-09-25T19:30+03:00" data-ll="41.0225,28.9769" data-cat="move" data-icon="boat">
 <div class="time">7:30 PM</div><div class="ic"><svg><use href="#i-boat"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">عبّارة العودة وعشاء خفيف</span></div>
 <div class="meta"><span class="pill price">$$</span></div>
@@ -899,26 +916,26 @@ body.modal-open{overflow:hidden}
 </div>
 <div class="day-body">
 <div class="grp"><h5>Morning <span class="arl">الصباح</span></h5>
-<div class="slot" data-dt="2026-09-26T10:00+03:00" data-cat="cafe" data-icon="coffee">
+<div class="slot" data-dt="2026-09-26T10:00+03:00" data-ll="41.0316,28.9829" data-cat="cafe" data-icon="coffee">
 <div class="time">10:00 AM</div><div class="ic"><svg><use href="#i-coffee"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">فطور متأخر — بيت فطور وان</span><span class="ten">Van Kahvaltı Evi</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>~8.8/10</span><span class="pill price">$$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Van+Kahvalti+Evi+Cihangir"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">ناما متأخرَين ثم السفرة الشهيرة على طريقة وان في جيهانغير (١٠ دقائق بالتاكسي): جبن الأعشاب والمرتوغا والعسل مع القيمق. طابور نهاية الأسبوع قصير ويتحرك.</div></div></div>
 </div>
 <div class="grp"><h5>Afternoon <span class="arl">بعد الظهر</span></h5>
-<div class="slot" data-dt="2026-09-26T12:00+03:00" data-cat="shop" data-icon="shop">
+<div class="slot" data-dt="2026-09-26T12:00+03:00" data-ll="41.0478,28.9942" data-cat="shop" data-icon="shop">
 <div class="time">12:00 PM</div><div class="ic"><svg><use href="#i-shop"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">تسوق نيشانتاشي على مهل</span><span class="ten">Nişantaşı</span></div>
 <div class="meta"><span class="pill price">Your call</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Abdi+Ipekci+Caddesi+Nisantasi"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">شارع عبدي إيبكجي صفّ الماركات الأول على بعد ١٠ دقائق من فندقكما؛ ومولا زورلو وإستينيه بارك على بعد ٢٠ دقيقة. بلا جدول وبلا مؤقّت.</div></div></div>
-<div class="slot" data-dt="2026-09-26T14:30+03:00" data-cat="act" data-icon="spa" data-must="1">
+<div class="slot" data-dt="2026-09-26T14:30+03:00" data-ll="41.0257,28.9832" data-cat="act" data-icon="spa" data-must="1">
 <div class="time">2:30 PM</div><div class="ic"><svg><use href="#i-spa"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">الحمّام التركي للثنائي</span><span class="ten">Ağa Hamamı · Hürrem Sultan</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.4 / 9.2</span><span class="pill price">€50–160 pp</span><a class="act" href="https://www.agahamami.com/"><svg><use href="#i-book"/></svg>Ağa<span class="arl">احجز</span></a><a class="act" href="https://shop.hurremsultanhamami.com/"><svg><use href="#i-book"/></svg>Hürrem<span class="arl">احجز</span></a></div>
 <div class="note">مساران: «آغا حمام» (١٤٥٤، بيوغلو — ٩.٤/١٠) من القلائل حيث يدخل الزوجان <b>معاً</b> بنحو €50–70. أو الفخم «حمام خُرّم سلطان» بجوار آيا صوفيا (٩.٢/١٠) — جناحا رخامٍ متوازيان له ولها بنحو €110–160 للفرد وبحجز قبل أسبوع إلى أسبوعين. في الحالين: ٩٠ دقيقة ثم راحة في الفندق.</div></div></div>
 </div>
 <div class="grp"><h5>Evening <span class="arl">المساء</span></h5>
-<div class="slot" data-dt="2026-09-26T19:00+03:00" data-cat="food" data-icon="food" data-must="1">
+<div class="slot" data-dt="2026-09-26T19:00+03:00" data-ll="41.0555,28.98" data-cat="food" data-icon="food" data-must="1">
 <div class="time">7:00 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">العشاء الكبير — مطعم TURK فاتح توتاك</span><span class="ten">TURK Fatih Tutak</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.4/10 <small>(1.1k)</small></span><span class="pill price">★★ Michelin · ~₺16,500 pp +12%</span><a class="act" href="https://www.turkft.com/"><svg><use href="#i-book"/></svg>Reserve<span class="arl">احجز</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=TURK+Fatih+Tutak+Bomonti+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
@@ -941,36 +958,36 @@ body.modal-open{overflow:hidden}
 </div>
 <div class="day-body">
 <div class="grp"><h5>Morning <span class="arl">الصباح</span></h5>
-<div class="slot" data-dt="2026-09-27T10:30+03:00" data-cat="move" data-icon="bed">
+<div class="slot" data-dt="2026-09-27T10:30+03:00" data-ll="41.023,28.9787" data-cat="move" data-icon="bed">
 <div class="time">10:30 AM</div><div class="ic"><svg><use href="#i-bed"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">صباح هادئ وانتقال إلى كاراكوي</span><span class="ten">The Wings Hotel Karaköy</span></div>
 <div class="meta"><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=The+Wings+Hotel+Karakoy+Istanbul"><svg><use href="#i-pin"/></svg>Wings Hotel<span class="arl">الموقع</span></a></div>
 <div class="note">تسجيل خروج ١٢:٠٠ وتاكسي ١٥–٢٠ دقيقة. اتركا الحقائب إن لم يجهز الجناح — <b>واطلبا الآن تأخير الخروج ليوم ٣٠</b>.</div></div></div>
 </div>
 <div class="grp"><h5>Afternoon <span class="arl">بعد الظهر</span></h5>
-<div class="slot" data-dt="2026-09-27T13:00+03:00" data-cat="food" data-icon="food">
+<div class="slot" data-dt="2026-09-27T13:00+03:00" data-ll="41.0233,28.9754" data-cat="food" data-icon="food">
 <div class="time">1:00 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">الغداء — ناملي غورمه (١٩٢٩)</span><span class="ten">Namlı Gurme</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.2/10 <small>(6.3k)</small></span><span class="pill">Alcohol-free · بدون كحول</span><span class="pill price">$$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Namli+Gurme+Karakoy"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">ثلاث دقائق من الفندق: كاونتر كاراكوي الأسطوري — بسطرمة وأجبان وأطباق ساخنة، أشيرا واختارا. بلا كحول — مؤسسة اسطنبولية خالصة.</div></div></div>
-<div class="slot" data-dt="2026-09-27T14:30+03:00" data-cat="act" data-icon="landmark">
+<div class="slot" data-dt="2026-09-27T14:30+03:00" data-ll="41.0264,28.9832" data-cat="act" data-icon="landmark">
 <div class="time">2:30 PM</div><div class="ic"><svg><use href="#i-landmark"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">متحف اسطنبول مودرن</span><span class="ten">Istanbul Modern</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.8/10 <small>(11k)</small></span><span class="pill price">~₺900</span><a class="act" href="https://www.istanbulmodern.org/en/visit"><svg><use href="#i-book"/></svg>Tickets<span class="arl">التذاكر</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Istanbul+Modern+Karakoy"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">مبنى رينزو بيانو على الماء — مفتوح الأحد ومغلق الاثنين (ولهذا يومه اليوم). لا تفوّتا بركة السطح العاكسة: بانوراما البوسفور بلا زحام.</div></div></div>
-<div class="slot" data-dt="2026-09-27T16:30+03:00" data-cat="act" data-icon="walk">
+<div class="slot" data-dt="2026-09-27T16:30+03:00" data-ll="41.025,28.9835" data-cat="act" data-icon="walk">
 <div class="time">4:30 PM</div><div class="ic"><svg><use href="#i-walk"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">ممشى غلطة بورت وجامع قلج علي باشا</span><span class="ten">Galataport · Kılıç Ali Paşa</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.2 / 9.6</span><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Galataport+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">الواجهة الجديدة المصقولة (٩.٢/١٠) — محلات تصميم وهواء بحر — ثم تحفة سنان المختبئة بجانبها (٩.٦/١٠) بسكينتها قبل الغسق.</div></div></div>
 </div>
 <div class="grp"><h5>Evening <span class="arl">المساء</span></h5>
-<div class="slot" data-dt="2026-09-27T18:15+03:00" data-cat="act" data-icon="sunset">
+<div class="slot" data-dt="2026-09-27T18:15+03:00" data-ll="41.0227,28.979" data-cat="act" data-icon="sunset">
 <div class="time">6:15 PM</div><div class="ic"><svg><use href="#i-sunset"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">الغروب من شارعكما</span></div>
 <div class="meta"><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Galata+Bridge+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">شاطئ كاراكوي أو الطابق السفلي لجسر غلطة عند ٦:٥٣ — صرتما تسكنان حيث كنتما تصوّران قبل ثلاثة أيام.</div></div></div>
-<div class="slot" data-dt="2026-09-27T20:00+03:00" data-cat="cafe" data-icon="dessert">
+<div class="slot" data-dt="2026-09-27T20:00+03:00" data-ll="41.0236,28.9744" data-cat="cafe" data-icon="dessert">
 <div class="time">8:00 PM</div><div class="ic"><svg><use href="#i-dessert"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">عشاء كاراكوي وبقلاوة منتصف الليل</span><span class="ten">Karaköy Güllüoğlu</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.0/10 <small>(3.6k)</small></span><span class="pill price">$$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Karakoy+Gulluoglu"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
@@ -993,31 +1010,31 @@ body.modal-open{overflow:hidden}
 </div>
 <div class="day-body">
 <div class="grp"><h5>Morning <span class="arl">الصباح</span></h5>
-<div class="slot" data-dt="2026-09-28T09:00+03:00" data-cat="act" data-icon="boat" data-must="1">
+<div class="slot" data-dt="2026-09-28T09:00+03:00" data-ll="41.0308,28.9945" data-cat="act" data-icon="boat" data-must="1">
 <div class="time">9:00 AM</div><div class="ic"><svg><use href="#i-boat"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">عبّارة كاباتاش إلى بيوك أضة</span><span class="ten">Büyükada Ferry</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.0/10 <small>(5.2k)</small></span><span class="pill price">~₺137 pp</span><a class="act" href="https://sehirhatlari.istanbul/en"><svg><use href="#i-book"/></svg>Timetable<span class="arl">المواعيد</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Kabatas+Adalar+Iskelesi"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">خط جزر الأمراء (٩:٠٠ أو ١٠:٠٥ — يعمل الاثنين): ساعة و٤٥ دقيقة من مناظر المرمرة؛ اجلسا على يمين العبّارة ذهاباً. كاباتاش محطة ترام واحدة أو ٥ دقائق بالتاكسي.</div></div></div>
-<div class="slot" data-dt="2026-09-28T11:00+03:00" data-cat="act" data-icon="walk">
+<div class="slot" data-dt="2026-09-28T11:00+03:00" data-ll="40.86,29.1266" data-cat="act" data-icon="walk">
 <div class="time">11:00 AM</div><div class="ic"><svg><use href="#i-walk"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">استكشاف الجزيرة — بلا سيارات وبلا عجلة</span><span class="ten">Büyükada</span></div>
 <div class="meta"><span class="pill price">Bikes ~₺250/h · e-bus on Istanbulkart</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Buyukada+Nizam+Caddesi"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">دراجات عادية أو كهربائية من الساحة (عربات الخيل صارت تاريخاً، ويوجد باص كهربائي). لفّة قصور شارع نظام الخشبية نحو المطلات — تلال الصنوبر رائحتها بلدٌ آخر.</div></div></div>
 </div>
 <div class="grp"><h5>Afternoon <span class="arl">بعد الظهر</span></h5>
-<div class="slot" data-dt="2026-09-28T13:30+03:00" data-cat="food" data-icon="food">
+<div class="slot" data-dt="2026-09-28T13:30+03:00" data-ll="40.8589,29.1263" data-cat="food" data-icon="food">
 <div class="time">1:30 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">الغداء — كفتة وبياز في سوق الجزيرة</span><span class="ten">Köfte & Piyaz</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.0/10 <small>(small local spot)</small></span><span class="pill">Alcohol-free style · بدون كحول</span><span class="pill price">$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Kofte+Piyaz+Buyukada"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">الكفتجي العائلي المحبوب خلف المرسى بزقاقين — كفتة فحم وبياز بالخل، بسيطٌ وممتاز. (تجاوزنا مطاعم سمك المرسى لأنها قائمة على ثقافة الراكي.) وسباحة اختيارية بعده — البحر ما زال ~٢١–٢٢°.</div></div></div>
 </div>
 <div class="grp"><h5>Evening <span class="arl">المساء</span></h5>
-<div class="slot" data-dt="2026-09-28T17:15+03:00" data-cat="act" data-icon="sunset" data-must="1">
+<div class="slot" data-dt="2026-09-28T17:15+03:00" data-ll="40.8593,29.1277" data-cat="act" data-icon="sunset" data-must="1">
 <div class="time">5:15 PM</div><div class="ic"><svg><use href="#i-sunset"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">عبّارة العودة — الغروب على الماء</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill price">Included</span></div>
 <div class="note">وقّتا العودة ليحلّ ٦:٥١ وأنتما وسط المرمرة والمدينة تكبر أمامكما — أجمل من أي سطح.</div></div></div>
-<div class="slot" data-dt="2026-09-28T20:30+03:00" data-cat="cafe" data-icon="dessert">
+<div class="slot" data-dt="2026-09-28T20:30+03:00" data-ll="41.024,28.977" data-cat="cafe" data-icon="dessert">
 <div class="time">8:30 PM</div><div class="ic"><svg><use href="#i-dessert"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">عشاء غلطة خفيف وكنافة بيك زاده</span><span class="ten">Beyzade Künefe</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.0/10 <small>(10k)</small></span><span class="pill price">$–$$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Beyzade+Kunefe+Karakoy"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
@@ -1039,30 +1056,30 @@ body.modal-open{overflow:hidden}
 </div>
 <div class="day-body">
 <div class="grp"><h5>Morning <span class="arl">الصباح</span></h5>
-<div class="slot" data-dt="2026-09-29T09:30+03:00" data-cat="move" data-icon="bed">
+<div class="slot" data-dt="2026-09-29T09:30+03:00" data-ll="41.023,28.9787" data-cat="move" data-icon="bed">
 <div class="time">9:30 AM</div><div class="ic"><svg><use href="#i-bed"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">صباح الجناح البطيء</span></div>
 <div class="note">فطور على نافذة البحر — دفعتما ثمن تلك الإطلالة، فحصّلاها.</div></div></div>
-<div class="slot" data-dt="2026-09-29T11:00+03:00" data-cat="act" data-icon="camera">
+<div class="slot" data-dt="2026-09-29T11:00+03:00" data-ll="41.0239,28.9737" data-cat="act" data-icon="camera">
 <div class="time">11:00 AM</div><div class="ic"><svg><use href="#i-camera"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">غلطة مشياً — سردار أكرم ودرج كاموندو</span><span class="ten">Serdar-ı Ekrem · Camondo Stairs</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.0/10 <small>(3.5k)</small></span><span class="pill price">Free</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Kamondo+Stairs+Galata"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">أجمل شارع مصممين مستقلين في المدينة، وصورة درج كاموندو الشهيرة، ثم أنتيكات تشوكورجوما ومقاهي جهانغير الكسولة.</div></div></div>
 </div>
 <div class="grp"><h5>Afternoon <span class="arl">بعد الظهر</span></h5>
-<div class="slot" data-dt="2026-09-29T15:00+03:00" data-cat="shop" data-icon="shop">
+<div class="slot" data-dt="2026-09-29T15:00+03:00" data-ll="41.0165,28.971" data-cat="shop" data-icon="shop">
 <div class="time">3:00 PM</div><div class="ic"><svg><use href="#i-shop"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">آخر الهدايا عبر الجسر</span><span class="ten">Spice Bazaar — Eminönü</span></div>
 <div class="meta"><span class="pill price">Your call</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Spice+Bazaar+Eminonu"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">ترام T1 أو ربع ساعة مشياً إلى إمينونو: بقلاوة مغلفة تفريغياً للطيران من «غوللو أوغلو»، وبنّ «محمد أفندي»، وحلقوم «حاجي بكر» — كل ما سيندم عليه «أنتُما الغد» إن تركتماه.</div></div></div>
 </div>
 <div class="grp"><h5>Evening <span class="arl">المساء</span></h5>
-<div class="slot" data-dt="2026-09-29T19:00+03:00" data-cat="food" data-icon="food" data-must="1">
+<div class="slot" data-dt="2026-09-29T19:00+03:00" data-ll="41.0229,28.9736" data-cat="food" data-icon="food" data-must="1">
 <div class="time">7:00 PM</div><div class="ic"><svg><use href="#i-food"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">عشاء الوداع — نيولوكال</span><span class="ten">Neolokal · SALT Galata</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.6/10 <small>(1.3k)</small></span><span class="pill price">★ Michelin + Green Star · ~€120–150 pp</span><a class="act" href="https://www.neolokal.com/"><svg><use href="#i-book"/></svg>Reserve<span class="arl">احجز</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Neolokal+SALT+Galata"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">خمس دقائق مشياً: تذوّق أناضولي معاصر للشيف مقصود أشقر داخل مبنى بنك عثماني مهيب والقرن الذهبي يتلألأ تحته. <b>ملاحظة صريحة:</b> يُقدَّم النبيذ لضيوف آخرين وتتوفر مشروبات غير كحولية — اذكرا ذلك عند الحجز. البديل بلا كحول كلياً: <a href="https://www.huqqa.com/">هوقا</a> (١٥ دقيقة بالتاكسي). الثلاثاء–السبت، والحجز قبل أسبوع إلى أسبوعين مع طلب طاولة النافذة.</div></div></div>
-<div class="slot" data-dt="2026-09-29T21:45+03:00" data-cat="act" data-icon="landmark" data-must="1">
+<div class="slot" data-dt="2026-09-29T21:45+03:00" data-ll="41.0256,28.9739" data-cat="act" data-icon="landmark" data-must="1">
 <div class="time">9:45 PM</div><div class="ic"><svg><use href="#i-landmark"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">برج غلطة ليلاً</span><span class="ten">Galata Tower</span> <span class="must">مهمة · MUST-SEE</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>9.2/10 <small>(210k)</small></span><span class="pill price">€30</span><a class="act" href="https://muze.gen.tr/muze-detay/galatakulesi"><svg><use href="#i-book"/></svg>Tickets<span class="arl">التذاكر</span></a><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Galata+Tower+Istanbul"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
@@ -1085,18 +1102,18 @@ body.modal-open{overflow:hidden}
 </div>
 <div class="day-body">
 <div class="grp"><h5>Morning <span class="arl">الصباح</span></h5>
-<div class="slot" data-dt="2026-09-30T09:30+03:00" data-cat="cafe" data-icon="coffee">
+<div class="slot" data-dt="2026-09-30T09:30+03:00" data-ll="41.023,28.9787" data-cat="cafe" data-icon="coffee">
 <div class="time">9:30 AM</div><div class="ic"><svg><use href="#i-coffee"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">فطور الوداع — الجناح أو ناملي غورمه</span><span class="ten">Namlı Gurme</span></div>
 <div class="meta"><span class="pill rate"><svg width="11" height="11" viewBox="0 0 24 24" fill="#a98a3f"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z"/></svg>8.2/10 <small>(6.3k)</small></span><span class="pill">Alcohol-free · بدون كحول</span><span class="pill price">$$</span><a class="act mapb" href="https://www.google.com/maps/search/?api=1&query=Namli+Gurme+Karakoy"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>
 <div class="note">آخر صباح بطيء: فطور على نافذة البحر، أو ثلاث دقائق إلى كاونتر ١٩٢٩ الذي سفرةُ فطوره أسطورتُه. وجبة الوداع الصحيحة.</div></div></div>
-<div class="slot" data-dt="2026-09-30T11:30+03:00" data-cat="act" data-icon="walk">
+<div class="slot" data-dt="2026-09-30T11:30+03:00" data-ll="41.0236,28.9769" data-cat="act" data-icon="walk">
 <div class="time">11:30 AM</div><div class="ic"><svg><use href="#i-walk"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">ساعة كاراكوي الأخيرة</span></div>
 <div class="note">ممشى الواجهة وصور أخيرة، وسو بوريك «غوللو أوغلو» إن احتجتما غداءً لاحقاً.</div></div></div>
 </div>
 <div class="grp"><h5>Afternoon <span class="arl">بعد الظهر</span></h5>
-<div class="slot" data-dt="2026-09-30T12:00+03:00" data-cat="move" data-icon="bed">
+<div class="slot" data-dt="2026-09-30T12:00+03:00" data-ll="41.023,28.9787" data-cat="move" data-icon="bed">
 <div class="time">12:00 PM</div><div class="ic"><svg><use href="#i-bed"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">تسجيل الخروج — الحقائب في الاستقبال</span></div>
 <div class="note">أو الخروج المتأخر الذي رتّبتماه يوم الانتقال. غداء خفيف قريب.</div></div></div>
@@ -1107,7 +1124,7 @@ body.modal-open{overflow:hidden}
 <div class="note">عبر BiTaksi/أوبر أو يطلبه الاستقبال؛ ٥٠–٨٠ دقيقة مع زحام العصر عبر طريق O-7. الوصول نحو ٥:٣٠–٥:٤٥ — الساعات الثلاث التي يوصي بها طيران ناس. <b>الحد الصارم: شباك الحقائب يُغلق ٧:٤٥ مساءً.</b></div></div></div>
 </div>
 <div class="grp"><h5>Evening <span class="arl">المساء</span></h5>
-<div class="slot" data-dt="2026-09-30T20:45+03:00" data-cat="move" data-icon="plane">
+<div class="slot" data-dt="2026-09-30T20:45+03:00" data-ll="41.2753,28.7519" data-cat="move" data-icon="plane">
 <div class="time">8:45 PM</div><div class="ic"><svg><use href="#i-plane"/></svg></div>
 <div class="wh"><div class="ttl"><span class="tar">طيران ناس XY300 إلى الرياض</span><span class="ten">flynas XY300</span></div>
 <div class="meta"><a class="act" href="https://www.flynas.com/en"><svg><use href="#i-book"/></svg>Check-in<span class="arl">إنهاء الإجراءات</span></a></div>
@@ -1324,6 +1341,13 @@ $$("article.day").forEach(function(d){
     dayprog(); autosave();
   });
   ctl.querySelector(".cbtn").addEventListener("click",function(){ d.classList.toggle("collapsed"); autosave(); });
+  /* globe button: day route map */
+  if($(".slot[data-ll]",d)){
+    var gb=document.createElement("button"); gb.type="button"; gb.className="daymap-btn"; gb.title="خريطة مسار اليوم";
+    gb.innerHTML='<svg><use href="#i-globe"/></svg><span class="arl">خريطة اليوم</span>';
+    gb.addEventListener("click",function(ev){ ev.stopPropagation(); openDayMap(d.id); });
+    var h3el=$("h3",head); if(h3el&&h3el.nextSibling)head.insertBefore(gb,h3el.nextSibling); else head.appendChild(gb);
+  }
   /* tapping the day name / header toggles it open — not only the small chevron */
   head.style.cursor="pointer";
   head.addEventListener("click",function(e){
@@ -1619,44 +1643,44 @@ nature:{ar:"يوم البوسفور الأخضر",en:"Green Bosphorus Day",icon:
  pitch:"طبيعة وإطلالات على الخط الساحلي الأوروبي: غابة أمير جان، قلعة روملي حصار، وكورنيش بيبيك — يوم هواء طلق كامل بلا متاحف.",
  arbox:"يوم مفتوح على الماء والخضرة: فطور متأخر على البحر في أمير جان، أبراج قلعة روملي، مشي بيبيك بين اليخوت، وعشاء تحت القلعة المضاءة — كله على خط ساحلي واحد وبلا كحول.",
  slots:[
- {t:"10:00",ampm:"10:00 AM",g:"m",cat:"act",icon:"sunset",tar:"غابة أمير جان",ten:"Emirgan Grove",mq:"Emirgan Korusu Istanbul",note:"أكبر حدائق الضفة الأوروبية: ممرات بين أشجار معمرة وأكشاك عثمانية ملونة وبرك — ادخلا من البوابة البحرية وخذا الصعود بهدوء."},
- {t:"12:00",ampm:"12:00 PM",g:"m",cat:"food",icon:"food",tar:"فطور متأخر — أمير جان سوتيش",ten:"Emirgan Sütiş",mq:"Emirgan Sutis",note:"مؤسسة ١٩١٨ على الماء مباشرة: فطور تركي كامل أو كفتة صاج، وسوتلاتش الفرن الشهير ختاماً — عائلي وبلا كحول."},
- {t:"14:30",ampm:"2:30 PM",g:"a",cat:"act",icon:"landmark",tar:"قلعة روملي حصار",ten:"Rumeli Fortress",mq:"Rumeli Hisari Istanbul",note:"قلعة الفاتح التي أغلقت البوسفور سنة ١٤٥٢: أسوار تُتسلق وإطلالة الجسر المعلق من الأبراج — تحققا من يوم الإغلاق الأسبوعي قبل الذهاب."},
- {t:"16:30",ampm:"4:30 PM",g:"a",cat:"act",icon:"walk",tar:"كورنيش بيبيك",ten:"Bebek Waterfront",mq:"Bebek sahil Istanbul",note:"أرقى ممشى على الضفة: يخوت ومقاهي وظل أشجار الجميز — جربا وافل بيبيك الشهير أو شوكولاتة الحي."},
- {t:"19:30",ampm:"7:30 PM",g:"e",cat:"food",icon:"food",tar:"عشاء هوقاباز روملي حصار",ten:"HuQQabaz Rumeli Hisarı",mq:"Huqqabaz Rumeli Hisari",note:"جلسة تحت القلعة المضاءة بلا كحول تماماً: مشاوي وعصائر مبتكرة وكنافة بالقشطة — احجزا طاولة خارجية مقدماً."}]},
+ {ll:[41.1069,29.053],t:"10:00",ampm:"10:00 AM",g:"m",cat:"act",icon:"sunset",tar:"غابة أمير جان",ten:"Emirgan Grove",mq:"Emirgan Korusu Istanbul",note:"أكبر حدائق الضفة الأوروبية: ممرات بين أشجار معمرة وأكشاك عثمانية ملونة وبرك — ادخلا من البوابة البحرية وخذا الصعود بهدوء."},
+ {ll:[41.1078,29.0546],t:"12:00",ampm:"12:00 PM",g:"m",cat:"food",icon:"food",tar:"فطور متأخر — أمير جان سوتيش",ten:"Emirgan Sütiş",mq:"Emirgan Sutis",note:"مؤسسة ١٩١٨ على الماء مباشرة: فطور تركي كامل أو كفتة صاج، وسوتلاتش الفرن الشهير ختاماً — عائلي وبلا كحول."},
+ {ll:[41.0846,29.0566],t:"14:30",ampm:"2:30 PM",g:"a",cat:"act",icon:"landmark",tar:"قلعة روملي حصار",ten:"Rumeli Fortress",mq:"Rumeli Hisari Istanbul",note:"قلعة الفاتح التي أغلقت البوسفور سنة ١٤٥٢: أسوار تُتسلق وإطلالة الجسر المعلق من الأبراج — تحققا من يوم الإغلاق الأسبوعي قبل الذهاب."},
+ {ll:[41.0774,29.0433],t:"16:30",ampm:"4:30 PM",g:"a",cat:"act",icon:"walk",tar:"كورنيش بيبيك",ten:"Bebek Waterfront",mq:"Bebek sahil Istanbul",note:"أرقى ممشى على الضفة: يخوت ومقاهي وظل أشجار الجميز — جربا وافل بيبيك الشهير أو شوكولاتة الحي."},
+ {ll:[41.0851,29.0568],t:"19:30",ampm:"7:30 PM",g:"e",cat:"food",icon:"food",tar:"عشاء هوقاباز روملي حصار",ten:"HuQQabaz Rumeli Hisarı",mq:"Huqqabaz Rumeli Hisari",note:"جلسة تحت القلعة المضاءة بلا كحول تماماً: مشاوي وعصائر مبتكرة وكنافة بالقشطة — احجزا طاولة خارجية مقدماً."}]},
 relax:{ar:"يوم الاسترخاء والسبا",en:"Slow Spa Day",icon:"i-spa",
  pitch:"صباح بطيء بلا منبه، حمّام تاريخي فاخر، برج تشاملجا الأعلى في المدينة، وعشاء عثماني هادئ — يوم يشحن البطاريات.",
  arbox:"يوم بلا ركض: قهوة على مهل، جلسة حمّام كاملة (بخار وتكييس ورغوة)، ثم الضفة الآسيوية — برج تشاملجا بإطلالة ٣٦٠ درجة، غروب أوسكودار، وعشاء كنعت العريق بلا كحول.",
  slots:[
- {t:"10:30",ampm:"10:30 AM",g:"m",cat:"cafe",icon:"coffee",tar:"صباح بطيء وقهوة على مهل",ten:"Slow Morning",mq:"Karakoy specialty coffee",note:"بلا منبه اليوم: فطور متأخر قرب الفندق وقهوة مختصة على مهل — هذا اليوم للجسد لا للجدول."},
- {t:"12:30",ampm:"12:30 PM",g:"m",cat:"act",icon:"spa",tar:"حمّام تاريخي — قلج علي باشا أو حريم السلطان",ten:"Historic Hamam",mq:"Kilic Ali Pasa Hamami",note:"الجلسة الكاملة: بخار فتكييس فرغوة تحت قبة سنان. قلج علي بفترات منفصلة له ولها، وحريم السلطان بجناحين متوازيين — احجزا مسبقاً وخذا ملابس السباحة."},
- {t:"15:30",ampm:"3:30 PM",g:"a",cat:"act",icon:"camera",tar:"برج تشاملجا",ten:"Çamlıca Tower",mq:"Camlica Tower Istanbul",note:"أعلى نقطة في اسطنبول: مصعد بانورامي وشرفة مراقبة ومقهى فوق السحاب — المدينة والمضيق والجزر كلها تحت أقدامكما."},
- {t:"18:00",ampm:"6:00 PM",g:"e",cat:"act",icon:"sunset",tar:"غروب كورنيش أوسكودار",ten:"Üsküdar Sunset",mq:"Uskudar sahil",note:"اجلسا على المدرجات البحرية قبالة برج الفتاة والشمس تنزل خلف المدينة القديمة — أجمل غروب مجاني في اسطنبول."},
- {t:"20:00",ampm:"8:00 PM",g:"e",cat:"food",icon:"food",tar:"عشاء كنعت لوكانتاسي",ten:"Kanaat Lokantası",mq:"Kanaat Lokantasi Uskudar",note:"مؤسسة ١٩٣٣: أطباق قدور عثمانية على الأصول وواجهة حلويات تاريخية (جربا الجزرية بالقيمق) — بلا كحول."}]},
+ {ll:[41.0236,28.976],t:"10:30",ampm:"10:30 AM",g:"m",cat:"cafe",icon:"coffee",tar:"صباح بطيء وقهوة على مهل",ten:"Slow Morning",mq:"Karakoy specialty coffee",note:"بلا منبه اليوم: فطور متأخر قرب الفندق وقهوة مختصة على مهل — هذا اليوم للجسد لا للجدول."},
+ {ll:[41.0257,28.9832],t:"12:30",ampm:"12:30 PM",g:"m",cat:"act",icon:"spa",tar:"حمّام تاريخي — قلج علي باشا أو حريم السلطان",ten:"Historic Hamam",mq:"Kilic Ali Pasa Hamami",note:"الجلسة الكاملة: بخار فتكييس فرغوة تحت قبة سنان. قلج علي بفترات منفصلة له ولها، وحريم السلطان بجناحين متوازيين — احجزا مسبقاً وخذا ملابس السباحة."},
+ {ll:[41.0288,29.0713],t:"15:30",ampm:"3:30 PM",g:"a",cat:"act",icon:"camera",tar:"برج تشاملجا",ten:"Çamlıca Tower",mq:"Camlica Tower Istanbul",note:"أعلى نقطة في اسطنبول: مصعد بانورامي وشرفة مراقبة ومقهى فوق السحاب — المدينة والمضيق والجزر كلها تحت أقدامكما."},
+ {ll:[41.0262,29.0158],t:"18:00",ampm:"6:00 PM",g:"e",cat:"act",icon:"sunset",tar:"غروب كورنيش أوسكودار",ten:"Üsküdar Sunset",mq:"Uskudar sahil",note:"اجلسا على المدرجات البحرية قبالة برج الفتاة والشمس تنزل خلف المدينة القديمة — أجمل غروب مجاني في اسطنبول."},
+ {ll:[41.027,29.0163],t:"20:00",ampm:"8:00 PM",g:"e",cat:"food",icon:"food",tar:"عشاء كنعت لوكانتاسي",ten:"Kanaat Lokantası",mq:"Kanaat Lokantasi Uskudar",note:"مؤسسة ١٩٣٣: أطباق قدور عثمانية على الأصول وواجهة حلويات تاريخية (جربا الجزرية بالقيمق) — بلا كحول."}]},
 shopping:{ar:"يوم التسوق العصري",en:"Modern Shopping Day",icon:"i-shop",
  pitch:"إستينيه بارك وزورلو سنتر — ماركات العالم في أفخم مولين بالمدينة، بلا شمس ولا زحام أرصفة، وعشاء والتون من قائمة تيك توك.",
  arbox:"يوم مولات مكيف على راحتكما: إستينيه بارك الفاخر بسوقه الداخلي، ثم زورلو سنتر (آبل ستور ومسرح PSM)، إنزال أكياس بالفندق، وعشاء «والتون» من ترشيحات تيك توك السعودية — بلا كحول.",
  slots:[
- {t:"10:30",ampm:"10:30 AM",g:"m",cat:"shop",icon:"shop",tar:"إستينيه بارك",ten:"İstinye Park",mq:"Istinye Park Istanbul",note:"أفخم مولات المدينة: ماركات عالمية وتركية راقية وسوق طازج داخلي بسقف زجاجي — ابدآ به قبل زحمة الظهيرة."},
- {t:"13:30",ampm:"1:30 PM",g:"a",cat:"food",icon:"food",tar:"غداء في المول",ten:"Lunch at İstinye Park",mq:"Istinye Park restaurants",note:"قاعة مطاعم واسعة: مشاوي تركية عائلية أو مادو للأخف — اختارا ما يناسب المزاج وارتاحا قبل الجولة الثانية."},
- {t:"15:30",ampm:"3:30 PM",g:"a",cat:"shop",icon:"shop",tar:"زورلو سنتر",ten:"Zorlu Center",mq:"Zorlu Center Istanbul",note:"تحفة معمارية بمدرجات خضراء: آبل ستور الشهير وماركات مختارة — وتفقدا برنامج مسرح PSM لو صادفت أمسيتكما عرضاً."},
- {t:"18:30",ampm:"6:30 PM",g:"e",cat:"act",icon:"walk",tar:"إنزال الأكياس + مشوار نيشانتاشي",ten:"Nişantaşı Stroll",mq:"Nisantasi Istanbul",note:"مرّا بالفندق لإنزال الغنائم، ثم مشي خفيف في شوارع نيشانتاشي الأنيقة لفتح الشهية."},
- {t:"20:00",ampm:"8:00 PM",g:"e",cat:"food",icon:"food",tar:"عشاء والتون",ten:"Walton",mq:"Walton Istanbul",note:"من قائمة تيك توك السعودية: «المنمن والكايماك بالعسل مع السميد» — أجواء فاخرة هادئة وبلا كحول."}]},
+ {ll:[41.1108,29.0316],t:"10:30",ampm:"10:30 AM",g:"m",cat:"shop",icon:"shop",tar:"إستينيه بارك",ten:"İstinye Park",mq:"Istinye Park Istanbul",note:"أفخم مولات المدينة: ماركات عالمية وتركية راقية وسوق طازج داخلي بسقف زجاجي — ابدآ به قبل زحمة الظهيرة."},
+ {ll:[41.1106,29.032],t:"13:30",ampm:"1:30 PM",g:"a",cat:"food",icon:"food",tar:"غداء في المول",ten:"Lunch at İstinye Park",mq:"Istinye Park restaurants",note:"قاعة مطاعم واسعة: مشاوي تركية عائلية أو مادو للأخف — اختارا ما يناسب المزاج وارتاحا قبل الجولة الثانية."},
+ {ll:[41.0669,29.0173],t:"15:30",ampm:"3:30 PM",g:"a",cat:"shop",icon:"shop",tar:"زورلو سنتر",ten:"Zorlu Center",mq:"Zorlu Center Istanbul",note:"تحفة معمارية بمدرجات خضراء: آبل ستور الشهير وماركات مختارة — وتفقدا برنامج مسرح PSM لو صادفت أمسيتكما عرضاً."},
+ {ll:[41.0475,28.9938],t:"18:30",ampm:"6:30 PM",g:"e",cat:"act",icon:"walk",tar:"إنزال الأكياس + مشوار نيشانتاشي",ten:"Nişantaşı Stroll",mq:"Nisantasi Istanbul",note:"مرّا بالفندق لإنزال الغنائم، ثم مشي خفيف في شوارع نيشانتاشي الأنيقة لفتح الشهية."},
+ {ll:[41.0556,28.9798],t:"20:00",ampm:"8:00 PM",g:"e",cat:"food",icon:"food",tar:"عشاء والتون",ten:"Walton",mq:"Walton Istanbul",note:"من قائمة تيك توك السعودية: «المنمن والكايماك بالعسل مع السميد» — أجواء فاخرة هادئة وبلا كحول."}]},
 bagdat:{ar:"يوم شارع بغداد",en:"Bağdat Avenue Day",icon:"i-walk",
  pitch:"الوجه المحلي الراقي للضفة الآسيوية: كيلومترات من المحلات والكافيهات على أرصفة مشجرة، حلواني بايلان (١٩٢٣)، وغروب كورنيش جادّة بوستان.",
  arbox:"يوم آسيوي محلي بعيد عن السياح تماماً: عبّارة الصباح، شارع بغداد بماركاته وأرصفته العريضة، «كوب غرييه» التاريخي في بايلان، غروب على المرمرة في جادّة بوستان، وعشاء كفتجي يوسف العائلي — بلا كحول.",
  slots:[
- {t:"10:30",ampm:"10:30 AM",g:"m",cat:"move",icon:"boat",tar:"عبّارة إلى قاضي كوي ثم بداية الشارع",ten:"Ferry + short ride",mq:"Kadikoy iskele",note:"عبّارة الصباح من الجهة الأوروبية، ثم تاكسي أو دولموش قصير إلى بداية شارع بغداد من جهة غوزتبه."},
- {t:"11:30",ampm:"11:30 AM",g:"m",cat:"shop",icon:"shop",tar:"شارع بغداد — الجولة الأولى",ten:"Bağdat Avenue",mq:"Bagdat Caddesi Istanbul",note:"شارع الأناقة الآسيوي: فاكو وبيمن وماركات تركيا الراقية على أرصفة مشجرة عريضة — هنا يتسوق أهل المدينة لا سياحها."},
- {t:"13:30",ampm:"1:30 PM",g:"a",cat:"cafe",icon:"dessert",tar:"حلواني بايلان التاريخي",ten:"Baylan Pâtisserie 1923",mq:"Baylan Bagdat Caddesi",note:"منذ ١٩٢٣: اطلبا «كوب غرييه» — اختراع بايلان الشهير من الكراميل والآيس كريم واللوز — مع ساندويتش خفيف غداءً."},
- {t:"17:30",ampm:"5:30 PM",g:"a",cat:"act",icon:"sunset",tar:"كورنيش جادّة بوستان",ten:"Caddebostan Seaside",mq:"Caddebostan sahil",note:"انزلا من الشارع نحو البحر: عشب وممشى طويل على المرمرة — الغروب هنا وجزر الأمراء على الأفق."},
- {t:"20:00",ampm:"8:00 PM",g:"e",cat:"food",icon:"food",tar:"عشاء كفتجي يوسف",ten:"Köfteci Yusuf",mq:"Kofteci Yusuf Kadikoy",note:"السلسلة العائلية المحبوبة في كل تركيا: كفتة وكباب بجودة ثابتة وأسعار مذهلة — بلا كحول قطعاً، ثم عبّارة العودة المضيئة."}]}
+ {ll:[40.9926,29.0233],t:"10:30",ampm:"10:30 AM",g:"m",cat:"move",icon:"boat",tar:"عبّارة إلى قاضي كوي ثم بداية الشارع",ten:"Ferry + short ride",mq:"Kadikoy iskele",note:"عبّارة الصباح من الجهة الأوروبية، ثم تاكسي أو دولموش قصير إلى بداية شارع بغداد من جهة غوزتبه."},
+ {ll:[40.9704,29.0622],t:"11:30",ampm:"11:30 AM",g:"m",cat:"shop",icon:"shop",tar:"شارع بغداد — الجولة الأولى",ten:"Bağdat Avenue",mq:"Bagdat Caddesi Istanbul",note:"شارع الأناقة الآسيوي: فاكو وبيمن وماركات تركيا الراقية على أرصفة مشجرة عريضة — هنا يتسوق أهل المدينة لا سياحها."},
+ {ll:[40.9598,29.0846],t:"13:30",ampm:"1:30 PM",g:"a",cat:"cafe",icon:"dessert",tar:"حلواني بايلان التاريخي",ten:"Baylan Pâtisserie 1923",mq:"Baylan Bagdat Caddesi",note:"منذ ١٩٢٣: اطلبا «كوب غرييه» — اختراع بايلان الشهير من الكراميل والآيس كريم واللوز — مع ساندويتش خفيف غداءً."},
+ {ll:[40.9632,29.0572],t:"17:30",ampm:"5:30 PM",g:"a",cat:"act",icon:"sunset",tar:"كورنيش جادّة بوستان",ten:"Caddebostan Seaside",mq:"Caddebostan sahil",note:"انزلا من الشارع نحو البحر: عشب وممشى طويل على المرمرة — الغروب هنا وجزر الأمراء على الأفق."},
+ {ll:[40.9772,29.0562],t:"20:00",ampm:"8:00 PM",g:"e",cat:"food",icon:"food",tar:"عشاء كفتجي يوسف",ten:"Köfteci Yusuf",mq:"Kofteci Yusuf Kadikoy",note:"السلسلة العائلية المحبوبة في كل تركيا: كفتة وكباب بجودة ثابتة وأسعار مذهلة — بلا كحول قطعاً، ثم عبّارة العودة المضيئة."}]}
 };
 var DAYORIG=DAYORIG||{};
 function daySnapshot(){ DAYORIG=DAYORIG||{}; $$("article.day").forEach(function(d){ var body=$(".day-body",d), h3=$(".day-head h3",d);
   if(body&&h3)DAYORIG[d.id]={body:body.innerHTML,h3:h3.innerHTML}; }); }
 function altSlotHTML(sl,date){ var dt=date+"T"+sl.t+"+03:00";
-  return '<div class="slot" data-dt="'+dt+'" data-cat="'+sl.cat+'" data-icon="'+sl.icon+'">'+
+  return '<div class="slot" data-dt="'+dt+'"'+(sl.ll?' data-ll="'+sl.ll[0]+','+sl.ll[1]+'"':'')+' data-cat="'+sl.cat+'" data-icon="'+sl.icon+'">'+
   '<div class="time">'+sl.ampm+'</div><div class="ic"><svg><use href="#i-'+sl.icon+'"/></svg></div>'+
   '<div class="wh"><div class="ttl"><span class="tar">'+sl.tar+'</span><span class="ten">'+sl.ten+'</span></div>'+
   '<div class="meta"><a class="act mapb" href="'+GM(sl.mq.replace(/ /g,"+"))+'"><svg><use href="#i-pin"/></svg>Map<span class="arl">الموقع</span></a></div>'+
@@ -1732,6 +1756,56 @@ function openDayPick(key){ var AD=ALTDAYS[key], m=buildDayPick();
 Object.keys(state.daySwap||{}).forEach(function(id){ if(ALTDAYS[state.daySwap[id]])applyDayAlt(id,state.daySwap[id]); });
 if(Object.keys(state.daySwap||{}).length){ refreshAfterDay(); }
 renderAltDays();
+/* ══ DAY ROUTE MAP: globe button → mini map with numbered route (OSM tiles via Leaflet) ══ */
+var LEAF=null;
+function loadLeaflet(){ if(LEAF)return LEAF;
+  LEAF=new Promise(function(res,rej){
+    var l=document.createElement("link"); l.id="leafcss"; l.rel="stylesheet";
+    l.href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+    document.head.appendChild(l);
+    var sc=document.createElement("script"); sc.id="leafjs";
+    sc.src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+    sc.onload=function(){res(window.L);};
+    sc.onerror=function(){LEAF=null;rej(new Error("cdn"));};
+    document.head.appendChild(sc);
+  });
+  return LEAF;}
+function buildGeoModal(){ if($("#geoModal"))return $("#geoModal");
+  var m=document.createElement("div"); m.id="geoModal"; m.className="cmodal"; m.hidden=true;
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass geo-glass"><button class="cm-x" type="button">✕</button><div class="geo-title"></div><div class="geo-map"></div><div class="geo-note">اضغطا على أي رقم لعرض اسم المحطة ووقتها — الخط المنقّط يوضح تسلسل حركتكما خلال اليوم</div></div>';
+  document.body.appendChild(m);
+  function close(){ m.hidden=true; document.body.classList.remove("modal-open"); }
+  m.querySelector(".cm-x").addEventListener("click",close);
+  m.querySelector(".cm-backdrop").addEventListener("click",close);
+  return m;}
+var geoMapObj=null;
+function openDayMap(dayId){ var d=$("#"+dayId); if(!d)return;
+  var pts=[]; $$(".slot[data-ll]",d).forEach(function(s){
+    var p=s.dataset.ll.split(","); var tar=s.querySelector(".ttl .tar"); var tm=s.querySelector(".time");
+    pts.push({lat:+p[0],lng:+p[1],name:tar?tar.textContent.trim():"",t:tm?tm.textContent.trim():"",dt:s.dataset.dt}); });
+  pts.sort(function(a,b){ return a.dt<b.dt?-1:1; });
+  if(!pts.length)return;
+  var m=buildGeoModal(); m.hidden=false; document.body.classList.add("modal-open");
+  var base=$(".day-head h3",d), baseTxt=base?base.childNodes[0].textContent.trim():"";
+  m.querySelector(".geo-title").innerHTML='<svg class="gt-ico"><use href="#i-globe"/></svg><b>'+$(".dnum",d).textContent+" — "+baseTxt+'</b><small>'+pts.length+" محطات · خط سير اليوم بالترتيب</small>";
+  var box=m.querySelector(".geo-map");
+  box.innerHTML='<div class="geo-load">جارٍ تحميل الخريطة…</div>';
+  loadLeaflet().then(function(Lf){
+    box.innerHTML="";
+    if(geoMapObj){ try{geoMapObj.remove();}catch(e){} geoMapObj=null; }
+    geoMapObj=Lf.map(box,{zoomControl:true,attributionControl:true});
+    Lf.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(geoMapObj);
+    var latlngs=[];
+    pts.forEach(function(p,i){ latlngs.push([p.lat,p.lng]);
+      var ic=Lf.divIcon({className:"gnumw",html:'<div class="gnum">'+(i+1)+"</div>",iconSize:[30,30],iconAnchor:[15,15]});
+      Lf.marker([p.lat,p.lng],{icon:ic}).addTo(geoMapObj)
+        .bindTooltip('<b dir="rtl">'+(i+1)+". "+p.name+'</b><br><span dir="ltr">'+p.t+"</span>",{direction:"top",offset:[0,-16]});
+    });
+    Lf.polyline(latlngs,{color:"#84855f",weight:3,opacity:.85,dashArray:"7 7"}).addTo(geoMapObj);
+    if(latlngs.length>1)geoMapObj.fitBounds(latlngs,{padding:[36,36]}); else geoMapObj.setView(latlngs[0],14);
+    setTimeout(function(){ if(geoMapObj)geoMapObj.invalidateSize(); },150);
+  }).catch(function(){ box.innerHTML='<div class="geo-load">تعذر تحميل الخريطة — تحققا من الاتصال بالإنترنت ثم أعيدا المحاولة.</div>'; });
+}
 /* ── live Türkiye card: clock, weather, fx, neighborhood ── */
 function tickIst(){try{var f=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Istanbul",hour12:true,hour:"numeric",minute:"2-digit",second:"2-digit"});var el=$("#ist-time");if(el)el.textContent=f.format(new Date());}catch(e){}}
 tickIst(); setInterval(tickIst,1000);
@@ -1792,7 +1866,7 @@ $("#savebtn").addEventListener("click",function(){
     var st=collect();
     var doc=document.documentElement.cloneNode(true);
     var holder=doc.querySelector("#savestate"); holder.textContent=JSON.stringify(st);
-    [].slice.call(doc.querySelectorAll(".dayctl, #chipModal, #placeModal, #daypickModal, #photoLB, .likedmark, .swapmark")).forEach(function(n){n.parentNode.removeChild(n);}); /* re-injected on load */
+    [].slice.call(doc.querySelectorAll(".dayctl, .daymap-btn, #chipModal, #placeModal, #daypickModal, #photoLB, #geoModal, #leafcss, #leafjs, .likedmark, .swapmark")).forEach(function(n){n.parentNode.removeChild(n);}); /* re-injected on load */
     var adg=doc.querySelector("#adgrid"); if(adg)adg.innerHTML=""; /* alt-day cards re-render on load */
     /* restore swapped DAYS to their original static HTML — day swaps re-apply from state on load */
     Object.keys(st.daySwap||{}).forEach(function(id){ var OD=DAYORIG[id]; if(!OD)return;
