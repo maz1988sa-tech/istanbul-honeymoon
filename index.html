@@ -291,9 +291,11 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
  border:1px solid rgba(255,246,228,.4);box-shadow:0 30px 70px rgba(35,26,14,.55),inset 0 1px 0 rgba(255,250,238,.35);
  animation:cmin .18s ease}
 @keyframes cmin{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
-.cm-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,246,228,.5);background:rgba(255,246,228,.12);color:#fdf8ec;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.mhead{display:flex;direction:ltr;align-items:flex-start;gap:10px;flex:none;min-width:0}
+.mhead>*{min-width:0}
+.cm-x{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,246,228,.5);background:rgba(255,246,228,.12);color:#fdf8ec;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
 .cm-x:hover{background:rgba(255,246,228,.3)}
-.cm-day{font-family:var(--serif);font-size:12.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;padding-right:40px}
+.cm-day{flex:1 1 auto;direction:rtl;text-align:right;padding-top:8px;font-family:var(--serif);font-size:12.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase}
 .cm-day .arl{font-family:var(--ar);letter-spacing:0;text-transform:none;opacity:.9}
 .cm-tabs{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
 .cm-tab{display:inline-flex;gap:7px;align-items:center;font-family:var(--sans);font-size:11.5px;font-weight:600;padding:6px 13px;border-radius:99px;border:1px solid rgba(255,246,228,.45);background:rgba(255,246,228,.1);color:#f6eeda;cursor:pointer}
@@ -372,7 +374,7 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 .dswapmark{display:inline-block;font-size:10.5px;font-weight:700;background:var(--gold);color:#fff;border-radius:5px;padding:2px 8px;margin:0 10px;vertical-align:3px;font-family:var(--ar)}
 .dayrevert{font-family:var(--ar);font-size:11.5px;font-weight:700;border:1px solid var(--line2);border-radius:99px;padding:3px 11px;background:var(--sand);color:var(--soft);cursor:pointer;vertical-align:3px}
 .dayrevert:hover{border-color:var(--olive);color:var(--olive-deep)}
-.dp-title{direction:rtl;text-align:right;font-family:var(--ar);font-size:17px;font-weight:700;margin-bottom:12px}
+.dp-title{flex:1 1 auto;direction:rtl;text-align:right;font-family:var(--ar);font-size:17px;font-weight:700;margin-bottom:12px;padding-top:4px}
 .dp-title small{display:block;font-size:12.5px;font-weight:400;opacity:.85;margin-top:4px;line-height:1.8}
 .dp-list{display:flex;flex-direction:column;gap:7px;overflow-y:auto;max-height:56vh;padding-left:4px}
 .dp-row{display:flex;flex-direction:column;gap:2px;text-align:right;direction:rtl;border:1px solid rgba(255,246,228,.35);background:rgba(255,246,228,.08);border-radius:12px;padding:9px 14px;cursor:pointer;color:#f6eeda}
@@ -387,7 +389,7 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 .daymap-btn svg{width:15px;height:15px}
 .day.collapsed .daymap-btn{margin-top:4px}
 .geo-glass{width:min(780px,96vw);max-height:92vh;display:flex;flex-direction:column}
-.geo-fs{position:absolute;top:12px;left:12px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,246,228,.5);background:rgba(255,246,228,.12);color:#fdf8ec;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.geo-fs{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,246,228,.5);background:rgba(255,246,228,.12);color:#fdf8ec;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .geo-fs:hover{background:rgba(255,246,228,.3)}
 .geo-fs svg{width:17px;height:17px}
 .geo-fs .fs-in{display:none}
@@ -399,10 +401,9 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 #geoModal.geo-full .geo-note{display:none}
 .geo-map.zhidewalk .glabel.gm-walk{display:none}
 .geo-map.zhideall .glabel{display:none}
-.geo-title{direction:rtl;text-align:right;font-family:var(--ar);margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.geo-title .gt-ico{width:22px;height:22px;color:#f3d9a8;flex:none}
-.geo-title b{font-size:16.5px}
-.geo-title small{display:block;width:100%;font-size:12.5px;opacity:.85;margin-top:-2px}
+.geo-title{flex:1 1 auto;direction:rtl;text-align:right;font-family:var(--ar);margin-bottom:10px;padding-top:4px}
+.geo-title b{display:block;font-size:16.5px;line-height:1.5}
+.geo-title small{display:block;font-size:12.5px;opacity:.85;margin-top:2px;line-height:1.7}
 .geo-map{height:min(58vh,480px);border-radius:14px;overflow:hidden;direction:ltr;background:rgba(255,246,228,.08)}
 .geo-load{display:flex;align-items:center;justify-content:center;height:100%;font-family:var(--ar);font-size:14.5px;color:#f6eeda;direction:rtl}
 .geo-note{direction:rtl;text-align:right;font-family:var(--ar);font-size:12.5px;opacity:.85;margin-top:10px;line-height:1.9}
@@ -429,17 +430,21 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 #placeModal{z-index:96} /* place card opens above the day map */
 #photoLB{z-index:120}
 .leaflet-tooltip{font-family:var(--ar)}
-#photoLB{position:fixed;inset:0;z-index:120;background:rgba(24,18,10,.94);display:flex;align-items:center;justify-content:center}
+#photoLB{position:fixed;inset:0;z-index:120;background:rgba(24,18,10,.94);display:flex;flex-direction:column}
 #photoLB[hidden]{display:none}
-#photoLB img{max-width:94vw;max-height:86vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-#photoLB .lb-x{position:absolute;top:16px;right:18px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,246,228,.5);background:rgba(255,246,228,.12);color:#fdf8ec;font-size:16px;cursor:pointer}
+#photoLB .lb-top{flex:none;display:flex;direction:ltr;justify-content:flex-end;padding:12px 14px 8px}
+#photoLB .lb-mid{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 12px}
+#photoLB img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#photoLB .lb-bot{flex:none;display:flex;direction:ltr;align-items:center;justify-content:center;gap:18px;padding:12px 14px 16px}
+#photoLB .lb-x{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,246,228,.5);background:rgba(255,246,228,.12);color:#fdf8ec;font-size:16px;cursor:pointer}
 #photoLB .lb-x:hover{background:rgba(255,246,228,.28)}
-#photoLB .lb-p,#photoLB .lb-n{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,246,228,.4);background:rgba(255,246,228,.1);color:#fdf8ec;font-size:22px;line-height:1;cursor:pointer}
-#photoLB .lb-p{left:14px}
-#photoLB .lb-n{right:14px}
+#photoLB .lb-p,#photoLB .lb-n{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,246,228,.4);background:rgba(255,246,228,.1);color:#fdf8ec;font-size:22px;line-height:1;cursor:pointer}
 #photoLB .lb-p:hover,#photoLB .lb-n:hover{background:rgba(255,246,228,.25)}
-#photoLB .lb-c{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-family:var(--sans);font-size:12px;letter-spacing:.14em;color:#f6eeda;opacity:.85}
-@media(max-width:600px){.pm-gal{grid-template-columns:repeat(2,1fr)}.pm-gal img,.pm-gal .gph{height:96px}}
+#photoLB .lb-p:hover,#photoLB .lb-n:hover{background:rgba(255,246,228,.25)}
+#photoLB .lb-c{font-family:var(--sans);font-size:12px;letter-spacing:.14em;color:#f6eeda;opacity:.85;min-width:52px;text-align:center}
+.pm-head{justify-content:flex-end;margin-bottom:2px}
+@media(max-width:600px){.pm-gal{grid-template-columns:repeat(2,1fr)}.pm-gal img,.pm-gal .gph{height:96px}
+ .cm-row{flex-wrap:wrap;row-gap:8px}.cm-t{flex:1 1 60%;min-width:170px}.cm-row .cm-btn{margin-left:0}}
 body.modal-open{overflow:hidden}
 /* ══ MOBILE: first screen = full trip interface, then page-by-page snap ══ */
 #fold{display:contents}
@@ -1396,7 +1401,7 @@ dayprog();
 var MCATS={act:CATS.act,food:CATS.food,cafe:CATS.cafe,shop:CATS.shop,move:CATS.move,must:{icon:"i-star",en:"Must-see",ar:"مهمة"}};
 function buildModal(){ if($("#chipModal"))return $("#chipModal");
   var m=document.createElement("div"); m.id="chipModal"; m.className="cmodal"; m.hidden=true;
-  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass"><button class="cm-x" type="button" title="إغلاق">✕</button><div class="cm-day"></div><div class="cm-tabs"></div><div class="cm-rule"></div><div class="cm-list"></div></div>';
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass"><div class="mhead"><div class="cm-day"></div><button class="cm-x" type="button" title="إغلاق">✕</button></div><div class="cm-tabs"></div><div class="cm-rule"></div><div class="cm-list"></div></div>';
   document.body.appendChild(m);
   function close(){m.hidden=true;document.body.classList.remove("modal-open");}
   m.querySelector(".cm-x").addEventListener("click",close);
@@ -1560,10 +1565,10 @@ function LBshow(){ var im=LB.querySelector("img"),u=LBl[LBi]; im.onerror=functio
 function LBnav(d){ if(!LBl.length)return; LBi=(LBi+d+LBl.length)%LBl.length; LBshow(); }
 function ensureLB(){ if(LB)return LB;
   LB=document.createElement("div"); LB.id="photoLB"; LB.hidden=true;
-  LB.innerHTML='<img alt=""><button class="lb-x" type="button">✕</button><button class="lb-p" type="button">‹</button><button class="lb-n" type="button">›</button><div class="lb-c"></div>';
+  LB.innerHTML='<div class="lb-top"><button class="lb-x" type="button">✕</button></div><div class="lb-mid"><img alt=""></div><div class="lb-bot"><button class="lb-p" type="button">‹</button><div class="lb-c"></div><button class="lb-n" type="button">›</button></div>';
   document.body.appendChild(LB);
   function close(){LB.hidden=true;}
-  LB.addEventListener("click",function(e){ if(e.target===LB)close(); });
+  LB.addEventListener("click",function(e){ var c=e.target.classList; if(e.target===LB||c.contains("lb-mid")||c.contains("lb-top")||c.contains("lb-bot"))close(); });
   LB.querySelector(".lb-x").addEventListener("click",close);
   LB.querySelector(".lb-p").addEventListener("click",function(e){e.stopPropagation();LBnav(-1);});
   LB.querySelector(".lb-n").addEventListener("click",function(e){e.stopPropagation();LBnav(1);});
@@ -1573,7 +1578,7 @@ function ensureLB(){ if(LB)return LB;
 function openLB(list,i){ ensureLB(); LBl=list||[]; LBi=i||0; if(!LBl.length)return; LB.hidden=false; LBshow(); }
 function buildPlaceModal(){ if($("#placeModal"))return $("#placeModal");
   var m=document.createElement("div"); m.id="placeModal"; m.className="cmodal"; m.hidden=true;
-  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass"><button class="cm-x" type="button">✕</button><div class="pm-scroll"><div class="pm-gal"></div><div class="pm-title"></div><div class="pm-actions"></div><div class="pm-why"></div><button class="pm-more" type="button" hidden></button><div class="pm-deep"><div class="pm-dish"></div><div class="pm-story"></div><div class="pm-info"></div></div><div class="pm-extra"></div></div></div>';
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass"><div class="mhead pm-head"><button class="cm-x" type="button">✕</button></div><div class="pm-scroll"><div class="pm-gal"></div><div class="pm-title"></div><div class="pm-actions"></div><div class="pm-why"></div><button class="pm-more" type="button" hidden></button><div class="pm-deep"><div class="pm-dish"></div><div class="pm-story"></div><div class="pm-info"></div></div><div class="pm-extra"></div></div></div>';
   document.body.appendChild(m);
   function close(){m.hidden=true; if(!$("#geoModal")||$("#geoModal").hidden)document.body.classList.remove("modal-open"); geoPreviewClear();}
   m.querySelector(".cm-x").addEventListener("click",close);
@@ -1759,7 +1764,7 @@ function renderAltDays(){ var grid=$("#adgrid"); if(!grid)return; grid.innerHTML
     grid.appendChild(card); }); }
 function buildDayPick(){ if($("#daypickModal"))return $("#daypickModal");
   var m=document.createElement("div"); m.id="daypickModal"; m.className="cmodal"; m.hidden=true;
-  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass"><button class="cm-x" type="button">✕</button><div class="dp-title"></div><div class="dp-list"></div></div>';
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass"><div class="mhead"><div class="dp-title"></div><button class="cm-x" type="button">✕</button></div><div class="dp-list"></div></div>';
   document.body.appendChild(m);
   function close(){m.hidden=true;document.body.classList.remove("modal-open");}
   m.querySelector(".cm-x").addEventListener("click",close);
@@ -1808,7 +1813,7 @@ function loadLeaflet(){ if(LEAF)return LEAF;
   return LEAF;}
 function buildGeoModal(){ if($("#geoModal"))return $("#geoModal");
   var m=document.createElement("div"); m.id="geoModal"; m.className="cmodal"; m.hidden=true;
-  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass geo-glass"><button class="cm-x" type="button">✕</button><button class="geo-fs" type="button" title="ملء الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="fs-out" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path class="fs-in" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button><div class="geo-title"></div><div class="geo-map"></div><div class="geo-legend"></div><div class="geo-note">«0» نقطة الانطلاق من الفندق · كل لون وسيلة نقل · النقاط الملونة محطات الركوب والعبور والنزول (اضغطا عليها للأسماء) · الأرقام تفتح بطاقة الفعالية · كبّرا الخريطة لعرض بطاقات الوسائل</div></div>';
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass geo-glass"><div class="mhead"><button class="geo-fs" type="button" title="ملء الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="fs-out" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path class="fs-in" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button><div class="geo-title"></div><button class="cm-x" type="button">✕</button></div><div class="geo-map"></div><div class="geo-legend"></div><div class="geo-note">«0» نقطة الانطلاق من الفندق · كل لون وسيلة نقل · النقاط الملونة محطات الركوب والعبور والنزول (اضغطا عليها للأسماء) · الأرقام تفتح بطاقة الفعالية · كبّرا الخريطة لعرض بطاقات الوسائل</div></div>';
   document.body.appendChild(m);
   function close(){ m.hidden=true; m.classList.remove("geo-full"); document.body.classList.remove("modal-open"); }
   m.querySelector(".cm-x").addEventListener("click",close);
@@ -2032,7 +2037,7 @@ function openDayMap(dayId){ var d=$("#"+dayId); if(!d)return;
   var pts=geoDayPts(); if(!pts.length)return;
   var m=buildGeoModal(); m.hidden=false; document.body.classList.add("modal-open");
   var base=$(".day-head h3",d), baseTxt=base?base.childNodes[0].textContent.trim():"";
-  m.querySelector(".geo-title").innerHTML='<svg class="gt-ico"><use href="#i-globe"/></svg><b>'+$(".dnum",d).textContent+" — "+baseTxt+'</b><small>'+pts.length+" محطات · خط سير اليوم بالترتيب — اضغطا على أي رقم لفتح بطاقة الفعالية</small>";
+  m.querySelector(".geo-title").innerHTML='<b>'+$(".dnum",d).textContent+" — "+baseTxt+'</b><small>'+pts.length+" محطات · خط سير اليوم بالترتيب — اضغطا على أي رقم لفتح بطاقة الفعالية</small>";
   var box=m.querySelector(".geo-map");
   box.innerHTML='<div class="geo-load">جارٍ تحميل الخريطة…</div>';
   loadLeaflet().then(function(Lf){
