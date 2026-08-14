@@ -1468,7 +1468,7 @@ function commonsFetch(q){ /* one Commons search -> [{t,f}] */
   return fetch("https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch="+encodeURIComponent("filetype:bitmap "+q)+"&gsrlimit=12&gsrnamespace=6&prop=imageinfo&iiprop=url&iiurlwidth=640")
     .then(function(r){return r.json()}).then(function(j){
       var urls=[]; if(j&&j.query&&j.query.pages){Object.keys(j.query.pages).sort(function(a,b){return j.query.pages[a].index-j.query.pages[b].index}).forEach(function(k){
-        var ii=j.query.pages[k].imageinfo; if(ii&&ii[0]&&/\.(jpe?g|png)$/i.test(ii[0].url||"")){
+        var ii=j.query.pages[k].imageinfo; if(ii&&ii[0]&&/\.(jpe?g|png)$/i.test(String(ii[0].url||"").split("?")[0])){
           var t=ii[0].thumburl||ii[0].url, f=t.replace(/\/(\d{2,4})px-/,"/1600px-"); if(f===t)f=ii[0].url||t;
           urls.push({t:t,f:f});}});}
       return urls;
