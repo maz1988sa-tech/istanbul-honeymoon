@@ -386,7 +386,19 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 .daymap-btn:hover{background:var(--gold);color:#fff}
 .daymap-btn svg{width:15px;height:15px}
 .day.collapsed .daymap-btn{margin-top:4px}
-.geo-glass{width:min(780px,96vw);max-height:90vh}
+.geo-glass{width:min(780px,96vw);max-height:92vh;display:flex;flex-direction:column}
+.geo-fs{position:absolute;top:12px;left:12px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,246,228,.5);background:rgba(255,246,228,.12);color:#fdf8ec;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.geo-fs:hover{background:rgba(255,246,228,.3)}
+.geo-fs svg{width:17px;height:17px}
+.geo-fs .fs-in{display:none}
+#geoModal.geo-full .geo-fs .fs-out{display:none}
+#geoModal.geo-full .geo-fs .fs-in{display:block}
+#geoModal.geo-full{padding:0}
+#geoModal.geo-full .cm-glass.geo-glass{width:100vw;max-width:100vw;height:100svh;max-height:100svh;border-radius:0;padding:12px 12px 8px}
+#geoModal.geo-full .geo-map{flex:1 1 auto;height:auto;min-height:0;max-height:none}
+#geoModal.geo-full .geo-note{display:none}
+.geo-map.zhidewalk .glabel.gm-walk{display:none}
+.geo-map.zhideall .glabel{display:none}
 .geo-title{direction:rtl;text-align:right;font-family:var(--ar);margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .geo-title .gt-ico{width:22px;height:22px;color:#f3d9a8;flex:none}
 .geo-title b{font-size:16.5px}
@@ -1796,11 +1808,16 @@ function loadLeaflet(){ if(LEAF)return LEAF;
   return LEAF;}
 function buildGeoModal(){ if($("#geoModal"))return $("#geoModal");
   var m=document.createElement("div"); m.id="geoModal"; m.className="cmodal"; m.hidden=true;
-  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass geo-glass"><button class="cm-x" type="button">✕</button><div class="geo-title"></div><div class="geo-map"></div><div class="geo-legend"></div><div class="geo-note">«0» نقطة الانطلاق من الفندق · كل لون وسيلة نقل · النقاط الملونة محطات الركوب والعبور والنزول (اضغطا عليها للأسماء) · الأرقام تفتح بطاقة الفعالية</div></div>';
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass geo-glass"><button class="cm-x" type="button">✕</button><button class="geo-fs" type="button" title="ملء الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="fs-out" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path class="fs-in" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button><div class="geo-title"></div><div class="geo-map"></div><div class="geo-legend"></div><div class="geo-note">«0» نقطة الانطلاق من الفندق · كل لون وسيلة نقل · النقاط الملونة محطات الركوب والعبور والنزول (اضغطا عليها للأسماء) · الأرقام تفتح بطاقة الفعالية · كبّرا الخريطة لعرض بطاقات الوسائل</div></div>';
   document.body.appendChild(m);
-  function close(){ m.hidden=true; document.body.classList.remove("modal-open"); }
+  function close(){ m.hidden=true; m.classList.remove("geo-full"); document.body.classList.remove("modal-open"); }
   m.querySelector(".cm-x").addEventListener("click",close);
   m.querySelector(".cm-backdrop").addEventListener("click",close);
+  m.querySelector(".geo-fs").addEventListener("click",function(){
+    m.classList.toggle("geo-full");
+    setTimeout(function(){ if(geoMapObj){ geoMapObj.invalidateSize();
+      if(geoLastFit&&geoLastFit.length>1)geoMapObj.fitBounds(geoLastFit,{padding:[36,36]}); } },180);
+  });
   return m;}
 /* ══ TRANSIT LAYER: real routes between stops — mode colors, stations, walk minutes ══ */
 var MODES={
@@ -1961,7 +1978,7 @@ function drawTransit(Lf,map,pts,dayId,items){
     '<span class="lgi"><i class="lgdot" style="background:#1f6fb5"></i>ركوب</span><span class="lgi"><i class="lgdot" style="background:#e8850c"></i>عبور</span><span class="lgi"><i class="lgdot" style="background:#2f9e44"></i>نزول</span>'; }
   return {bounds:bounds};
 }
-var geoMapObj=null,geoLfRef=null,geoDayId=null,geoItems=[],geoPrevMark=null;
+var geoMapObj=null,geoLfRef=null,geoDayId=null,geoItems=[],geoPrevMark=null,geoLastFit=null;
 function geoDayPts(){ var d=geoDayId?$("#"+geoDayId):null; if(!d)return [];
   var pts=[]; $$(".slot[data-ll]",d).forEach(function(s){
     var p=s.dataset.ll.split(","); var tar=s.querySelector(".ttl .tar"); var tm=s.querySelector(".time");
@@ -1987,7 +2004,15 @@ function drawGeo(){ var gm=$("#geoModal"); if(!geoMapObj||!geoLfRef||!gm||gm.hid
     var lg=$("#geoModal .geo-legend"); if(lg)lg.innerHTML="";
   }
   var fitLls=tr&&tr.bounds?tr.bounds:latlngs;
+  geoLastFit=fitLls;
   if(fitLls.length>1)geoMapObj.fitBounds(fitLls,{padding:[36,36]}); else geoMapObj.setView(fitLls[0],14);
+  geoZoomClasses();
+}
+function geoZoomClasses(){ var gm=$("#geoModal"); if(!geoMapObj||!gm)return;
+  var box=gm.querySelector(".geo-map"); if(!box||!geoMapObj.getZoom)return;
+  var z=geoMapObj.getZoom();
+  box.classList.toggle("zhidewalk",z<14.2);
+  box.classList.toggle("zhideall",z<12.6);
 }
 function geoPreview(dt,n){ var gm=$("#geoModal");
   if(!geoMapObj||!geoLfRef||!gm||gm.hidden||!geoDayId)return;
@@ -2016,6 +2041,7 @@ function openDayMap(dayId){ var d=$("#"+dayId); if(!d)return;
     geoItems=[]; geoPrevMark=null; geoLfRef=Lf;
     geoMapObj=Lf.map(box,{zoomControl:true,attributionControl:true});
     Lf.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(geoMapObj);
+    if(geoMapObj.on)geoMapObj.on("zoomend",geoZoomClasses);
     drawGeo();
     setTimeout(function(){ if(geoMapObj)geoMapObj.invalidateSize(); },150);
   }).catch(function(){ box.innerHTML='<div class="geo-load">تعذر تحميل الخريطة — تحققا من الاتصال بالإنترنت ثم أعيدا المحاولة.</div>'; });
