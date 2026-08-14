@@ -435,6 +435,47 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 .geo-legend .geo-all{font-family:var(--ar);font-size:12px;font-weight:700;border:1px solid rgba(255,246,228,.6);background:rgba(255,246,228,.14);color:#fdf8ec;border-radius:99px;padding:4px 13px;cursor:pointer}
 .geo-legend .geo-all:hover{background:rgba(255,246,228,.3)}
 .geo-legend .geo-ct{font-weight:700;color:#f3d9a8}
+/* ══ MOMENTS: on-device album + designed day cards ══ */
+.gnum{position:relative}
+.gnum .mb{position:absolute;top:-4px;left:-4px;width:13px;height:13px;border-radius:50%;background:var(--gold);border:2px solid #fdfbf6}
+.pm-mom{direction:rtl;text-align:right;margin:12px 0 2px;padding:11px 13px;border:1.5px dashed rgba(255,246,228,.4);border-radius:14px}
+.pm-momlab{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:var(--ar);font-size:13.5px;font-weight:700;color:#f3d9a8}
+.mom-add{font-family:var(--ar);font-size:12.5px;font-weight:700;border:1px solid rgba(255,246,228,.55);background:rgba(255,246,228,.12);color:#fdf8ec;border-radius:99px;padding:5px 14px;cursor:pointer}
+.mom-add:hover{background:rgba(255,246,228,.28)}
+.mom-strip{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.mom-strip:empty{display:none}
+.mom-th{position:relative;width:64px;height:64px}
+.mom-th img{width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,246,228,.4);cursor:pointer}
+.mom-th .mx{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#2e2618;color:#fdf8ec;border:1px solid rgba(255,246,228,.5);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.daycard-btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--ar);font-size:12.5px;font-weight:700;border:1px solid var(--line2);border-radius:99px;padding:5px 14px;margin:8px 0 0 8px;background:var(--page);color:var(--soft);cursor:pointer;vertical-align:middle}
+.daycard-btn:hover{border-color:var(--gold);color:var(--olive-deep)}
+.day.collapsed .daycard-btn{margin-top:4px}
+.tripcard-btn{font-family:var(--ar);font-size:13px;font-weight:700;border:1px solid var(--line2);border-radius:99px;padding:7px 18px;margin-top:14px;background:transparent;color:var(--soft);cursor:pointer}
+.tripcard-btn:hover{border-color:var(--gold);color:var(--olive-deep)}
+.cd-scroll{overflow-y:auto;padding:2px 4px 6px;direction:rtl;text-align:right}
+.cd-lab{font-family:var(--ar);font-size:13.5px;font-weight:700;color:#f3d9a8;margin:10px 0 8px}
+.cd-emp{font-family:var(--ar);font-size:14.5px;line-height:2;opacity:.9;padding:14px 4px;text-align:center}
+.cd-grid{display:flex;gap:9px;flex-wrap:wrap}
+.cd-grid .cg{position:relative;width:74px;height:74px;cursor:pointer}
+.cd-grid .cg img{width:74px;height:74px;object-fit:cover;border-radius:11px;border:2px solid transparent;opacity:.85}
+.cd-grid .cg.on img{border-color:#f3d9a8;opacity:1}
+.cd-grid .cg .n{display:none;position:absolute;top:-7px;left:-7px;width:22px;height:22px;border-radius:50%;background:var(--gold);color:#fff;font-family:var(--sans);font-size:12px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fdfbf6}
+.cd-grid .cg.on .n{display:flex}
+.cd-tpls{display:flex;gap:8px;flex-wrap:wrap}
+.cd-tpls button{font-family:var(--ar);font-size:12.5px;font-weight:700;border:1px solid rgba(255,246,228,.5);background:rgba(255,246,228,.1);color:#f6eeda;border-radius:99px;padding:6px 15px;cursor:pointer}
+.cd-tpls button.on{background:#fdf8ec;color:#57462f;border-color:#fdf8ec}
+.cd-cap{width:100%;box-sizing:border-box;font-family:var(--ar);font-size:14px;border:1px solid rgba(255,246,228,.45);background:rgba(255,246,228,.1);color:#fdf8ec;border-radius:12px;padding:10px 14px;margin-top:2px}
+.cd-cap::placeholder{color:rgba(253,248,236,.55)}
+.cd-prevw{display:flex;justify-content:center;margin-top:12px}
+.cd-cv{width:238px;height:auto;border-radius:14px;box-shadow:0 14px 40px rgba(30,22,10,.45);background:#f6f1e7}
+.cd-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px;direction:rtl}
+.cd-share,.cd-dl{font-family:var(--ar);font-size:14px;font-weight:700;border-radius:99px;padding:10px 20px;cursor:pointer;border:1px solid rgba(255,246,228,.55)}
+.cd-share{background:#fdf8ec;color:#57462f}
+.cd-share:hover{background:#fff}
+.cd-dl{background:rgba(255,246,228,.1);color:#fdf8ec}
+.cd-dl:hover{background:rgba(255,246,228,.25)}
+.cd-share[disabled],.cd-dl[disabled]{opacity:.45;cursor:default}
+.cd-hint{font-family:var(--ar);font-size:11.5px;opacity:.75;margin-top:8px;line-height:1.8}
 .glabel{display:inline-block;white-space:nowrap;transform:translate(-50%,-50%);font-family:var(--ar);font-size:11px;font-weight:700;background:#fdfbf6;border:1.5px solid rgba(58,53,44,.25);border-radius:99px;padding:2px 9px;color:#3a352c;box-shadow:0 2px 8px rgba(40,32,18,.28)}
 .glabel.gm-walk{color:#5d5744}
 .glabel.gm-tram{border-color:#d64545;color:#a52f2f}
@@ -1406,6 +1447,10 @@ $$("article.day").forEach(function(d){
     gb.innerHTML='<svg><use href="#i-globe"/></svg><span class="arl">خريطة اليوم</span>';
     gb.addEventListener("click",function(ev){ ev.stopPropagation(); openDayMap(d.id); });
     var h3el=$("h3",head); if(h3el&&h3el.nextSibling)head.insertBefore(gb,h3el.nextSibling); else head.appendChild(gb);
+    var cb=document.createElement("button"); cb.type="button"; cb.className="daycard-btn"; cb.title="بطاقة اليوم — لحظاتكما بتصميم جاهز للمشاركة";
+    cb.innerHTML='✨<span class="arl">بطاقة اليوم</span>';
+    cb.addEventListener("click",function(ev){ ev.stopPropagation(); openDayCard(d.id); });
+    if(gb.nextSibling)head.insertBefore(cb,gb.nextSibling); else head.appendChild(cb);
   }
   /* tapping the day name / header toggles it open — not only the small chevron */
   head.style.cursor="pointer";
@@ -1600,7 +1645,7 @@ function ensureLB(){ if(LB)return LB;
 function openLB(list,i){ ensureLB(); LBl=list||[]; LBi=i||0; if(!LBl.length)return; LB.hidden=false; LBshow(); }
 function buildPlaceModal(){ if($("#placeModal"))return $("#placeModal");
   var m=document.createElement("div"); m.id="placeModal"; m.className="cmodal"; m.hidden=true;
-  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass"><div class="mhead pm-head"><button class="cm-x" type="button">✕</button></div><div class="pm-scroll"><div class="pm-gal"></div><div class="pm-title"></div><div class="pm-actions"></div><div class="pm-why"></div><button class="pm-more" type="button" hidden></button><div class="pm-deep"><div class="pm-dish"></div><div class="pm-story"></div><div class="pm-info"></div></div><div class="pm-extra"></div></div></div>';
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass"><div class="mhead pm-head"><button class="cm-x" type="button">✕</button></div><div class="pm-scroll"><div class="pm-gal"></div><div class="pm-title"></div><div class="pm-actions"></div><div class="pm-mom"></div><div class="pm-why"></div><button class="pm-more" type="button" hidden></button><div class="pm-deep"><div class="pm-dish"></div><div class="pm-story"></div><div class="pm-info"></div></div><div class="pm-extra"></div></div></div>';
   document.body.appendChild(m);
   function close(){m.hidden=true; if(!$("#geoModal")||$("#geoModal").hidden)document.body.classList.remove("modal-open"); geoPreviewClear();}
   m.querySelector(".cm-x").addEventListener("click",close);
@@ -1619,6 +1664,7 @@ function openPlaceModal(dt){ var P=PLACES[dt], s=$('.slot[data-dt="'+dt+'"]'); i
     var gal=m.querySelector(".pm-gal"), ti=m.querySelector(".pm-title"), ac=m.querySelector(".pm-actions"), st=m.querySelector(".pm-story"), ex=m.querySelector(".pm-extra");
     var more=m.querySelector(".pm-more"), deep=m.querySelector(".pm-deep"), inf=m.querySelector(".pm-info"), dsh=m.querySelector(".pm-dish"), why=m.querySelector(".pm-why");
     var cur=state.swapped[dt]||0;
+    momRender(dt,m.querySelector(".pm-mom")); /* their private photos for this stop */
     function moreLbl(){more.textContent=deep.classList.contains("open")?"إخفاء التفاصيل ▴":"اقرأ المزيد — نبذة ومعلومات مهمة ▾";}
     deep.classList.remove("open"); more.hidden=false; moreLbl();
     more.onclick=function(){deep.classList.toggle("open");moreLbl();};
@@ -1858,9 +1904,10 @@ function buildGeoModal(){ if($("#geoModal"))return $("#geoModal");
   });
   /* step-flow controls: done-toggle & place-card buttons inside map popups + the view toggle */
   m.addEventListener("click",function(e){
-    var b=e.target.closest?e.target.closest(".gpx-done,.gpx-undone,.gpx-card,.geo-all"):null; if(!b)return;
+    var b=e.target.closest?e.target.closest(".gpx-done,.gpx-undone,.gpx-card,.gpx-mom,.geo-all"):null; if(!b)return;
     if(b.classList.contains("geo-all")){ geoShowAll=!geoShowAll; geoFitNext=true; drawGeo(); return; }
     var dt=b.getAttribute("data-dt");
+    if(b.classList.contains("gpx-mom")){ if(dt)momPick(dt); return; }
     if(b.classList.contains("gpx-card")){ if(geoMapObj&&geoMapObj.closePopup)geoMapObj.closePopup(); if(dt)openPlaceModal(dt); return; }
     if(!dt)return;
     state.actDone=state.actDone||{};
@@ -2077,12 +2124,13 @@ function drawGeo(){ var gm=$("#geoModal"); if(!geoMapObj||!geoLfRef||!gm||gm.hid
     latlngs.push([p.lat,p.lng]);
     var isDone=!!doneMap[p.dt], isNext=(i===frontier&&frontier<pts.length);
     var cls="gnum gclick"+(isDone?" gdone":"")+(isNext?" gnext":"");
-    var ic=Lf.divIcon({className:"gnumw",html:'<div class="'+cls+'">'+(i+1)+"</div>",iconSize:[30,30],iconAnchor:[15,15]});
+    var ic=Lf.divIcon({className:"gnumw",html:'<div class="'+cls+'">'+(i+1)+(MOMC&&MOMC[p.dt]?'<i class="mb"></i>':"")+"</div>",iconSize:[30,30],iconAnchor:[15,15]});
     var st=isDone?'<br><span dir="rtl" style="color:#9a948a;font-weight:700">✓ منجزة</span>':(isNext?'<br><span dir="rtl" style="opacity:.85">وجهتكما التالية — اضغطا للتأكيد</span>':"");
     var mk=Lf.marker([p.lat,p.lng],{icon:ic,zIndexOffset:700}).addTo(geoMapObj)
       .bindTooltip('<b dir="rtl">'+(i+1)+". "+p.name+'</b><br><span dir="ltr">'+p.t+"</span>"+st,{direction:"top",offset:[0,-16]});
     var pop='<div class="gpop" dir="rtl"><b>'+(i+1)+". "+p.name+'</b><div class="gpop-btns">'
       +'<button type="button" class="'+(isDone?"gpx-undone":"gpx-done")+'" data-dt="'+p.dt+'">'+(isDone?"إرجاعها غير منجزة":"✓ خلصناها")+"</button>"
+      +'<button type="button" class="gpx-mom" data-dt="'+p.dt+'">📸 لحظة</button>'
       +(PLACES[p.dt]?'<button type="button" class="gpx-card" data-dt="'+p.dt+'">بطاقة الفعالية</button>':"")+"</div></div>";
     if(mk.bindPopup)mk.bindPopup(pop,{closeButton:false,offset:[0,-12]});
     else if(PLACES[p.dt]&&mk.on)mk.on("click",function(){ openPlaceModal(p.dt); });
@@ -2151,6 +2199,224 @@ function openDayMap(dayId){ var d=$("#"+dayId); if(!d)return;
     setTimeout(function(){ if(geoMapObj)geoMapObj.invalidateSize(); },150);
   }).catch(function(){ box.innerHTML='<div class="geo-load">تعذر تحميل الخريطة — تحققا من الاتصال بالإنترنت ثم أعيدا المحاولة.</div>'; });
 }
+/* ══ MOMENTS: private on-device photo album + designed shareable day cards ══ */
+var MDB=null, MOMC={}, MOM_DT=null;
+function momDB(){ return new Promise(function(res,rej){ if(MDB)return res(MDB);
+  try{ var rq=indexedDB.open("ist-moments",1);
+    rq.onupgradeneeded=function(e){ var db=e.target.result;
+      if(!db.objectStoreNames.contains("ph")){ var st=db.createObjectStore("ph",{keyPath:"id",autoIncrement:true});
+        st.createIndex("dt","dt"); st.createIndex("day","day"); } };
+    rq.onsuccess=function(){ MDB=rq.result; res(MDB); };
+    rq.onerror=function(){ rej(rq.error); };
+  }catch(e){ rej(e); } }); }
+function momTx(mode){ return momDB().then(function(db){ return db.transaction("ph",mode).objectStore("ph"); }); }
+function momRefreshCounts(){ return momTx("readonly").then(function(st){ return new Promise(function(res){
+  var c={}, cur=st.index("dt").openKeyCursor();
+  cur.onsuccess=function(e){ var k=e.target.result; if(k){ c[k.key]=(c[k.key]||0)+1; k.continue(); } else { MOMC=c; res(c); } };
+  cur.onerror=function(){ res(MOMC); } }); }).catch(function(){ return MOMC; }); }
+function momAdd(rec){ return momTx("readwrite").then(function(st){ return new Promise(function(res,rej){
+  var rq=st.add(rec); rq.onsuccess=function(){ MOMC[rec.dt]=(MOMC[rec.dt]||0)+1; res(rq.result); }; rq.onerror=function(){rej(rq.error);} }); }); }
+function momDel(id,dt){ return momTx("readwrite").then(function(st){ return new Promise(function(res){
+  var rq=st.delete(id); rq.onsuccess=function(){ if(MOMC[dt])MOMC[dt]=Math.max(0,MOMC[dt]-1); res(); }; rq.onerror=function(){res();} }); }); }
+function momByDt(dt){ return momTx("readonly").then(function(st){ return new Promise(function(res){
+  var rq=st.index("dt").getAll(dt); rq.onsuccess=function(){res(rq.result||[]);}; rq.onerror=function(){res([]);} }); }).catch(function(){return [];}); }
+function momByDay(day){ return momTx("readonly").then(function(st){ return new Promise(function(res){
+  var rq=day?st.index("day").getAll(day):st.getAll(); rq.onsuccess=function(){res(rq.result||[]);}; rq.onerror=function(){res([]);} }); }).catch(function(){return [];}); }
+function momShrink(file){ return new Promise(function(res,rej){
+  var u=URL.createObjectURL(file), im=new Image();
+  im.onload=function(){ try{
+    var mx=1600, s=Math.min(1,mx/Math.max(im.width,im.height));
+    var c=document.createElement("canvas"); c.width=Math.max(1,Math.round(im.width*s)); c.height=Math.max(1,Math.round(im.height*s));
+    c.getContext("2d").drawImage(im,0,0,c.width,c.height); URL.revokeObjectURL(u);
+    c.toBlob(function(b){ if(b)res({blob:b,w:c.width,h:c.height}); else rej(new Error("blob")); },"image/jpeg",0.82);
+  }catch(e){ URL.revokeObjectURL(u); rej(e); } };
+  im.onerror=function(){ URL.revokeObjectURL(u); rej(new Error("img")); };
+  im.src=u; }); }
+function ensureMomInput(){ var i=$("#momInput"); if(i)return i;
+  i=document.createElement("input"); i.type="file"; i.id="momInput"; i.accept="image/*"; i.multiple=true; i.hidden=true;
+  document.body.appendChild(i);
+  i.addEventListener("change",function(){
+    var files=[].slice.call(i.files||[]), dt=MOM_DT; i.value="";
+    if(!files.length||!dt)return;
+    var day=String(dt).slice(0,10), done=0;
+    Promise.all(files.slice(0,12).map(function(f){ return momShrink(f).then(function(r){
+      return momAdd({dt:dt,day:day,ts:Date.now(),blob:r.blob,w:r.w,h:r.h}).then(function(){done++;});
+    }).catch(function(){}); })).then(function(){
+      toast("<span class='arl'>📸 أُضيفت "+done+(done===1?" لحظة":" لحظات")+" ✓ — محفوظة في جوالكما</span>");
+      var pm=$("#placeModal"); if(pm&&!pm.hidden)momRender(dt,pm.querySelector(".pm-mom"));
+      var gm=$("#geoModal"); if(gm&&!gm.hidden)drawGeo();
+    });
+  });
+  return i; }
+function momPick(dt){ MOM_DT=dt; ensureMomInput().click(); }
+function momRender(dt,box){ if(!box)return; box.innerHTML="";
+  var lab=document.createElement("div"); lab.className="pm-momlab";
+  lab.innerHTML='<span>📸 لحظاتكما هنا</span><button type="button" class="mom-add">أضيفا لحظة</button><span class="mom-ct" style="opacity:.8;font-weight:400"></span>';
+  var strip=document.createElement("div"); strip.className="mom-strip";
+  box.appendChild(lab); box.appendChild(strip);
+  lab.querySelector(".mom-add").addEventListener("click",function(){ momPick(dt); });
+  momByDt(dt).then(function(list){
+    lab.querySelector(".mom-ct").textContent=list.length?("· "+list.length):"";
+    var urls=list.map(function(r){ return URL.createObjectURL(r.blob); });
+    strip.innerHTML=list.map(function(r,i){ return '<span class="mom-th"><img src="'+urls[i]+'" data-i="'+i+'" alt=""><b class="mx" data-id="'+r.id+'">✕</b></span>'; }).join("");
+    strip.onclick=function(e){
+      var del=e.target.closest?e.target.closest(".mx"):null;
+      if(del){ momDel(+del.getAttribute("data-id"),dt).then(function(){ momRender(dt,box); var gm=$("#geoModal"); if(gm&&!gm.hidden)drawGeo(); }); return; }
+      var im=e.target.closest?e.target.closest("img"):null;
+      if(im){ openLB(urls.map(function(u){return {t:u,f:u};}),+im.dataset.i||0); }
+    };
+  }); }
+/* ── the designed day card (canvas → share/download) ── */
+var CD={dayId:null,date:null,list:[],sel:[],tpl:"collage",cap:"",blob:null,urls:[],seq:0};
+function buildCardModal(){ if($("#cardModal"))return $("#cardModal");
+  var m=document.createElement("div"); m.id="cardModal"; m.className="cmodal"; m.hidden=true;
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass"><div class="mhead"><div class="dp-title cd-title"></div><button class="cm-x" type="button">✕</button></div><div class="cd-scroll">'
+    +'<div class="cd-emp" hidden></div>'
+    +'<div class="cd-body"><div class="cd-lab">١ · اختارا الصور — بترتيب الضغط (حتى ٦)</div><div class="cd-grid"></div>'
+    +'<div class="cd-lab">٢ · القالب</div><div class="cd-tpls"><button type="button" data-t="collage" class="on">كولاج · حتى ٦</button><button type="button" data-t="pola">بولارويد · حتى ٣</button><button type="button" data-t="film">شريط فيلم · حتى ٣</button></div>'
+    +'<div class="cd-lab">٣ · سطر يوثق اليوم (اختياري)</div><input class="cd-cap" maxlength="90" placeholder="مثال: أول غروب لنا على البسفور…">'
+    +'<div class="cd-prevw"><canvas class="cd-cv" width="1080" height="1920"></canvas></div>'
+    +'<div class="cd-actions"><button type="button" class="cd-share" disabled>حفظ في الصور / مشاركة</button><button type="button" class="cd-dl" disabled>تنزيل الملف</button></div>'
+    +'<div class="cd-hint">البطاقة بمقاس ستوري 1080×1920 — «حفظ في الصور» يفتح قائمة مشاركة الآيفون · الصور محفوظة في هذا الجوال فقط ولا تُرفع لأي مكان</div>'
+    +'</div></div></div>';
+  document.body.appendChild(m);
+  function close(){ m.hidden=true; document.body.classList.remove("modal-open"); CD.urls.forEach(function(u){try{URL.revokeObjectURL(u);}catch(e){}}); CD.urls=[]; }
+  m.querySelector(".cm-x").addEventListener("click",close);
+  m.querySelector(".cm-backdrop").addEventListener("click",close);
+  m.querySelector(".cd-grid").addEventListener("click",function(e){
+    var cg=e.target.closest?e.target.closest(".cg"):null; if(!cg)return;
+    var id=+cg.getAttribute("data-id"), at=CD.sel.indexOf(id), max=CD.tpl==="collage"?6:3;
+    if(at>=0)CD.sel.splice(at,1); else { if(CD.sel.length>=max)return; CD.sel.push(id); }
+    cardGridMark(m); cardRender(m);
+  });
+  m.querySelector(".cd-tpls").addEventListener("click",function(e){
+    var b=e.target.closest?e.target.closest("button"):null; if(!b)return;
+    CD.tpl=b.getAttribute("data-t");
+    $$(".cd-tpls button",m).forEach(function(x){x.classList.toggle("on",x===b);});
+    var max=CD.tpl==="collage"?6:3; if(CD.sel.length>max)CD.sel=CD.sel.slice(0,max);
+    cardGridMark(m); cardRender(m);
+  });
+  m.querySelector(".cd-cap").addEventListener("input",function(){ CD.cap=this.value; cardRender(m); });
+  m.querySelector(".cd-share").addEventListener("click",function(){
+    if(!CD.blob)return;
+    var f=null; try{ f=new File([CD.blob],cardName(),{type:"image/jpeg"}); }catch(e){}
+    if(f&&navigator.canShare&&navigator.canShare({files:[f]})&&navigator.share){ navigator.share({files:[f]}).catch(function(){}); }
+    else m.querySelector(".cd-dl").click();
+  });
+  m.querySelector(".cd-dl").addEventListener("click",function(){
+    if(!CD.blob)return;
+    var a=document.createElement("a"); a.href=URL.createObjectURL(CD.blob); a.download=cardName();
+    document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},800);
+  });
+  return m; }
+function cardName(){ return CD.dayId?("istanbul-"+CD.dayId+"-card.jpg"):"istanbul-honeymoon-card.jpg"; }
+function cardGridMark(m){ $$(".cd-grid .cg",m).forEach(function(cg){ var id=+cg.getAttribute("data-id"), at=CD.sel.indexOf(id);
+  cg.classList.toggle("on",at>=0); cg.querySelector(".n").textContent=at>=0?(at+1):""; }); }
+function openDayCard(dayId){ var m=buildCardModal();
+  CD.dayId=dayId; CD.sel=[]; CD.cap=""; CD.blob=null; m.querySelector(".cd-cap").value="";
+  var d=dayId?$("#"+dayId):null;
+  CD.date=d?d.dataset.day:null;
+  m.querySelector(".cd-title").innerHTML=dayId
+    ? ('بطاقة اليوم ✨<small>'+$(".dnum",d).textContent+" — لحظاتكما بتصميم جاهز للمشاركة</small>")
+    : 'بطاقة الرحلة كاملة ✨<small>أجمل لحظات شهر العسل في تصميم واحد</small>';
+  m.hidden=false; document.body.classList.add("modal-open");
+  CD.urls.forEach(function(u){try{URL.revokeObjectURL(u);}catch(e){}}); CD.urls=[];
+  momByDay(CD.date).then(function(list){
+    list.sort(function(a,b){return a.ts-b.ts;});
+    CD.list=list;
+    var emp=m.querySelector(".cd-emp"), body=m.querySelector(".cd-body");
+    if(!list.length){ emp.hidden=false; body.style.display="none";
+      emp.innerHTML="ما أضفتما لحظات "+(dayId?"لهذا اليوم":"للرحلة")+" بعد 📸<br>من بطاقة أي فعالية — أو من نافذة «✓ خلصناها» في الخريطة — اضغطا «أضيفا لحظة»."; return; }
+    emp.hidden=true; body.style.display="";
+    CD.urls=list.map(function(r){ return URL.createObjectURL(r.blob); });
+    m.querySelector(".cd-grid").innerHTML=list.map(function(r,i){ return '<span class="cg" data-id="'+r.id+'"><img src="'+CD.urls[i]+'" alt=""><span class="n"></span></span>'; }).join("");
+    CD.sel=list.slice(0,Math.min(4,list.length)).map(function(r){return r.id;});
+    cardGridMark(m); cardRender(m);
+  }); }
+function cardCover(ctx,im,x,y,w,h,r){ ctx.save(); rr(ctx,x,y,w,h,r); ctx.clip();
+  var s=Math.max(w/im.width,h/im.height), dw=im.width*s, dh=im.height*s;
+  ctx.drawImage(im,x+(w-dw)/2,y+(h-dh)/2,dw,dh); ctx.restore(); }
+function rr(ctx,x,y,w,h,r){ ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function cardRender(m){ var my=++CD.seq;
+  var cv=m.querySelector(".cd-cv"), ctx=cv.getContext("2d");
+  var shr=m.querySelector(".cd-share"), dl=m.querySelector(".cd-dl");
+  shr.disabled=true; dl.disabled=true; CD.blob=null;
+  var picks=CD.sel.map(function(id){ return CD.list.filter(function(r){return r.id===id;})[0]; }).filter(Boolean);
+  var fl=[]; try{ fl=[document.fonts.load('96px "Great Vibes"'),document.fonts.load('700 62px "Noto Naskh Arabic"'),document.fonts.load('400 42px "Noto Naskh Arabic"'),document.fonts.load('600 34px Jost'),document.fonts.load('52px "Great Vibes"')]; }catch(e){}
+  Promise.all([Promise.all(fl).catch(function(){})].concat(picks.map(function(r){ return createImageBitmap(r.blob).catch(function(){return null;}); })))
+  .then(function(rs){ if(my!==CD.seq)return;
+    var ims=rs.slice(1).filter(Boolean);
+    /* canvas: boho story 1080x1920 */
+    ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,1080,1920);
+    ctx.fillStyle="#f6f1e7"; ctx.fillRect(0,0,1080,1920);
+    ctx.strokeStyle="#a98a3f"; ctx.lineWidth=3; ctx.strokeRect(42,42,996,1836);
+    ctx.lineWidth=1.2; ctx.strokeRect(58,58,964,1804);
+    ctx.textAlign="center"; ctx.fillStyle="#a98a3f";
+    ctx.font='96px "Great Vibes"'; ctx.fillText("Istanbul",540,168);
+    var d=CD.dayId?$("#"+CD.dayId):null;
+    ctx.fillStyle="#6b6c4c"; ctx.font="600 34px Jost";
+    var top=CD.dayId?($(".dnum",d).textContent.toUpperCase()):"OUR HONEYMOON";
+    ctx.fillText(top.split("").join("  "),540,238);
+    ctx.fillStyle="#3a352c"; ctx.direction="rtl"; ctx.font='700 62px "Noto Naskh Arabic"';
+    var ttl=CD.dayId?$(".day-head h3",d).childNodes[0].textContent.trim():"رحلة شهر العسل — إسطنبول";
+    var h3ar=CD.dayId?($(".day-head h3 .ar",d)?$(".day-head h3 .ar",d).textContent.replace("|","").trim():""):"";
+    ctx.fillText(h3ar||ttl,540,320);
+    ctx.direction="ltr"; ctx.fillStyle="#8b8574"; ctx.font="500 30px Jost";
+    var dline=CD.dayId?new Date(CD.date+"T12:00:00+03:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"}):"20 — 30 September 2026";
+    ctx.fillText(dline.toUpperCase(),540,372);
+    /* photos zone y 420..1560 */
+    var Z={x:80,y:420,w:920,h:1130};
+    function ph(im,x,y,w,h,rot,frame){ ctx.save();
+      ctx.translate(x+w/2,y+h/2); ctx.rotate((rot||0)*Math.PI/180); ctx.translate(-(x+w/2),-(y+h/2));
+      ctx.shadowColor="rgba(60,45,20,.28)"; ctx.shadowBlur=26; ctx.shadowOffsetY=10;
+      if(frame){ ctx.fillStyle="#fffdf8"; rr(ctx,x-18,y-18,w+36,h+36+64,10); ctx.fill(); ctx.shadowColor="transparent"; cardCover(ctx,im,x,y,w,h,6); }
+      else { ctx.fillStyle="#fffdf8"; rr(ctx,x-6,y-6,w+12,h+12,24); ctx.fill(); ctx.shadowColor="transparent"; cardCover(ctx,im,x,y,w,h,20); }
+      ctx.restore(); }
+    var n=ims.length;
+    if(n){
+      if(CD.tpl==="pola"){
+        var pw=560,phh=560, cx=540, spots=[[cx-pw/2-90,Z.y+30,-4],[cx-pw/2+90,Z.y+330,3],[cx-pw/2,Z.y+300,-1.5]];
+        if(n===1)ph(ims[0],cx-pw/2,Z.y+180,pw,phh,-2,true);
+        else if(n===2){ ph(ims[0],cx-pw/2-70,Z.y+40,pw,phh,-4,true); ph(ims[1],cx-pw/2+70,Z.y+430,pw,phh,3,true); }
+        else { ph(ims[0],cx-pw/2-95,Z.y+10,pw-40,phh-40,-5,true); ph(ims[1],cx-pw/2+120,Z.y+230,pw-40,phh-40,4,true); ph(ims[2],cx-pw/2+5,Z.y+480,pw-20,phh-20,-1.5,true); }
+        ctx.fillStyle="#a98a3f"; ctx.beginPath(); ctx.arc(540,Z.y+18,11,0,7); ctx.fill();
+      } else if(CD.tpl==="film"){
+        var fw=620, fh=352, fx=540-fw/2, gap=34, fy=Z.y+20+(3-Math.min(n,3))*((fh+gap)/2);
+        ctx.fillStyle="#40382a"; rr(ctx,fx-46,Z.y-6,fw+92,Math.min(n,3)*(fh+gap)-gap+52,14); ctx.fill();
+        for(var fi=0;fi<Math.min(n,3);fi++){
+          var yy=fy+fi*(fh+gap)-((3-Math.min(n,3))*((fh+gap)/2));
+          cardCover(ctx,ims[fi],fx,yy+20,fw,fh,4);
+          ctx.fillStyle="#f6f1e7";
+          for(var hx=0;hx<6;hx++){ rr(ctx,fx-34,yy+30+hx*((fh-20)/5),16,22,4); ctx.fill(); rr(ctx,fx+fw+18,yy+30+hx*((fh-20)/5),16,22,4); ctx.fill(); }
+        }
+      } else { /* collage grids per count */
+        var G={1:[[0,0,1,1]],2:[[0,0,1,.5],[0,.5,1,.5]],3:[[0,0,1,.52],[0,.52,.5,.48],[.5,.52,.5,.48]],4:[[0,0,.5,.5],[.5,0,.5,.5],[0,.5,.5,.5],[.5,.5,.5,.5]],5:[[0,0,.5,.4],[.5,0,.5,.4],[0,.4,1,.28],[0,.68,.5,.32],[.5,.68,.5,.32]],6:[[0,0,.5,.36],[.5,0,.5,.36],[0,.36,.5,.32],[.5,.36,.5,.32],[0,.68,.5,.32],[.5,.68,.5,.32]]}[Math.min(n,6)];
+        var g=14;
+        G.forEach(function(c,ci){ if(!ims[ci])return;
+          ph(ims[ci],Z.x+c[0]*Z.w+(c[0]?g/2:0),Z.y+c[1]*Z.h+(c[1]?g/2:0),c[2]*Z.w-(c[2]<1?g/2:0),c[3]*Z.h-(c[3]<1?g/2:0),0,false); });
+      }
+    }
+    /* stops line (day mode) */
+    ctx.fillStyle="#8b8574"; ctx.font="500 26px Jost"; ctx.direction="ltr";
+    if(CD.dayId){ var stops=$$(".slot .ttl .ten",$("#"+CD.dayId)).slice(0,3).map(function(s){return s.textContent.trim();}).filter(Boolean).join("  ·  ");
+      if(stops)ctx.fillText(stops.toUpperCase(),540,1618); }
+    else ctx.fillText("11 DAYS  ·  47 MOMENTS  ·  ONE CITY",540,1618);
+    /* caption */
+    if(CD.cap){ ctx.fillStyle="#57462f"; ctx.direction="rtl"; ctx.font='400 44px "Noto Naskh Arabic"'; ctx.fillText(CD.cap,540,1686); }
+    /* footer */
+    ctx.direction="ltr"; ctx.fillStyle="#a98a3f"; ctx.font='64px "Great Vibes"';
+    ctx.fillText("Mohand  &  Eman",540,1790);
+    ctx.fillStyle="#8b8574"; ctx.direction="rtl"; ctx.font='400 27px "Noto Naskh Arabic"';
+    ctx.fillText("شهر عسل · إسطنبول ٢٠٢٦",540,1836);
+    cv.toBlob(function(b){ if(my!==CD.seq)return; CD.blob=b; if(b&&picks.length){ shr.disabled=false; dl.disabled=false; } },"image/jpeg",0.9);
+  }); }
+momRefreshCounts();
+(function(){ var fw=$("footer .wrap"); if(!fw)return;
+  var tb2=document.createElement("button"); tb2.type="button"; tb2.className="tripcard-btn";
+  tb2.textContent="✨ بطاقة الرحلة كاملة — أجمل لحظاتكما في تصميم واحد";
+  tb2.addEventListener("click",function(){ openDayCard(null); });
+  fw.insertBefore(tb2,$("#lastsaved")); })();
 /* ── live Türkiye card: clock, weather, fx, neighborhood ── */
 function tickIst(){try{var f=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Istanbul",hour12:true,hour:"numeric",minute:"2-digit",second:"2-digit"});var el=$("#ist-time");if(el)el.textContent=f.format(new Date());}catch(e){}}
 tickIst(); setInterval(tickIst,1000);
@@ -2211,7 +2477,7 @@ $("#savebtn").addEventListener("click",function(){
     var st=collect();
     var doc=document.documentElement.cloneNode(true);
     var holder=doc.querySelector("#savestate"); holder.textContent=JSON.stringify(st);
-    [].slice.call(doc.querySelectorAll(".dayctl, .daymap-btn, #chipModal, #placeModal, #daypickModal, #photoLB, #geoModal, #leafcss, #leafjs, .likedmark, .swapmark")).forEach(function(n){n.parentNode.removeChild(n);}); /* re-injected on load */
+    [].slice.call(doc.querySelectorAll(".dayctl, .daymap-btn, .daycard-btn, .tripcard-btn, #cardModal, #momInput, #chipModal, #placeModal, #daypickModal, #photoLB, #geoModal, #leafcss, #leafjs, .likedmark, .swapmark")).forEach(function(n){n.parentNode.removeChild(n);}); /* re-injected on load */
     var adg=doc.querySelector("#adgrid"); if(adg)adg.innerHTML=""; /* alt-day cards re-render on load */
     /* restore swapped DAYS to their original static HTML — day swaps re-apply from state on load */
     Object.keys(st.daySwap||{}).forEach(function(id){ var OD=DAYORIG[id]; if(!OD)return;
