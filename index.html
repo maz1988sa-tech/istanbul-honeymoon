@@ -468,6 +468,7 @@ footer .ar{direction:rtl;font-family:var(--ar);font-size:13.5px;margin-top:10px}
 .cd-cap::placeholder{color:rgba(253,248,236,.55)}
 .cd-prevw{display:flex;justify-content:center;margin-top:12px}
 .cd-cv{width:238px;height:auto;border-radius:14px;box-shadow:0 14px 40px rgba(30,22,10,.45);background:#f6f1e7}
+.cd-cv.pst{width:100%;max-width:460px}
 .cd-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px;direction:rtl}
 .cd-share,.cd-dl{font-family:var(--ar);font-size:14px;font-weight:700;border-radius:99px;padding:10px 20px;cursor:pointer;border:1px solid rgba(255,246,228,.55)}
 .cd-share{background:#fdf8ec;color:#57462f}
@@ -2272,8 +2273,8 @@ function buildCardModal(){ if($("#cardModal"))return $("#cardModal");
   var m=document.createElement("div"); m.id="cardModal"; m.className="cmodal"; m.hidden=true;
   m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass"><div class="mhead"><div class="dp-title cd-title"></div><button class="cm-x" type="button">✕</button></div><div class="cd-scroll">'
     +'<div class="cd-emp" hidden></div>'
-    +'<div class="cd-body"><div class="cd-lab">١ · اختارا الصور — بترتيب الضغط (حتى ٦)</div><div class="cd-grid"></div>'
-    +'<div class="cd-lab">٢ · القالب</div><div class="cd-tpls"><button type="button" data-t="collage" class="on">كولاج · حتى ٦</button><button type="button" data-t="pola">بولارويد · حتى ٣</button><button type="button" data-t="film">شريط فيلم · حتى ٣</button></div>'
+    +'<div class="cd-body"><div class="cd-lab cd-lab-pick">١ · اختارا الصور — بترتيب الضغط (حتى ١٠)</div><div class="cd-grid"></div>'
+    +'<div class="cd-lab cd-lab-tpl">٢ · القالب</div><div class="cd-tpls"><button type="button" data-t="collage" class="on">كولاج · حتى ١٠</button><button type="button" data-t="pola">بولارويد · حتى ٣</button><button type="button" data-t="film">شريط فيلم · حتى ٣</button></div>'
     +'<div class="cd-lab">٣ · سطر يوثق اليوم (اختياري)</div><input class="cd-cap" maxlength="90" placeholder="مثال: أول غروب لنا على البسفور…">'
     +'<div class="cd-prevw"><canvas class="cd-cv" width="1080" height="1920"></canvas></div>'
     +'<div class="cd-actions"><button type="button" class="cd-share" disabled>حفظ في الصور / مشاركة</button><button type="button" class="cd-dl" disabled>تنزيل الملف</button></div>'
@@ -2285,7 +2286,7 @@ function buildCardModal(){ if($("#cardModal"))return $("#cardModal");
   m.querySelector(".cm-backdrop").addEventListener("click",close);
   m.querySelector(".cd-grid").addEventListener("click",function(e){
     var cg=e.target.closest?e.target.closest(".cg"):null; if(!cg)return;
-    var id=+cg.getAttribute("data-id"), at=CD.sel.indexOf(id), max=CD.tpl==="collage"?6:3;
+    var id=+cg.getAttribute("data-id"), at=CD.sel.indexOf(id), max=!CD.dayId?12:(CD.tpl==="collage"?10:3);
     if(at>=0)CD.sel.splice(at,1); else { if(CD.sel.length>=max)return; CD.sel.push(id); }
     cardGridMark(m); cardRender(m);
   });
@@ -2293,7 +2294,7 @@ function buildCardModal(){ if($("#cardModal"))return $("#cardModal");
     var b=e.target.closest?e.target.closest("button"):null; if(!b)return;
     CD.tpl=b.getAttribute("data-t");
     $$(".cd-tpls button",m).forEach(function(x){x.classList.toggle("on",x===b);});
-    var max=CD.tpl==="collage"?6:3; if(CD.sel.length>max)CD.sel=CD.sel.slice(0,max);
+    var max=CD.tpl==="collage"?10:3; if(CD.sel.length>max)CD.sel=CD.sel.slice(0,max);
     cardGridMark(m); cardRender(m);
   });
   m.querySelector(".cd-cap").addEventListener("input",function(){ CD.cap=this.value; cardRender(m); });
@@ -2309,7 +2310,7 @@ function buildCardModal(){ if($("#cardModal"))return $("#cardModal");
     document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},800);
   });
   return m; }
-function cardName(){ return CD.dayId?("istanbul-"+CD.dayId+"-card.jpg"):"istanbul-honeymoon-card.jpg"; }
+function cardName(){ return CD.dayId?("istanbul-"+CD.dayId+"-card.jpg"):"istanbul-trip-poster.jpg"; }
 function cardGridMark(m){ $$(".cd-grid .cg",m).forEach(function(cg){ var id=+cg.getAttribute("data-id"), at=CD.sel.indexOf(id);
   cg.classList.toggle("on",at>=0); cg.querySelector(".n").textContent=at>=0?(at+1):""; }); }
 function openDayCard(dayId){ var m=buildCardModal();
@@ -2318,7 +2319,14 @@ function openDayCard(dayId){ var m=buildCardModal();
   CD.date=d?d.dataset.day:null;
   m.querySelector(".cd-title").innerHTML=dayId
     ? ('بطاقة اليوم ✨<small>'+$(".dnum",d).textContent+" — لحظاتكما بتصميم جاهز للمشاركة</small>")
-    : 'بطاقة الرحلة كاملة ✨<small>أجمل لحظات شهر العسل في تصميم واحد</small>';
+    : 'بوستر الرحلة — خريطة رحلتنا 🗺<small>البسفور وأيامكما ولحظاتكما في لوحة عرضية واحدة بجودة طباعة</small>';
+  m.querySelector(".cd-lab-pick").textContent=dayId?"١ · اختارا الصور — بترتيب الضغط (حتى ١٠)":"١ · اختارا اللحظات — بترتيب الضغط (حتى ١٢)";
+  m.querySelector(".cd-lab-tpl").style.display=dayId?"":"none";
+  m.querySelector(".cd-tpls").style.display=dayId?"":"none";
+  m.querySelector(".cd-cap").placeholder=dayId?"مثال: أول غروب لنا على البسفور…":"سطر الشكر أسفل البوستر — مثال: الحمد لله الذي بنعمته تتم الصالحات";
+  var cvEl=m.querySelector(".cd-cv");
+  if(dayId){ cvEl.width=1080; cvEl.height=1920; cvEl.classList.remove("pst"); }
+  else { cvEl.width=3200; cvEl.height=1800; cvEl.classList.add("pst"); }
   m.hidden=false; document.body.classList.add("modal-open");
   CD.urls.forEach(function(u){try{URL.revokeObjectURL(u);}catch(e){}}); CD.urls=[];
   momByDay(CD.date).then(function(list){
@@ -2330,7 +2338,7 @@ function openDayCard(dayId){ var m=buildCardModal();
     emp.hidden=true; body.style.display="";
     CD.urls=list.map(function(r){ return URL.createObjectURL(r.blob); });
     m.querySelector(".cd-grid").innerHTML=list.map(function(r,i){ return '<span class="cg" data-id="'+r.id+'"><img src="'+CD.urls[i]+'" alt=""><span class="n"></span></span>'; }).join("");
-    CD.sel=list.slice(0,Math.min(4,list.length)).map(function(r){return r.id;});
+    CD.sel=list.slice(0,Math.min(dayId?4:10,list.length)).map(function(r){return r.id;});
     cardGridMark(m); cardRender(m);
   }); }
 function cardCover(ctx,im,x,y,w,h,r){ ctx.save(); rr(ctx,x,y,w,h,r); ctx.clip();
@@ -2346,9 +2354,13 @@ function cardRender(m){ var my=++CD.seq;
   var fl=[]; try{ fl=[document.fonts.load('96px "Great Vibes"'),document.fonts.load('700 62px "Noto Naskh Arabic"'),document.fonts.load('400 42px "Noto Naskh Arabic"'),document.fonts.load('600 34px Jost'),document.fonts.load('52px "Great Vibes"')]; }catch(e){}
   Promise.all([Promise.all(fl).catch(function(){})].concat(picks.map(function(r){ return createImageBitmap(r.blob).catch(function(){return null;}); })))
   .then(function(rs){ if(my!==CD.seq)return;
-    var ims=rs.slice(1).filter(Boolean);
+    var pairs=rs.slice(1).map(function(b,bi){ return b?{im:b,rec:picks[bi]}:null; }).filter(Boolean);
+    var ims=pairs.map(function(p){return p.im;});
+    ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,cv.width,cv.height);
+    if(!CD.dayId){ posterDraw(ctx,pairs);
+      cv.toBlob(function(b){ if(my!==CD.seq)return; CD.blob=b; if(b&&picks.length){ shr.disabled=false; dl.disabled=false; } },"image/jpeg",0.92);
+      return; }
     /* canvas: boho story 1080x1920 */
-    ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,1080,1920);
     ctx.fillStyle="#f6f1e7"; ctx.fillRect(0,0,1080,1920);
     ctx.strokeStyle="#a98a3f"; ctx.lineWidth=3; ctx.strokeRect(42,42,996,1836);
     ctx.lineWidth=1.2; ctx.strokeRect(58,58,964,1804);
@@ -2391,7 +2403,11 @@ function cardRender(m){ var my=++CD.seq;
           for(var hx=0;hx<6;hx++){ rr(ctx,fx-34,yy+30+hx*((fh-20)/5),16,22,4); ctx.fill(); rr(ctx,fx+fw+18,yy+30+hx*((fh-20)/5),16,22,4); ctx.fill(); }
         }
       } else { /* collage grids per count */
-        var G={1:[[0,0,1,1]],2:[[0,0,1,.5],[0,.5,1,.5]],3:[[0,0,1,.52],[0,.52,.5,.48],[.5,.52,.5,.48]],4:[[0,0,.5,.5],[.5,0,.5,.5],[0,.5,.5,.5],[.5,.5,.5,.5]],5:[[0,0,.5,.4],[.5,0,.5,.4],[0,.4,1,.28],[0,.68,.5,.32],[.5,.68,.5,.32]],6:[[0,0,.5,.36],[.5,0,.5,.36],[0,.36,.5,.32],[.5,.36,.5,.32],[0,.68,.5,.32],[.5,.68,.5,.32]]}[Math.min(n,6)];
+        var T3=1/3, G={1:[[0,0,1,1]],2:[[0,0,1,.5],[0,.5,1,.5]],3:[[0,0,1,.52],[0,.52,.5,.48],[.5,.52,.5,.48]],4:[[0,0,.5,.5],[.5,0,.5,.5],[0,.5,.5,.5],[.5,.5,.5,.5]],5:[[0,0,.5,.4],[.5,0,.5,.4],[0,.4,1,.28],[0,.68,.5,.32],[.5,.68,.5,.32]],6:[[0,0,.5,.36],[.5,0,.5,.36],[0,.36,.5,.32],[.5,.36,.5,.32],[0,.68,.5,.32],[.5,.68,.5,.32]],
+          7:[[0,0,.5,.34],[.5,0,.5,.34],[0,.34,.5,.33],[.5,.34,.5,.33],[0,.67,T3,.33],[T3,.67,T3,.33],[2*T3,.67,T3,.33]],
+          8:[[0,0,.5,.36],[.5,0,.5,.36],[0,.36,T3,.32],[T3,.36,T3,.32],[2*T3,.36,T3,.32],[0,.68,T3,.32],[T3,.68,T3,.32],[2*T3,.68,T3,.32]],
+          9:[[0,0,T3,T3],[T3,0,T3,T3],[2*T3,0,T3,T3],[0,T3,T3,T3],[T3,T3,T3,T3],[2*T3,T3,T3,T3],[0,2*T3,T3,T3],[T3,2*T3,T3,T3],[2*T3,2*T3,T3,T3]],
+          10:[[0,0,.5,.4],[.5,0,.5,.4],[0,.4,.25,.3],[.25,.4,.25,.3],[.5,.4,.25,.3],[.75,.4,.25,.3],[0,.7,.25,.3],[.25,.7,.25,.3],[.5,.7,.25,.3],[.75,.7,.25,.3]]}[Math.min(n,10)];
         var g=14;
         G.forEach(function(c,ci){ if(!ims[ci])return;
           ph(ims[ci],Z.x+c[0]*Z.w+(c[0]?g/2:0),Z.y+c[1]*Z.h+(c[1]?g/2:0),c[2]*Z.w-(c[2]<1?g/2:0),c[3]*Z.h-(c[3]<1?g/2:0),0,false); });
@@ -2411,6 +2427,113 @@ function cardRender(m){ var my=++CD.seq;
     ctx.fillText("شهر عسل · إسطنبول ٢٠٢٦",540,1836);
     cv.toBlob(function(b){ if(my!==CD.seq)return; CD.blob=b; if(b&&picks.length){ shr.disabled=false; dl.disabled=false; } },"image/jpeg",0.9);
   }); }
+/* ── trip poster «خريطة رحلتنا»: hand-drawn Bosphorus map, landmark icons, pinned polaroids ── */
+function pkP(x){ x.strokeStyle="#a98a3f"; x.lineWidth=6; x.lineCap="round"; x.lineJoin="round"; }
+function pkDome(x,a,b,s){ pkP(x); x.beginPath(); x.arc(a,b,s*.5,Math.PI,0);
+  x.moveTo(a-s*.5,b); x.lineTo(a+s*.5,b); x.moveTo(a,b-s*.5); x.lineTo(a,b-s*.66);
+  x.moveTo(a-s*.74,b); x.lineTo(a-s*.74,b-s*.8); x.lineTo(a-s*.66,b-s*1.05); x.lineTo(a-s*.58,b-s*.8); x.lineTo(a-s*.58,b);
+  x.moveTo(a+s*.74,b); x.lineTo(a+s*.74,b-s*.8); x.lineTo(a+s*.66,b-s*1.05); x.lineTo(a+s*.58,b-s*.8); x.lineTo(a+s*.58,b); x.stroke(); }
+function pkTower(x,a,b,s){ pkP(x); x.beginPath(); x.moveTo(a-s*.2,b); x.lineTo(a-s*.15,b-s*.72); x.lineTo(a+s*.15,b-s*.72); x.lineTo(a+s*.2,b);
+  x.moveTo(a-s*.27,b-s*.72); x.lineTo(a+s*.27,b-s*.72); x.moveTo(a-s*.2,b-s*.86); x.lineTo(a+s*.2,b-s*.86);
+  x.moveTo(a-s*.22,b-s*.86); x.lineTo(a,b-s*1.2); x.lineTo(a+s*.22,b-s*.86); x.stroke(); }
+function pkMaiden(x,a,b,s){ pkP(x); x.beginPath(); x.moveTo(a-s*.55,b); x.lineTo(a+s*.55,b);
+  x.moveTo(a-s*.16,b); x.lineTo(a-s*.13,b-s*.6); x.lineTo(a+s*.13,b-s*.6); x.lineTo(a+s*.16,b);
+  x.moveTo(a-s*.2,b-s*.6); x.lineTo(a+s*.2,b-s*.6); x.moveTo(a-s*.13,b-s*.6); x.lineTo(a,b-s*.92); x.lineTo(a+s*.13,b-s*.6);
+  x.moveTo(a-s*.75,b+s*.18); x.quadraticCurveTo(a-s*.4,b+s*.34,a,b+s*.18); x.quadraticCurveTo(a+s*.4,b+s*.02,a+s*.75,b+s*.18); x.stroke(); }
+function pkFerry(x,a,b,s){ pkP(x); x.beginPath(); x.moveTo(a-s*.62,b); x.quadraticCurveTo(a,b+s*.42,a+s*.62,b);
+  x.lineTo(a+s*.46,b-s*.24); x.lineTo(a-s*.46,b-s*.24); x.closePath();
+  x.moveTo(a-s*.26,b-s*.24); x.lineTo(a-s*.26,b-s*.5); x.lineTo(a+s*.26,b-s*.5); x.lineTo(a+s*.26,b-s*.24);
+  x.moveTo(a+s*.08,b-s*.5); x.lineTo(a+s*.08,b-s*.72); x.moveTo(a+s*.08,b-s*.78); x.quadraticCurveTo(a+s*.24,b-s*.86,a+s*.34,b-s*.78);
+  x.moveTo(a-s*.95,b+s*.28); x.quadraticCurveTo(a-s*.7,b+s*.4,a-s*.45,b+s*.28); x.moveTo(a+s*.45,b+s*.28); x.quadraticCurveTo(a+s*.7,b+s*.4,a+s*.95,b+s*.28); x.stroke(); }
+function pkTulip(x,a,b,s){ pkP(x); x.strokeStyle="#6b6c4c"; x.beginPath(); x.moveTo(a,b); x.lineTo(a,b-s*.45);
+  x.moveTo(a,b-s*.45); x.bezierCurveTo(a-s*.4,b-s*.7,a-s*.32,b-s*1.15,a,b-s*.9);
+  x.bezierCurveTo(a+s*.32,b-s*1.15,a+s*.4,b-s*.7,a,b-s*.45);
+  x.moveTo(a,b-s*.2); x.quadraticCurveTo(a-s*.35,b-s*.3,a-s*.4,b-s*.05); x.stroke(); }
+function pkTea(x,a,b,s){ pkP(x); x.beginPath(); x.moveTo(a-s*.3,b-s); x.bezierCurveTo(a-s*.46,b-s*.5,a-s*.12,b-s*.45,a-s*.18,b);
+  x.moveTo(a+s*.3,b-s); x.bezierCurveTo(a+s*.46,b-s*.5,a+s*.12,b-s*.45,a+s*.18,b);
+  x.moveTo(a-s*.3,b-s); x.lineTo(a+s*.3,b-s); x.moveTo(a-s*.22,b); x.lineTo(a+s*.22,b);
+  x.moveTo(a-s*.34,b+s*.14); x.lineTo(a+s*.34,b+s*.14); x.stroke(); }
+function pkGull(x,a,b,s){ pkP(x); x.lineWidth=4; x.beginPath(); x.moveTo(a-s,b); x.quadraticCurveTo(a-s*.5,b-s*.55,a,b);
+  x.quadraticCurveTo(a+s*.5,b-s*.55,a+s,b); x.stroke(); }
+function arNum(n){ return String(n).replace(/\d/g,function(d){return "٠١٢٣٤٥٦٧٨٩"[+d];}); }
+function pkDayLabel(d){ if(!d)return "";
+  var h3=$(".day-head h3",d); if(!h3)return "";
+  var t1=(h3.childNodes[0]&&h3.childNodes[0].textContent||"").trim();
+  var t2=($(".ar",h3)?$(".ar",h3).textContent.replace(/\|/g,"").trim():"");
+  var ar=/[؀-ۿ]/.test(t1)?t1:(/[؀-ۿ]/.test(t2)?t2:t1);
+  var w=ar.split(/\s+/), out=w.slice(0,3).join(" ");
+  if(out.length>22)out=w.slice(0,2).join(" ");
+  return out; }
+function pkBez(t,P){ var u=1-t;
+  return [u*u*u*P[0][0]+3*u*u*t*P[1][0]+3*u*t*t*P[2][0]+t*t*t*P[3][0],
+          u*u*u*P[0][1]+3*u*u*t*P[1][1]+3*u*t*t*P[2][1]+t*t*t*P[3][1]]; }
+var PK_S1=[[700,1500],[1160,1230],[1430,1430],[1830,1030]], PK_S2=[[1830,1030],[2160,700],[2300,800],[2620,420]];
+function pkPt(t){ return t<.5?pkBez(t*2,PK_S1):pkBez((t-.5)*2,PK_S2); }
+function posterDraw(x,pairs){
+  var W=3200,H=1800,GOLD="#a98a3f",INK="#3a352c",OLV="#6b6c4c",SOFT="#8b8574";
+  x.fillStyle="#f6f1e7"; x.fillRect(0,0,W,H);
+  x.strokeStyle=GOLD; x.lineWidth=6; x.strokeRect(60,60,W-120,H-120);
+  x.lineWidth=2; x.strokeRect(84,84,W-168,H-168);
+  x.textAlign="center"; x.direction="ltr";
+  x.fillStyle=GOLD; x.font='150px "Great Vibes"'; x.fillText("Istanbul — Our Journey",W/2,222);
+  x.fillStyle=SOFT; x.font="600 38px Jost"; x.fillText("M O H A N D   &   E M A N     ·     2 0 — 3 0   S E P T E M B E R   2 0 2 6",W/2,296);
+  x.fillStyle=OLV; x.direction="rtl"; x.font='400 42px "Noto Naskh Arabic"';
+  x.fillText("خريطة رحلة شهر العسل — أحد عشر يوماً على ضفتي البسفور",W/2,362); x.direction="ltr";
+  /* the strait */
+  x.save(); x.lineCap="round"; x.strokeStyle="rgba(157,182,200,.95)"; x.lineWidth=92; x.beginPath();
+  var s0=pkPt(0); x.moveTo(s0[0],s0[1]);
+  for(var ti=1;ti<=60;ti++){ var p=pkPt(ti/60); x.lineTo(p[0],p[1]); }
+  x.stroke(); x.strokeStyle="rgba(255,255,255,.28)"; x.lineWidth=26; x.stroke(); x.restore();
+  /* day dots + short titles */
+  var days=$$("article.day"), dPos=[], dayIdxByDate={};
+  days.forEach(function(d,i){ dayIdxByDate[d.dataset.day]=i; });
+  for(var i=0;i<11;i++){ var t=.045+ .91*i/10, p=pkPt(t); dPos.push(p); }
+  /* photo slots: geographic order follows the journey (early days left → late days top-right) */
+  var L1=[150,430],L2=[168,766],L3=[144,1102],BL=[150,1438],B1=[560,1392],B2=[946,1436],B3=[1892,1436],B4=[2278,1392],BR=[2742,1438],R3=[2748,1102],R2=[2724,766],R1=[2742,430];
+  var GEO=[L1,L2,L3,BL,B1,B2,B3,B4,BR,R3,R2,R1], SPREAD=[L1,R1,B1,B4,L2,R2,B2,B3,L3,R3,BL,BR];
+  /* photos sorted by day order so the strings stay short and tidy */
+  var sorted=pairs.slice(0,12).map(function(pr){ var di=dayIdxByDate[pr.rec.day]; return {pr:pr,di:(di==null?99:di)}; })
+    .sort(function(a,b){ return a.di-b.di||a.pr.rec.ts-b.pr.rec.ts; });
+  var SLOTS=(sorted.length<=4)?SPREAD:GEO;
+  var PW=298,PH=222;
+  x.setLineDash([9,11]); x.strokeStyle="rgba(169,138,63,.5)"; x.lineWidth=3;
+  sorted.forEach(function(o,i){ var sl=SLOTS[i]; if(!sl||o.di>10)return; var dp=dPos[o.di];
+    x.beginPath(); x.moveTo(sl[0]+PW/2,sl[1]+PH/2); x.lineTo(dp[0],dp[1]); x.stroke(); });
+  x.setLineDash([]);
+  dPos.forEach(function(p,i){
+    x.fillStyle="#fdfbf6"; x.beginPath(); x.arc(p[0],p[1],31,0,7); x.fill();
+    x.strokeStyle=GOLD; x.lineWidth=5; x.stroke();
+    x.fillStyle=OLV; x.font="700 30px Jost"; x.fillText(String(i+1),p[0],p[1]+11);
+  });
+  /* labels after dots, hand-placed per day around the fixed curve, with a cream halo */
+  var OFFS=[[0,-60],[0,92],[0,-60],[0,92],[-170,-44],[210,64],[-235,-6],[285,12],[245,-20],[-40,-62],[-10,-64]];
+  x.direction="rtl"; x.font='700 33px "Noto Naskh Arabic"'; x.lineJoin="round";
+  dPos.forEach(function(p,i){
+    var tt=pkDayLabel(days[i]); if(!tt)return;
+    var o=OFFS[i]||[0,-60];
+    x.strokeStyle="rgba(246,241,231,.92)"; x.lineWidth=9; x.strokeText(tt,p[0]+o[0],p[1]+o[1]);
+    x.fillStyle=INK; x.fillText(tt,p[0]+o[0],p[1]+o[1]);
+  });
+  x.direction="ltr";
+  /* landmark icons */
+  pkDome(x,1180,905,96); pkTower(x,2085,565,100); pkMaiden(x,1665,1275,84); pkFerry(x,2395,1010,84);
+  pkTulip(x,600,660,62); pkTea(x,2648,1290,58); pkGull(x,470,252,24); pkGull(x,548,224,18); pkGull(x,2732,246,22);
+  /* pinned polaroids */
+  sorted.forEach(function(o,i){ var pr=o.pr, sl=SLOTS[i]; if(!sl)return;
+    var rot=[-3,3,-2,2.5,-2.5,2,-3,2.5,-1.5,1.5,-2,2][i]||0;
+    x.save(); x.translate(sl[0]+PW/2,sl[1]+PH/2); x.rotate(rot*Math.PI/180); x.translate(-(sl[0]+PW/2),-(sl[1]+PH/2));
+    x.shadowColor="rgba(60,45,20,.3)"; x.shadowBlur=22; x.shadowOffsetY=8;
+    x.fillStyle="#fffdf8"; rr(x,sl[0]-14,sl[1]-14,PW+28,PH+28+52,8); x.fill(); x.shadowColor="transparent";
+    cardCover(x,pr.im,sl[0],sl[1],PW,PH,5);
+    x.fillStyle=SOFT; x.direction="rtl"; x.font='400 30px "Noto Naskh Arabic"';
+    x.fillText(o.di<=10?("اليوم "+arNum(o.di+1)):"",sl[0]+PW/2,sl[1]+PH+40); x.direction="ltr";
+    x.restore(); });
+  /* bottom center: stats · thanks · signature */
+  x.fillStyle=INK; x.direction="rtl"; x.font='700 46px "Noto Naskh Arabic"';
+  x.fillText("١١ يوماً  ·  ٤٧ محطة  ·  "+arNum(CD.list.length)+" لحظة موثقة",W/2,1532);
+  if(CD.cap){ x.fillStyle="#57462f"; x.font='400 42px "Noto Naskh Arabic"'; x.fillText(CD.cap,W/2,1602); }
+  x.direction="ltr"; x.fillStyle=GOLD; x.font='76px "Great Vibes"'; x.fillText("Mohand  &  Eman",W/2,1688);
+}
 momRefreshCounts();
 (function(){ var fw=$("footer .wrap"); if(!fw)return;
   var tb2=document.createElement("button"); tb2.type="button"; tb2.className="tripcard-btn";
