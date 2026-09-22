@@ -136,6 +136,55 @@ header.hero{position:relative;padding:24px 0 0;text-align:center;overflow:hidden
 .sp-done:hover{background:var(--sand)}
 .sp-done.on{background:#0ca30c;border-color:#0ca30c;color:#fff}
 .sp-done:focus-visible{outline:2px solid var(--olive);outline-offset:2px}
+.slot .time.tmclick{cursor:pointer;border-radius:8px;padding:8px 6px 4px;margin:-8px -6px -4px;
+  transition:background .15s;-webkit-tap-highlight-color:transparent}
+.slot .time.tmclick:hover{background:var(--sand)}
+.slot .time.tmclick:focus-visible{outline:2px solid var(--olive);outline-offset:1px}
+.slot.tshift .time{color:var(--gold);font-weight:700}
+.slot.tshift .time::after{content:"معدّل";display:block;font-family:var(--ar);font-size:9.5px;font-weight:600;
+  letter-spacing:0;color:var(--gold);opacity:.9;margin-top:1px}
+.slot.act-skip{position:relative}
+.slot.act-skip .ttl,.slot.act-skip .meta,.slot.act-skip .note,.slot.act-skip .time{opacity:.38}
+.slot.act-skip .ttl .tar{text-decoration:line-through}
+.skipbadge{display:inline-flex;align-items:center;gap:5px;font-family:var(--ar);font-size:11.5px;font-weight:600;
+  color:#a8452a;background:#f7e6e0;border:1px solid #e6c6bb;border-radius:99px;padding:2px 10px;cursor:pointer;margin-top:6px}
+.skipbadge:hover{background:#f2d9d1}
+.tmreset{font-family:var(--ar);font-size:11px;padding:0 10px;width:auto;white-space:nowrap}
+.tm-glass{width:min(380px,94vw)}
+.tm-title{font-family:var(--ar);font-size:18px;font-weight:700;line-height:1.5;flex:1;min-width:0}
+.tm-title small{display:block;font-size:13px;font-weight:500;opacity:.8;margin-top:2px}
+.tm-body{direction:rtl;margin-top:6px}
+.tm-def{font-family:var(--ar);font-size:13px;line-height:1.9;opacity:.92}
+.tm-def b{font-family:var(--sans);font-weight:700}
+.tm-warn{display:block;margin-top:6px;color:#ffd4c8;font-weight:600}
+.tm-open{display:block;margin-top:4px;opacity:.8}
+.tm-input{display:block;width:100%;box-sizing:border-box;margin-top:12px;background:rgba(255,246,228,.1);
+  border:1.5px solid rgba(255,246,228,.5);border-radius:14px;padding:10px 14px;color:#fdf8ec;
+  font-family:var(--sans);font-size:30px;font-weight:600;text-align:center;direction:ltr}
+.tm-nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px;direction:rtl}
+.tm-nudge button{font-family:var(--ar);font-size:13px;font-weight:600;border-radius:11px;padding:9px 0;cursor:pointer;
+  border:1px solid rgba(255,246,228,.4);background:rgba(255,246,228,.1);color:#fdf8ec}
+.tm-nudge button:hover{background:rgba(255,246,228,.25)}
+.tm-note{font-family:var(--ar);font-size:12px;opacity:.75;margin-top:11px;line-height:1.85}
+.tm-acts{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin-top:13px;direction:rtl}
+.tm-acts button{font-family:var(--ar);font-size:14px;font-weight:700;border-radius:13px;padding:11px 0;cursor:pointer;
+  border:1px solid rgba(255,246,228,.4);color:#fdf8ec;background:rgba(255,246,228,.12)}
+.tm-acts .tm-ok{background:rgba(243,217,168,.3);border-color:rgba(243,217,168,.7);color:#fdf3dd}
+.tm-acts button:hover{filter:brightness(1.12)}
+.tw-glass{width:min(420px,94vw)}
+.tw-title{font-family:var(--ar);font-size:17px;font-weight:700;flex:1;min-width:0}
+.tw-body{direction:rtl;margin-top:6px}
+.tw-lede{font-family:var(--ar);font-size:13.5px;line-height:1.9;margin-bottom:10px}
+.tw-row{border:1px solid rgba(255,246,228,.28);border-inline-start:3px solid #ffb4a2;border-radius:12px;
+  padding:9px 12px;margin-bottom:8px;background:rgba(255,246,228,.07)}
+.tw-row b{display:block;font-family:var(--ar);font-size:14.5px}
+.tw-why{display:block;font-family:var(--ar);font-size:12.5px;opacity:.85;line-height:1.8}
+.tw-t{display:inline-block;font-family:var(--sans);font-size:12.5px;font-weight:600;margin-top:3px;color:#f3d9a8;direction:ltr;unicode-bidi:isolate}
+.tw-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;direction:rtl}
+.tw-acts button{font-family:var(--ar);font-size:13.5px;font-weight:700;border-radius:13px;padding:11px 8px;cursor:pointer;
+  border:1px solid rgba(255,246,228,.4);color:#fdf8ec;background:rgba(255,246,228,.12);line-height:1.5}
+.tw-acts .tw-cancel{background:rgba(214,69,69,.24);border-color:rgba(255,170,160,.55)}
+.tw-acts button:hover{filter:brightness(1.12)}
 .slot.act-done .ttl,.slot.act-done .meta,.slot.act-done .note{opacity:.5}
 .slot.act-done .ttl .tar,.slot.act-done .ttl .ten{text-decoration:line-through;text-decoration-thickness:1px}
 .slot.act-done .ic{background:#e4f4e4;border-color:#a9dca9;color:#0b8f0b}
@@ -1555,7 +1604,7 @@ try{EMB=JSON.parse($("#savestate").textContent||"{}")||{};}catch(e){EMB={}}
 try{if(store){var lraw=store.getItem(KEY);if(lraw)LS=JSON.parse(lraw);}}catch(e){LS=null}
 /* newer wins: embedded file-state vs this browser's memory */
 var state=(LS&&((LS.ts||0)>=(EMB.ts||0)))?LS:EMB;
-state=state||{};state.checks=state.checks||{};state.notes=state.notes||{};state.budget=state.budget||{};state.savedAt=state.savedAt||null;state.dayDone=state.dayDone||{};state.dayCollapsed=state.dayCollapsed||{};state.liked=state.liked||{};state.swapped=state.swapped||{};state.daySwap=state.daySwap||{};state.actDone=state.actDone||{};state.spend=state.spend||{};
+state=state||{};state.checks=state.checks||{};state.notes=state.notes||{};state.budget=state.budget||{};state.savedAt=state.savedAt||null;state.dayDone=state.dayDone||{};state.dayCollapsed=state.dayCollapsed||{};state.liked=state.liked||{};state.swapped=state.swapped||{};state.daySwap=state.daySwap||{};state.actDone=state.actDone||{};state.spend=state.spend||{};state.tset=state.tset||{};state.actSkip=state.actSkip||{};
 $$("input[data-ck]").forEach(function(b){b.checked=!!state.checks[b.dataset.ck];});
 $$("textarea[data-note]").forEach(function(t){if(state.notes[t.dataset.note])t.value=state.notes[t.dataset.note];});
 $$("input[data-b]").forEach(function(i){if(state.budget[i.dataset.b]!=null)i.value=state.budget[i.dataset.b];});
@@ -1619,7 +1668,7 @@ $$("article.day").forEach(function(d){
   /* tapping the day name / header toggles it open — not only the small chevron */
   head.style.cursor="pointer";
   head.addEventListener("click",function(e){
-    if(e.target.closest&&(e.target.closest(".dayctl")||e.target.closest(".acchip")||e.target.closest("button")||e.target.closest("a")||e.target.closest("input")||e.target.closest("label")))return;
+    if(e.target.closest&&(e.target.closest(".dayctl")||e.target.closest(".acchip")||e.target.closest(".time.tmclick")||e.target.closest(".spendrow")||e.target.closest(".skipbadge")||e.target.closest("button")||e.target.closest("a")||e.target.closest("input")||e.target.closest("label")))return;
     d.classList.toggle("collapsed"); autosave();
   });
 });
@@ -1864,7 +1913,8 @@ daySnapshot();
 Object.keys(state.swapped||{}).forEach(function(dt){applySwap(dt);});
 Object.keys(state.liked||{}).forEach(function(dt){markSlot(dt);});
 document.addEventListener("click",function(e){
-  if(e.target.closest&&(e.target.closest("a")||e.target.closest("button")||e.target.closest("input")||e.target.closest("textarea")))return;
+  if(e.target.closest&&(e.target.closest("a")||e.target.closest("button")||e.target.closest("input")||e.target.closest("textarea")
+    ||e.target.closest(".time.tmclick")||e.target.closest(".spendrow")||e.target.closest(".skipbadge")))return;
   var s=e.target.closest?e.target.closest(".slot[data-pm]"):null;
   if(s)openPlaceModal(s.dataset.dt);});
 /* ── timeline rail ── */
@@ -1874,7 +1924,7 @@ for(var d=0;d<11;d++){var el=document.createElement("div");el.className="dot";el
 function istWall(d){return new Date(d.getTime()+(180+d.getTimezoneOffset())*60000);} /* shift an instant to Istanbul wall-clock for DISPLAY only */
 function fmtT(dt){var h=dt.getHours(),m=dt.getMinutes(),ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+(m<10?"0":"")+m+" "+ap;}
 var slots=[];
-function rebuildSlots(){ slots=$$(".slot[data-dt]").map(function(s){return{el:s,t:new Date(s.dataset.dt)};}).sort(function(a,b){return a.t-b.t;}); }
+function rebuildSlots(){ slots=$$(".slot[data-dt]").map(function(s){return{el:s,t:new Date(s.dataset.adt||s.dataset.dt)};}).sort(function(a,b){return a.t-b.t;}); }
 rebuildSlots();
 function tick(){
   var nowReal=new Date(); var big=$("#tstate .big"),sub=$("#tstate .sub"),go=$("#gonow");
@@ -1981,7 +2031,7 @@ function revertDay(dayId){ var d=$("#"+dayId), OD=DAYORIG[dayId]; if(!d||!OD)ret
   var ch=$(".day-head .chips",d); if(ch)ch.style.display="";
   var ta=$("textarea[data-note]",d); if(ta&&state.notes[dayId])ta.value=state.notes[dayId];
   reapplyPlaceState(dayId); }
-function refreshAfterDay(){ rebuildChips(); rebuildSlots(); tick(); if(window.spendMount)spendMount(); }
+function refreshAfterDay(){ rebuildChips(); rebuildSlots(); tick(); if(window.spendMount)spendMount(); if(window.tmApply)tmApply(); }
 function dayLabel(d){ return $(".dnum",d).textContent+" · "+d.dataset.day.slice(8)+" سبتمبر"; }
 function renderAltDays(){ var grid=$("#adgrid"); if(!grid)return; grid.innerHTML="";
   Object.keys(ALTDAYS).forEach(function(key){ var AD=ALTDAYS[key];
@@ -3258,6 +3308,197 @@ function spRenderAll(){ var d=spDays(); spRenderDays(d); spPanel(d); }
 function spendMount(){ spMountSlots(); spRenderAll(); }
 spendMount();
 
+/* ══════════ EDITABLE START TIMES — tap a time, the rest of the day follows ══════════
+   Defaults always live in data-dt. An edit is an overlay in state.tset, and is reversible. */
+var TM_HOURS={   /* verified opening hours — source: The Istanbul Insider, Sept 2026 */
+ "2026-09-21T14:00+03:00":{n:"صهريج البازيليك",o:540,c:1320},                    /* 9:00–22:00 */
+ "2026-09-21T17:45+03:00":{n:"جامع السليمانية",o:540,c:1080},                    /* 9:00–18:00 */
+ "2026-09-22T09:30+03:00":{n:"قصر دولمة بهجة",o:540,c:1080,l:1020,x:1},          /* آخر دخول 17:00 · مغلق الاثنين */
+ "2026-09-23T09:00+03:00":{n:"قصر توبكابي",o:540,c:1080,l:1020,x:2},             /* آخر دخول 17:00 · مغلق الثلاثاء */
+ "2026-09-23T14:15+03:00":{n:"البازار الكبير",o:510,c:1140,x:0},                 /* 8:30–19:00 · مغلق الأحد */
+ "2026-09-23T16:30+03:00":{n:"السوق المصري",o:480,c:1170},                       /* 8:00–19:30 */
+ "2026-09-27T14:30+03:00":{n:"متحف اسطنبول مودرن",o:660,c:1080,x:1},             /* الأحد 11:00–18:00 */
+ "2026-09-29T15:00+03:00":{n:"السوق المصري",o:480,c:1170},
+ "2026-09-29T21:45+03:00":{n:"برج غلطة",o:510,c:1380,l:1320}                     /* آخر دخول 22:00 */
+};
+var TM_FIXED={   /* booked or timetabled — any shift is a real problem */
+ "2026-09-22T17:00+03:00":"حجز اليخت الخاص",
+ "2026-09-26T14:30+03:00":"حجز الحمّام التركي",
+ "2026-09-26T19:00+03:00":"حجز عشاء TURK",
+ "2026-09-29T19:00+03:00":"حجز عشاء نيولوكال",
+ "2026-09-28T09:00+03:00":"موعد عبّارة بيوك أضة",
+ "2026-09-20T19:55+03:00":"وصول الرحلة XY299",
+ "2026-09-30T21:05+03:00":"إقلاع الرحلة XY300"
+};
+function tmMin(dt){ var m=/T(\d\d):(\d\d)/.exec(dt||""); return m?(+m[1]*60 + +m[2]):0; }
+function tmHM(min){ min=Math.max(0,Math.min(1439,Math.round(min)));
+  return String(Math.floor(min/60)).padStart(2,"0")+":"+String(min%60).padStart(2,"0"); }
+function tmLabel(min){ min=Math.max(0,Math.min(1439,Math.round(min)));
+  var h=Math.floor(min/60), mm=String(min%60).padStart(2,"0"), ap=h<12?"AM":"PM", h12=h%12; if(!h12)h12=12;
+  return h12+":"+mm+" "+ap; }
+function tmArab(min){ var t=tmLabel(min); return t.replace("AM","ص").replace("PM","م"); }
+function tmName(sl){ var t=$(".tar",sl)||$(".ttl",sl); return t?t.textContent.trim():"الفعالية"; }
+function tmDayOf(dt){ return new Date(dt.slice(0,10)+"T12:00:00+03:00").getDay(); }
+
+/* the whole day's schedule under a given set of overrides */
+function tmSchedule(day,over){
+  over=over||state.tset||{};
+  var carry=0,out=[];
+  $$(".slot[data-dt]",day).forEach(function(sl){
+    var dt=sl.dataset.dt, o=tmMin(dt), n;
+    if(Object.prototype.hasOwnProperty.call(over,dt)){ n=tmMin("T"+over[dt]); carry=n-o; }
+    else n=o+carry;
+    n=Math.max(0,Math.min(1439,n));
+    out.push({el:sl,dt:dt,orig:o,now:n,moved:n!==o});
+  });
+  return out;
+}
+/* every rule the new schedule breaks */
+function tmConflicts(day,sched){
+  var list=[];
+  sched.forEach(function(r){
+    if(state.actSkip&&state.actSkip[r.dt])return;
+    if(!r.moved)return;
+    if(TM_FIXED[r.dt]) list.push({dt:r.dt,n:tmName(r.el),why:TM_FIXED[r.dt]+" — الموعد ثابت ولا يتزحزح",
+      was:tmLabel(r.orig),now:tmLabel(r.now),kind:"fixed"});
+    var H=TM_HOURS[r.dt]; if(!H)return;
+    var lim=(H.l!=null?H.l:H.c), why=null;
+    if(r.now<H.o) why="يفتح "+tmArab(H.o)+" — الوقت الجديد قبل الافتتاح";
+    else if(r.now>lim) why=(H.l!=null?("آخر دخول "+tmArab(H.l)):("يغلق "+tmArab(H.c)))+" — الوقت الجديد بعده";
+    if(why) list.push({dt:r.dt,n:H.n,why:why,was:tmLabel(r.orig),now:tmLabel(r.now),kind:"hours"});
+  });
+  return list;
+}
+/* paint the times */
+function tmApply(){
+  $$("article.day").forEach(function(day){
+    var sched=tmSchedule(day), anyShift=false;
+    sched.forEach(function(r){
+      var t=$(".time",r.el); if(!t)return;
+      if(!t.dataset.def) t.dataset.def=t.textContent.trim();
+      t.textContent=tmLabel(r.now);
+      t.classList.add("tmclick"); t.setAttribute("role","button"); t.setAttribute("tabindex","0");
+      t.title="اضغط لتعديل وقت البدء";
+      r.el.classList.toggle("tshift",r.moved);
+      var skipped=!!(state.actSkip&&state.actSkip[r.dt]);
+      r.el.classList.toggle("act-skip",skipped);
+      var bd=$(".skipbadge",r.el);
+      if(skipped&&!bd){ bd=document.createElement("button"); bd.type="button"; bd.className="skipbadge";
+        bd.innerHTML="مُستبعدة — خارج أوقات العمل · اضغط لإرجاعها";
+        var wh=$(".wh",r.el); if(wh)wh.appendChild(bd); }
+      else if(!skipped&&bd) bd.parentNode.removeChild(bd);
+      r.el.dataset.adt=r.dt.slice(0,11)+tmHM(r.now)+"+03:00";
+      if(r.moved)anyShift=true;
+    });
+    var ctl=$(".dayctl",day);
+    if(ctl){ var rb=$(".tmreset",ctl);
+      if(anyShift&&!rb){ rb=document.createElement("button"); rb.type="button"; rb.className="cbtn tmreset";
+        rb.title="إرجاع أوقات اليوم الافتراضية"; rb.textContent="↺ الأوقات"; ctl.insertBefore(rb,ctl.firstChild); }
+      else if(!anyShift&&rb) rb.parentNode.removeChild(rb); }
+  });
+  if(window.rebuildSlots){ rebuildSlots(); if(window.tick)tick(); }
+}
+/* ── the editor ── */
+var TME={dt:null};
+function tmModal(){ if($("#tmModal"))return $("#tmModal");
+  var m=document.createElement("div"); m.id="tmModal"; m.className="cmodal"; m.hidden=true;
+  m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass tm-glass">'
+    +'<div class="mhead"><div class="tm-title"></div><button class="cm-x" type="button">✕</button></div>'
+    +'<div class="tm-body">'
+    +'<div class="tm-def"></div>'
+    +'<input class="tm-input" type="time" step="300" aria-label="وقت البدء">'
+    +'<div class="tm-nudge"><button type="button" data-d="-30">−٣٠ د</button><button type="button" data-d="-15">−١٥ د</button>'
+    +'<button type="button" data-d="15">+١٥ د</button><button type="button" data-d="30">+٣٠ د</button></div>'
+    +'<div class="tm-note">الفعاليات التالية في نفس اليوم تتحرك بنفس الفارق. الأوقات الأصلية محفوظة دائماً.</div>'
+    +'<div class="tm-acts"><button type="button" class="tm-ok">تطبيق</button>'
+    +'<button type="button" class="tm-rst">إرجاع الافتراضي</button></div>'
+    +'</div></div>';
+  document.body.appendChild(m);
+  function close(){ m.hidden=true; document.body.classList.remove("modal-open"); }
+  m.querySelector(".cm-x").addEventListener("click",close);
+  m.querySelector(".cm-backdrop").addEventListener("click",close);
+  m.querySelector(".tm-nudge").addEventListener("click",function(e){
+    var b=e.target.closest?e.target.closest("button"):null; if(!b)return;
+    var i=m.querySelector(".tm-input"), cur=tmMin("T"+(i.value||"00:00"));
+    i.value=tmHM(cur+ +b.dataset.d); });
+  m.querySelector(".tm-ok").addEventListener("click",function(){
+    var v=m.querySelector(".tm-input").value; if(!v)return;
+    tmTry(TME.dt,v,close); });
+  m.querySelector(".tm-rst").addEventListener("click",function(){
+    if(state.tset)delete state.tset[TME.dt];
+    tmApply(); autosave(); close(); toast("<span class='arl'>↺ رجع وقت الفعالية الافتراضي</span>"); });
+  return m; }
+function tmOpen(dt){
+  var sl=$('.slot[data-dt="'+dt+'"]'); if(!sl)return;
+  TME.dt=dt; var m=tmModal(); m.hidden=false; document.body.classList.add("modal-open");
+  var sched=tmSchedule(sl.closest("article.day")), cur=null;
+  sched.forEach(function(r){ if(r.dt===dt)cur=r; });
+  m.querySelector(".tm-title").innerHTML="وقت بدء الفعالية<small>"+tmName(sl)+"</small>";
+  m.querySelector(".tm-def").innerHTML="الوقت الافتراضي: <b>"+tmArab(tmMin(dt))+"</b>"
+    +(cur&&cur.moved?(" · الحالي بعد التعديل: <b>"+tmArab(cur.now)+"</b>"):"")
+    +(TM_FIXED[dt]?('<span class="tm-warn">⚠ '+TM_FIXED[dt]+" — تعديله يخالف الحجز</span>"):"")
+    +(TM_HOURS[dt]?('<span class="tm-open">أوقات العمل: '+tmArab(TM_HOURS[dt].o)+" – "
+        +tmArab(TM_HOURS[dt].c)+(TM_HOURS[dt].l!=null?(" · آخر دخول "+tmArab(TM_HOURS[dt].l)):"")+"</span>"):"");
+  m.querySelector(".tm-input").value=tmHM(cur?cur.now:tmMin(dt));
+}
+/* apply, but stop on a real conflict and let him decide */
+function tmTry(dt,val,done){
+  var sl=$('.slot[data-dt="'+dt+'"]'); if(!sl)return;
+  var day=sl.closest("article.day");
+  var probe={}; for(var k in (state.tset||{})) probe[k]=state.tset[k];
+  probe[dt]=val;
+  var sched=tmSchedule(day,probe), bad=tmConflicts(day,sched);
+  if(!bad.length){ state.tset=probe; tmApply(); autosave(); done&&done();
+    toast("<span class='arl'>✓ عُدّل الوقت وتحرّكت الفعاليات التالية معه</span>"); return; }
+  tmWarn(bad,function(choice){
+    if(choice==="skip"){ state.actSkip=state.actSkip||{}; bad.forEach(function(c){ state.actSkip[c.dt]=1; });
+      state.tset=probe; tmApply(); autosave(); done&&done();
+      toast("<span class='arl'>تم التعديل — واستُبعدت "+bad.length+" فعالية خارج أوقات عملها</span>"); }
+    else { done&&done(); toast("<span class='arl'>أُلغي تعديل الوقت — الجدول كما كان</span>"); }
+  });
+}
+function tmWarn(list,cb){
+  var m=$("#tmWarn");
+  if(!m){ m=document.createElement("div"); m.id="tmWarn"; m.className="cmodal"; m.hidden=true;
+    m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass tw-glass">'
+      +'<div class="mhead"><div class="tw-title">⚠ تعارض في المواعيد</div><button class="cm-x" type="button">✕</button></div>'
+      +'<div class="tw-body"><div class="tw-lede"></div><div class="tw-list"></div>'
+      +'<div class="tw-acts"><button type="button" class="tw-skip"></button>'
+      +'<button type="button" class="tw-cancel">ألغِ تعديل الوقت</button></div></div></div>';
+    document.body.appendChild(m); }
+  var close=function(){ m.hidden=true; document.body.classList.remove("modal-open"); };
+  m.querySelector(".tw-lede").textContent = list.length===1
+    ? "التعديل يُخرج هذه الفعالية عن وقتها الممكن:" : ("التعديل يُخرج "+list.length+" فعاليات عن أوقاتها الممكنة:");
+  m.querySelector(".tw-list").innerHTML=list.map(function(c){
+    return '<div class="tw-row"><b>'+c.n+'</b><span class="tw-why">'+c.why+'</span>'
+      +'<span class="tw-t">'+c.was+" ← "+c.now+"</span></div>"; }).join("");
+  m.querySelector(".tw-skip").textContent = list.length===1 ? "تجاهل هذه الفعالية وطبّق" : "تجاهل هذه الفعاليات وطبّق";
+  var nx=m.cloneNode(true); m.parentNode.replaceChild(nx,m); m=nx;   /* fresh listeners each time */
+  m.querySelector(".cm-x").addEventListener("click",function(){close();cb("cancel");});
+  m.querySelector(".cm-backdrop").addEventListener("click",function(){close();cb("cancel");});
+  m.querySelector(".tw-cancel").addEventListener("click",function(){close();cb("cancel");});
+  m.querySelector(".tw-skip").addEventListener("click",function(){close();cb("skip");});
+  m.hidden=false; document.body.classList.add("modal-open");
+}
+/* clicks: the time itself, the day reset, and restoring a skipped activity */
+document.addEventListener("click",function(ev){
+  var t=ev.target.closest?ev.target.closest(".time.tmclick"):null;
+  if(t){ var sl=t.closest(".slot[data-dt]"); if(sl){ ev.preventDefault(); tmOpen(sl.dataset.dt); } return; }
+  var rb=ev.target.closest?ev.target.closest(".tmreset"):null;
+  if(rb){ var day=rb.closest("article.day"); var n=0;
+    $$(".slot[data-dt]",day).forEach(function(s){ if(state.tset&&state.tset[s.dataset.dt]){delete state.tset[s.dataset.dt];n++;} });
+    tmApply(); autosave(); toast("<span class='arl'>↺ رجعت أوقات اليوم الافتراضية</span>"); return; }
+  var sk=ev.target.closest?ev.target.closest(".skipbadge"):null;
+  if(sk){ var s2=sk.closest(".slot[data-dt]"); if(s2&&state.actSkip){ delete state.actSkip[s2.dataset.dt];
+      tmApply(); autosave(); toast("<span class='arl'>أُعيدت الفعالية إلى الجدول</span>"); } }
+});
+document.addEventListener("keydown",function(ev){
+  if(ev.key!=="Enter"&&ev.key!==" ")return;
+  var t=ev.target.closest?ev.target.closest(".time.tmclick"):null; if(!t)return;
+  var sl=t.closest(".slot[data-dt]"); if(sl){ ev.preventDefault(); tmOpen(sl.dataset.dt); }
+});
+tmApply();
+
 /* ── self-save: download this same file with state embedded ── */
 function collect(){var st={checks:{},notes:{},budget:{},savedAt:null};
   $$("input[data-ck]").forEach(function(b){st.checks[b.dataset.ck]=b.checked;});
@@ -3265,7 +3506,7 @@ function collect(){var st={checks:{},notes:{},budget:{},savedAt:null};
   $$("input[data-b]").forEach(function(i){if(i.value!=="")st.budget[i.dataset.b]=i.value;});
   st.dayDone={};st.dayCollapsed={};
   $$("article.day").forEach(function(d){ if(d.classList.contains("dday-done"))st.dayDone[d.id]=true; st.dayCollapsed[d.id]=d.classList.contains("collapsed"); });
-  st.liked=state.liked||{}; st.swapped=state.swapped||{}; st.daySwap=state.daySwap||{}; st.actDone=state.actDone||{}; st.spend=state.spend||{};
+  st.liked=state.liked||{}; st.swapped=state.swapped||{}; st.daySwap=state.daySwap||{}; st.actDone=state.actDone||{}; st.spend=state.spend||{}; st.tset=state.tset||{}; st.actSkip=state.actSkip||{};
   var n=istWall(new Date());st.savedAt=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0")+" "+fmtT(n)+" (Istanbul time)";
   st.ts=Date.now();
   return st;}
@@ -3275,8 +3516,13 @@ $("#savebtn").addEventListener("click",function(){
     var st=collect();
     var doc=document.documentElement.cloneNode(true);
     var holder=doc.querySelector("#savestate"); holder.textContent=JSON.stringify(st);
-    [].slice.call(doc.querySelectorAll(".spendrow, .daysum, #spendpanel, .sptip, .dayctl, .daymap-btn, .daycard-btn, .tripcard-btn, #cardModal, #fxModal, #momInput, #chipModal, #placeModal, #daypickModal, #photoLB, #geoModal, #leafcss, #leafjs, .likedmark, .swapmark")).forEach(function(n){n.parentNode.removeChild(n);}); /* re-injected on load */
+    [].slice.call(doc.querySelectorAll(".spendrow, .daysum, #spendpanel, .sptip, .skipbadge, #tmModal, #tmWarn, .dayctl, .daymap-btn, .daycard-btn, .tripcard-btn, #cardModal, #fxModal, #momInput, #chipModal, #placeModal, #daypickModal, #photoLB, #geoModal, #leafcss, #leafjs, .likedmark, .swapmark")).forEach(function(n){n.parentNode.removeChild(n);}); /* re-injected on load */
     var adg=doc.querySelector("#adgrid"); if(adg)adg.innerHTML=""; /* alt-day cards re-render on load */
+    [].slice.call(doc.querySelectorAll(".slot .time")).forEach(function(t){
+      if(t.dataset.def){ t.textContent=t.dataset.def; delete t.dataset.def; }
+      t.classList.remove("tmclick"); t.removeAttribute("role"); t.removeAttribute("tabindex"); t.removeAttribute("title"); });
+    [].slice.call(doc.querySelectorAll(".slot")).forEach(function(sl){
+      sl.classList.remove("tshift","act-skip","act-done","spent"); delete sl.dataset.adt; });
     var lc=doc.querySelector("#ist-loc"); if(lc){ lc.innerHTML='<button id="locbtn" type="button">\u{1F4CD} Locate us \u00B7 \u062D\u062F\u062F \u0645\u0648\u0642\u0639\u0646\u0627</button>'; }
     var ll=doc.querySelector("#loc-lab"); if(ll) ll.style.display="none"; /* area re-resolves on load */
     /* restore swapped DAYS to their original static HTML — day swaps re-apply from state on load */
