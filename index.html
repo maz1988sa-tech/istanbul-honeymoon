@@ -117,13 +117,25 @@ header.hero{position:relative;padding:24px 0 0;text-align:center;overflow:hidden
 .spendrow{direction:rtl;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2)}
 .spendrow .sp-lab{font-family:var(--ar);font-size:12px;color:var(--soft)}
 .sp-in{display:inline-flex;align-items:stretch;border:1px solid var(--line2);border-radius:9px;overflow:hidden;background:#fff;height:32px}
-.sp-in input{width:88px;border:none;outline:none;padding:0 8px;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink);background:transparent;text-align:center;-moz-appearance:textfield}
+.sp-in input{width:96px;border:none;outline:none;padding:0 8px;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink);background:transparent;text-align:center;-moz-appearance:textfield}
+.sp-in input::placeholder{font-family:var(--ar);font-size:12.5px;color:var(--faint);font-weight:400}
 .sp-in input::-webkit-outer-spin-button,.sp-in input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .sp-in input:focus{background:#fffdf6}
 .sp-cur{border:none;border-inline-end:1px solid var(--line2);background:var(--sand);color:var(--ink);font-family:var(--sans);font-size:13px;font-weight:600;width:40px;cursor:pointer}
 .sp-cur:hover{background:var(--line)}
 .sp-eq{font-family:var(--sans);font-size:12px;color:var(--soft);font-variant-numeric:tabular-nums;white-space:nowrap}
 .slot.spent .sp-in{border-color:var(--olive);box-shadow:0 0 0 2px rgba(132,133,95,.14)}
+.sp-done{border:1px solid var(--line2);background:var(--page);color:var(--olive-deep);font-family:var(--ar);
+  font-size:12.5px;border-radius:9px;height:32px;padding:0 13px;cursor:pointer;white-space:nowrap;line-height:1}
+.sp-done:hover{background:var(--sand)}
+.sp-done.on{background:#0ca30c;border-color:#0ca30c;color:#fff}
+.sp-done:focus-visible{outline:2px solid var(--olive);outline-offset:2px}
+.slot.act-done .ttl,.slot.act-done .meta,.slot.act-done .note{opacity:.5}
+.slot.act-done .ttl .tar,.slot.act-done .ttl .ten{text-decoration:line-through;text-decoration-thickness:1px}
+.slot.act-done .ic{background:#e4f4e4;border-color:#a9dca9;color:#0b8f0b}
+.actct{font-family:var(--sans);font-size:10.5px;font-weight:600;letter-spacing:.06em;color:var(--soft);
+  border:1px solid var(--line2);border-radius:99px;padding:3px 10px;background:var(--page);white-space:nowrap}
+.actct.all{background:#e4f4e4;border-color:#a9dca9;color:#0b8f0b}
 .daysum{direction:rtl;margin-top:14px;border:1px solid var(--line);border-radius:14px;background:var(--page);padding:13px 15px}
 .ds-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .ds-head b{font-family:var(--ar);font-size:14px}
@@ -183,7 +195,7 @@ header.hero{position:relative;padding:24px 0 0;text-align:center;overflow:hidden
   .sp-kpi{grid-template-columns:1fr 1fr}
   .spchart{height:170px;gap:3px}
   .spcol-val{font-size:9px}
-  .sp-in input{width:76px}
+  .sp-in input{width:92px}
 }
 
 #fx-usd,#fx-sar{display:inline-block;margin:3px 6px 0 0;font-size:15px}
@@ -2032,7 +2044,7 @@ function buildGeoModal(){ if($("#geoModal"))return $("#geoModal");
     var had=false;
     geoDayPts().forEach(function(p){ if(state.actDone&&state.actDone[p.dt]){delete state.actDone[p.dt];had=true;} });
     geoShowAll=false; geoFitNext=true;
-    autosave(); drawGeo();
+    autosave(); drawGeo(); if(window.actPaint)actPaint();
     toast(had?"<span class='arl'>↺ أُعيد ضبط مسار اليوم — تبدآن من نقطة الانطلاق</span>":"<span class='arl'>المسار عند نقطة البداية أصلاً ✓</span>");
   });
   /* step-flow controls: done-toggle & place-card buttons inside map popups + the view toggle */
@@ -2045,6 +2057,7 @@ function buildGeoModal(){ if($("#geoModal"))return $("#geoModal");
     if(!dt)return;
     state.actDone=state.actDone||{};
     if(b.classList.contains("gpx-done"))state.actDone[dt]=1; else delete state.actDone[dt];
+    if(window.actPaint)actPaint();
     if(geoMapObj&&geoMapObj.closePopup)geoMapObj.closePopup();
     autosave(); drawGeo();
   });
@@ -2981,14 +2994,17 @@ function spMountSlots(){
     var old=$(".spendrow",s); if(old) old.parentNode.removeChild(old);
     var rec=(state.spend||{})[dt]||{v:"",c:"try"};
     var row=document.createElement("div"); row.className="spendrow";
-    row.innerHTML='<span class="sp-lab">المصروف</span>'
+    var isDone=!!(state.actDone&&state.actDone[dt]);
+    row.innerHTML='<button type="button" class="sp-done'+(isDone?" on":"")+'" data-done="'+dt+'">'
+      +(isDone?"✓ أُنجزت":"خلصناها؟")+'</button>'
       +'<span class="sp-in"><button type="button" class="sp-cur" aria-label="تبديل العملة">'+(rec.c==="sar"?"ر.س":"₺")+'</button>'
-      +'<input type="number" inputmode="decimal" min="0" step="1" data-sp="'+dt+'" placeholder="0" value="'+(rec.v===0?"":(rec.v||""))+'"></span>'
+      +'<input type="number" inputmode="decimal" min="0" step="1" data-sp="'+dt+'" placeholder="المصروف" aria-label="المصروف" value="'+(rec.v===0?"":(rec.v||""))+'"></span>'
       +'<span class="sp-eq"></span>';
     wh.appendChild(row);
     s.classList.toggle("spent", !!Number(rec.v));
+    s.classList.toggle("act-done", !!(state.actDone&&state.actDone[dt]));
   });
-  spSlotEq();
+  spSlotEq(); actPaint();
 }
 function spSlotEq(){
   $$(".slot").forEach(function(s){
@@ -3174,6 +3190,32 @@ function spBudgetMap(days){
   window.addEventListener("scroll",hide,{passive:true});
 })();
 
+/* ── activity "done" in the list — the same state the map step-flow uses ── */
+function actPaint(){
+  $$("article.day").forEach(function(d){
+    var tot=0,done=0;
+    $$(".slot",d).forEach(function(s){
+      var dt=s.dataset.dt; if(!dt)return; tot++;
+      var on=!!(state.actDone&&state.actDone[dt]); if(on)done++;
+      s.classList.toggle("act-done",on);
+      var b=$(".sp-done",s); if(b){ b.classList.toggle("on",on); b.textContent = on?"✓ أُنجزت":"خلصناها؟"; }
+    });
+    var ctl=$(".dayctl",d); if(!ctl)return;
+    var c=$(".actct",ctl);
+    if(!tot){ if(c)c.parentNode.removeChild(c); return; }
+    if(!c){ c=document.createElement("span"); c.className="actct"; ctl.insertBefore(c,ctl.firstChild); }
+    c.textContent="أُنجزت "+done+" من "+tot;
+    c.classList.toggle("all",done===tot);
+  });
+}
+document.addEventListener("click",function(ev){
+  var b=ev.target.closest?ev.target.closest(".sp-done"):null; if(!b)return;
+  var dt=b.getAttribute("data-done"); if(!dt)return;
+  state.actDone=state.actDone||{};
+  if(state.actDone[dt]) delete state.actDone[dt]; else state.actDone[dt]=1;
+  actPaint(); autosave();
+  var g=$("#geoModal"); if(g&&!g.hidden&&typeof drawGeo==="function"){ geoFitNext=false; drawGeo(); }
+});
 function spRenderAll(){ var d=spDays(); spRenderDays(d); spPanel(d); }
 function spendMount(){ spMountSlots(); spRenderAll(); }
 spendMount();
