@@ -109,6 +109,83 @@ header.hero{position:relative;padding:24px 0 0;text-align:center;overflow:hidden
 .glive small .arl{font-family:var(--ar);letter-spacing:0;text-transform:none}
 #locbtn{background:rgba(253,248,236,.16);border:1px solid rgba(253,248,236,.45);color:#fdf8ec;border-radius:99px;padding:5px 13px;font-family:var(--sans);font-size:11.5px;font-weight:600;cursor:pointer}
 #locbtn:hover{background:rgba(253,248,236,.3)}
+.locname{display:inline}
+.locname em{font-style:normal;font-weight:500;opacity:.72;font-size:13.5px;font-family:var(--ar)}
+#locre{background:rgba(253,248,236,.14);border:1px solid rgba(253,248,236,.4);color:#fdf8ec;border-radius:99px;width:26px;height:26px;line-height:1;font-size:13px;cursor:pointer;vertical-align:middle;margin-inline-start:6px;padding:0}
+#locre:hover{background:rgba(253,248,236,.3)}
+/* ══ spend tracker ══ */
+.spendrow{direction:rtl;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2)}
+.spendrow .sp-lab{font-family:var(--ar);font-size:12px;color:var(--soft)}
+.sp-in{display:inline-flex;align-items:stretch;border:1px solid var(--line2);border-radius:9px;overflow:hidden;background:#fff;height:32px}
+.sp-in input{width:88px;border:none;outline:none;padding:0 8px;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink);background:transparent;text-align:center;-moz-appearance:textfield}
+.sp-in input::-webkit-outer-spin-button,.sp-in input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.sp-in input:focus{background:#fffdf6}
+.sp-cur{border:none;border-inline-end:1px solid var(--line2);background:var(--sand);color:var(--ink);font-family:var(--sans);font-size:13px;font-weight:600;width:40px;cursor:pointer}
+.sp-cur:hover{background:var(--line)}
+.sp-eq{font-family:var(--sans);font-size:12px;color:var(--soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+.slot.spent .sp-in{border-color:var(--olive);box-shadow:0 0 0 2px rgba(132,133,95,.14)}
+.daysum{direction:rtl;margin-top:14px;border:1px solid var(--line);border-radius:14px;background:var(--page);padding:13px 15px}
+.ds-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ds-head b{font-family:var(--ar);font-size:14px}
+.ds-tot{font-family:var(--sans);font-size:21px;font-weight:600;margin-inline-start:auto;font-variant-numeric:tabular-nums}
+.ds-try{font-family:var(--sans);font-size:12.5px;color:var(--soft);font-variant-numeric:tabular-nums}
+.ds-bar{display:flex;gap:2px;height:12px;border-radius:99px;overflow:hidden;margin:11px 0 9px;background:var(--sand)}
+.ds-bar i{display:block;height:100%}
+.ds-leg{display:flex;flex-wrap:wrap;gap:7px 14px}
+.ds-leg span{display:inline-flex;align-items:center;gap:6px;font-family:var(--ar);font-size:12.5px;color:var(--ink)}
+.ds-leg i{width:10px;height:10px;border-radius:3px;flex:none}
+.ds-leg b{font-family:var(--sans);font-weight:600;font-variant-numeric:tabular-nums}
+.ds-trend{margin-top:10px;font-family:var(--ar);font-size:12.5px;padding-top:9px;border-top:1px dashed var(--line);line-height:1.8}
+.ds-trend .up{color:#c0392b;font-weight:700}
+.ds-trend .down{color:#00795c;font-weight:700}
+.ds-trend .flat{color:var(--olive-deep);font-weight:700}
+.daysum.empty .ds-tot{color:var(--faint)}
+#spendpanel{direction:rtl;margin-top:24px;border:1px solid var(--line2);border-radius:18px;background:var(--page);padding:18px 18px 16px}
+#spendpanel h3{font-family:var(--ar);font-size:17px;margin-bottom:3px}
+#spendpanel .sp-sub{font-family:var(--ar);font-size:12.5px;color:var(--soft);margin-bottom:14px}
+.sp-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sp-k{border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--paper)}
+.sp-k b{display:block;font-family:var(--sans);font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.4}
+.sp-k span{font-family:var(--ar);font-size:11.5px;color:var(--soft)}
+.sp-verdict{margin-top:14px;border:1px solid var(--line);border-inline-start:4px solid var(--band);border-radius:12px;padding:11px 14px;font-family:var(--ar);font-size:13.5px;line-height:1.85;background:var(--paper)}
+.sp-verdict.up{border-inline-start-color:#c0392b}
+.sp-verdict.down{border-inline-start-color:#00795c}
+.sp-verdict.flat{border-inline-start-color:var(--olive)}
+.spchart{position:relative;display:flex;gap:5px;height:196px;margin:18px 0 4px}
+.spcol{flex:1 1 0;min-width:0;display:flex;flex-direction:column;height:100%}
+.spcol-val{height:15px;font-family:var(--sans);font-size:10px;color:var(--soft);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:center;line-height:15px}
+.spcol-track{flex:1 1 auto;min-height:0;display:flex;align-items:flex-end;justify-content:center}
+.spcol-bar{width:100%;max-width:32px;display:flex;flex-direction:column-reverse;gap:2px;border-radius:4px 4px 0 0;overflow:hidden;background:transparent}
+.spcol-bar i{display:block;cursor:pointer;min-height:2px}
+.spcol-bar.zero{background:var(--sand);height:3px;border-radius:99px}
+.spcol-lab{height:19px;font-family:var(--sans);font-size:10.5px;color:var(--soft);font-variant-numeric:tabular-nums;text-align:center;line-height:19px}
+.spavgwrap{position:absolute;left:0;right:0;top:15px;bottom:19px;pointer-events:none}
+.spavg{position:absolute;left:0;right:0;border-top:1.5px dashed var(--band)}
+.spcap{font-family:var(--ar);font-size:11.5px;color:var(--soft);display:flex;align-items:center;gap:7px;margin-top:2px}
+.spcap i{display:inline-block;width:20px;border-top:1.5px dashed var(--band);flex:none}
+.sp-leg{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.sp-leg span{display:inline-flex;align-items:center;gap:7px;font-family:var(--ar);font-size:13px}
+.sp-leg i{width:11px;height:11px;border-radius:3px;flex:none}
+.sp-leg b{font-family:var(--sans);font-weight:600;font-variant-numeric:tabular-nums}
+.sp-tbl{margin-top:14px;font-family:var(--ar);font-size:12.5px}
+.sp-tbl summary{cursor:pointer;color:var(--olive-deep)}
+.sp-tbl table{width:100%;border-collapse:collapse;margin-top:9px;font-size:12.5px}
+.sp-tbl th,.sp-tbl td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
+.sp-tbl th{background:var(--sand);font-size:11.5px}
+.sp-tbl td.n{font-family:var(--sans);font-variant-numeric:tabular-nums}
+.sp-apply{margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sp-apply button{font-family:var(--ar);font-size:13px;background:var(--olive-deep);color:#fdfbf6;border:none;border-radius:10px;padding:9px 16px;cursor:pointer}
+.sp-apply button:hover{background:var(--olive)}
+.sp-apply small{flex:1 1 100%;min-width:0;font-family:var(--ar);font-size:11.5px;color:var(--soft);line-height:1.9}
+.sptip{position:fixed;z-index:140;background:var(--ink);color:#fdfbf6;font-family:var(--ar);font-size:12.5px;padding:7px 11px;border-radius:9px;pointer-events:none;opacity:0;transition:opacity .12s;white-space:nowrap;box-shadow:0 6px 18px rgba(58,53,44,.25)}
+.sptip.on{opacity:1}
+@media(max-width:620px){
+  .sp-kpi{grid-template-columns:1fr 1fr}
+  .spchart{height:170px;gap:3px}
+  .spcol-val{font-size:9px}
+  .sp-in input{width:76px}
+}
+
 #fx-usd,#fx-sar{display:inline-block;margin:3px 6px 0 0;font-size:15px}
 .gf-fx{cursor:pointer;border-radius:14px;padding:6px 10px;margin:-6px -10px;transition:background .15s}
 .gf-fx:hover{background:rgba(253,248,236,.12)}
@@ -701,7 +778,7 @@ body.modal-open{overflow:hidden}
     <div class="gfact glive">
       <div class="lrow"><span id="ist-time">—:—:—</span><small>Istanbul now <span class="arl">· الساعة الآن في اسطنبول</span></small></div>
       <div class="lrow"><span id="ist-weather">…</span><small>Weather now <span class="arl">· الطقس الآن في اسطنبول</span></small></div>
-      <div class="lrow"><span id="ist-loc"><button id="locbtn" type="button">📍 Locate us · حدد موقعنا</button></span><small id="loc-lab" style="display:none">Current area <span class="arl">· الحي الحالي</span></small></div>
+      <div class="lrow"><span id="ist-loc"><button id="locbtn" type="button">📍 Locate us · حدد موقعنا</button></span><small id="loc-lab" style="display:none">Current area <span class="arl">· موقعكما الآن</span></small></div>
     </div>
   </div>
   <div class="grule"></div>
@@ -1447,7 +1524,7 @@ try{EMB=JSON.parse($("#savestate").textContent||"{}")||{};}catch(e){EMB={}}
 try{if(store){var lraw=store.getItem(KEY);if(lraw)LS=JSON.parse(lraw);}}catch(e){LS=null}
 /* newer wins: embedded file-state vs this browser's memory */
 var state=(LS&&((LS.ts||0)>=(EMB.ts||0)))?LS:EMB;
-state=state||{};state.checks=state.checks||{};state.notes=state.notes||{};state.budget=state.budget||{};state.savedAt=state.savedAt||null;state.dayDone=state.dayDone||{};state.dayCollapsed=state.dayCollapsed||{};state.liked=state.liked||{};state.swapped=state.swapped||{};state.daySwap=state.daySwap||{};state.actDone=state.actDone||{};
+state=state||{};state.checks=state.checks||{};state.notes=state.notes||{};state.budget=state.budget||{};state.savedAt=state.savedAt||null;state.dayDone=state.dayDone||{};state.dayCollapsed=state.dayCollapsed||{};state.liked=state.liked||{};state.swapped=state.swapped||{};state.daySwap=state.daySwap||{};state.actDone=state.actDone||{};state.spend=state.spend||{};
 $$("input[data-ck]").forEach(function(b){b.checked=!!state.checks[b.dataset.ck];});
 $$("textarea[data-note]").forEach(function(t){if(state.notes[t.dataset.note])t.value=state.notes[t.dataset.note];});
 $$("input[data-b]").forEach(function(i){if(state.budget[i.dataset.b]!=null)i.value=state.budget[i.dataset.b];});
@@ -1873,7 +1950,7 @@ function revertDay(dayId){ var d=$("#"+dayId), OD=DAYORIG[dayId]; if(!d||!OD)ret
   var ch=$(".day-head .chips",d); if(ch)ch.style.display="";
   var ta=$("textarea[data-note]",d); if(ta&&state.notes[dayId])ta.value=state.notes[dayId];
   reapplyPlaceState(dayId); }
-function refreshAfterDay(){ rebuildChips(); rebuildSlots(); tick(); }
+function refreshAfterDay(){ rebuildChips(); rebuildSlots(); tick(); if(window.spendMount)spendMount(); }
 function dayLabel(d){ return $(".dnum",d).textContent+" · "+d.dataset.day.slice(8)+" سبتمبر"; }
 function renderAltDays(){ var grid=$("#adgrid"); if(!grid)return; grid.innerHTML="";
   Object.keys(ALTDAYS).forEach(function(key){ var AD=ALTDAYS[key];
@@ -2747,17 +2824,117 @@ function openFx(){ var m=buildFxModal(); m.hidden=false; document.body.classList
 (function(){ var o=$("#fxopen"); if(!o)return; o.addEventListener("click",openFx);
   o.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();openFx();} }); })();
 fxNow(); setInterval(fxNow,60*60000);
-var lb=$("#locbtn");
-if(lb)lb.addEventListener("click",function(){
-  var st=$("#ist-loc"); st.textContent="…";
-  if(!navigator.geolocation){st.textContent="غير مدعوم في هذا المتصفح";return;}
+/* ── where are we now — neighbourhood level, written in Arabic ── */
+var LOC_KEY="ist-loc-v1";
+/* Istanbul mahalle + ilçe names as Arabic travel media write them */
+var NAME_AR={
+"Cumhuriyet":"الجمهورية","Harbiye":"حربية","Teşvikiye":"تشفيكية","Nişantaşı":"نيشانتاشي",
+"Mecidiyeköy":"مجيدية كوي","Kurtuluş":"كورتولوش","Osmanbey":"عثمان بيه","Elmadağ":"إلمه داغ",
+"Bomonti":"بومونتي","Feriköy":"فري كوي","Fulya":"فوليا","Gayrettepe":"غيرت تبه",
+"Esentepe":"إسن تبه","Zincirlikuyu":"زنجيرلي كويو","Levent":"ليفنت","Maslak":"مسلك","Etiler":"إتيلر",
+"Karaköy":"كاراكوي","Galata":"غلطة","Şişhane":"شيشهانه","Tünel":"تونيل","Asmalımescit":"أسمالي مسجد",
+"Tophane":"توب هانة","Cihangir":"جيهانغير","Taksim":"تقسيم","Kasımpaşa":"قاسم باشا","Dolapdere":"دولاب ديره",
+"Kabataş":"كاباتاش","Fındıklı":"فندقلي","Gümüşsuyu":"غوموش صويو",
+"Sultanahmet":"السلطان أحمد","Cankurtaran":"جان قورتاران","Alemdar":"علمدار","Hocapaşa":"خوجه باشا",
+"Sirkeci":"سيركجي","Eminönü":"أمين أونو","Rüstem Paşa":"رستم باشا","Mahmutpaşa":"محمود باشا",
+"Beyazıt":"بايزيد","Süleymaniye":"السليمانية","Vezneciler":"وزنه جيلر","Şehzadebaşı":"شهزاده باشي",
+"Saraçhane":"سراجهانه","Vefa":"وفا","Çemberlitaş":"تشمبرليطاش","Kumkapı":"قوم قابي","Yenikapı":"يني قابي",
+"Aksaray":"أكسراي","Laleli":"لاليلي","Yusufpaşa":"يوسف باشا","Fındıkzade":"فندق زاده",
+"Balat":"بلاط","Fener":"فنر","Ayvansaray":"آيفان سراي","Edirnekapı":"أدرنة قابي","Karagümrük":"قره غمرك",
+"Çarşamba":"تشارشامبا","Samatya":"سماطيا","Yedikule":"يدي كوله","Zeyrek":"زيرك","Unkapanı":"أون قاباني",
+"Hasköy":"خاص كوي","Halıcıoğlu":"خاليجي أوغلو","Eyüp":"أيوب","Eyüpsultan":"أيوب سلطان","Piyer Loti":"بيير لوتي",
+"Ortaköy":"أورتاكوي","Kuruçeşme":"كوروتشيشمة","Bebek":"بيبك","Arnavutköy":"أرناؤوط كوي",
+"Emirgan":"إميرجان","İstinye":"إستينيه","Yeniköy":"يني كوي","Tarabya":"طرابية","Rumelihisarı":"روملي حصار",
+"Moda":"مودا","Kuzguncuk":"كوزغونجوك","Salacak":"سلاجاك","Mimar Sinan":"معمار سنان","Çengelköy":"جنكل كوي",
+"Beylerbeyi":"بيلربيي","Kanlıca":"قانلجه","Altunizade":"ألتون إزاده","Bağlarbaşı":"باغلار باشي",
+"Acıbadem":"آجي بادم","Fenerbahçe":"فنربهتشه","Bostancı":"بوستانجي","Çamlıca":"تشامليجا",
+"Büyükada":"بيوك أضة","Heybeliada":"هيبلي أضة","Burgazada":"بورغاز أضة","Kınalıada":"قنالي أضة",
+"Florya":"فلوريا","Yeşilköy":"يشيل كوي","Ataköy":"آتاكوي","Tayakadın":"طايا قادن",
+"Şişli":"شيشلي","Beyoğlu":"بي أوغلو","Fatih":"الفاتح","Beşiktaş":"بشكتاش","Üsküdar":"أوسكودار",
+"Kadıköy":"قاضي كوي","Sarıyer":"ساريير","Zeytinburnu":"زيتون بورنو","Bakırköy":"باكر كوي",
+"Adalar":"جزر الأميرات","Gaziosmanpaşa":"غازي عثمان باشا","Kağıthane":"كاغيت هانه","Ataşehir":"آتاشهير",
+"Maltepe":"مالتيبه","Beykoz":"بيكوز","Ümraniye":"أومرانية","Bayrampaşa":"بيرام باشا","Esenler":"إسنلر",
+"Başakşehir":"باشاك شهير","İstanbul":"إسطنبول","Istanbul":"إسطنبول","Türkiye":"تركيا","Turkey":"تركيا"};
+/* names that are a district (ilçe), not a neighbourhood — no "حي" prefix */
+var ILCE_K={"sisli":1,"beyoglu":1,"fatih":1,"besiktas":1,"uskudar":1,"kadikoy":1,"sariyer":1,
+"eyupsultan":1,"zeytinburnu":1,"bakirkoy":1,"adalar":1,"gaziosmanpasa":1,"kagithane":1,"atasehir":1,
+"maltepe":1,"beykoz":1,"umraniye":1,"bayrampasa":1,"esenler":1,"basaksehir":1,"istanbul":1};
+function trKey(x){return String(x||"")
+  .replace(/[İIıi]/g,"i").replace(/[Şş]/g,"s").replace(/[Ğğ]/g,"g").replace(/[Çç]/g,"c")
+  .replace(/[Öö]/g,"o").replace(/[Üü]/g,"u").toLowerCase()
+  .replace(/\s*(mahallesi|mahalle|mah\.?|ilçesi|ilcesi|province|il)\s*$/,"")
+  .replace(/[^a-z0-9؀-ۿ]+/g," ").trim();}
+var NAME_IDX={}; for(var _k in NAME_AR){ NAME_IDX[trKey(_k)]=NAME_AR[_k]; }
+function isAr(x){return /[؀-ۿ]/.test(x||"");}
+function arName(x){ if(!x) return ""; var k=trKey(x); if(NAME_IDX[k]) return NAME_IDX[k];
+  return String(x).replace(/\s*Mahallesi\s*$/i,"").trim(); }
+function isIlce(x){ return !!ILCE_K[trKey(x)]; }
+
+function locParse(j){
+  var li=j.localityInfo||{}, adm=(li.administrative||[]).slice(), inf=li.informative||[];
+  adm.sort(function(a,b){return (b.adminLevel||0)-(a.adminLevel||0);});
+  var hood=j.locality||"", dist="", city=j.city||"";
+  if(!hood){ for(var i=0;i<inf.length;i++){ var d=(inf[i].description||"").toLowerCase();
+      if(/neighbourhood|neighborhood|suburb|quarter|village/.test(d)){ hood=inf[i].name; break; } } }
+  if(!hood && adm.length) hood=adm[0].name;
+  for(var n=0;n<adm.length;n++){ var nm=adm[n].name;
+    if(nm && trKey(nm)!==trKey(hood) && isIlce(nm)){ dist=nm; break; } }
+  if(!dist){ for(var p=0;p<adm.length;p++){ var q=adm[p].name;
+      if(q && trKey(q)!==trKey(hood) && trKey(q)!==trKey(j.countryName)){ dist=q; break; } } }
+  if(!dist) dist=city;
+  return {hood:hood,dist:dist,city:city,country:j.countryName||""};
+}
+function locDone(o){
+  var h=arName(o.hood), d=arName(o.dist), c=arName(o.city), main="", sub="";
+  if(h && !isIlce(o.hood)){ main = /^حي\s/.test(h) ? h : ("حي "+h); }
+  else { main = h||d||c||"—"; h=""; }
+  var parts=[]; [d,c].forEach(function(x){ if(x && x!==main && x.replace("حي ","")!==main.replace("حي ","") && parts.indexOf(x)<0) parts.push(x); });
+  sub=parts.slice(0,2).join("، ");
+  var st=$("#ist-loc"); if(!st) return;
+  st.innerHTML='<span class="locname">📍 '+main+(sub?' <em>· '+sub+'</em>':'')+'</span>'
+    +'<button id="locre" type="button" aria-label="تحديث الموقع" title="تحديث">↻</button>';
+  var l=$("#loc-lab"); if(l)l.style.display="block";
+  try{ localStorage.setItem(LOC_KEY,JSON.stringify({main:main,sub:sub,ts:Date.now()})); }catch(e){}
+}
+function locOSM(la,lo,o){
+  fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=16&accept-language=ar&lat="+la+"&lon="+lo)
+    .then(function(r){return r.json()}).then(function(j){
+      var a=j.address||{};
+      var h=a.neighbourhood||a.quarter||a.suburb||a.village||a.hamlet||o.hood||"";
+      var d=a.city_district||a.town||a.municipality||o.dist||"";
+      var c=a.city||a.province||a.state||o.city||"";
+      locDone({hood:h,dist:d,city:c,country:a.country||""});
+    }).catch(function(){ if(o&&(o.hood||o.dist||o.city)) locDone(o);
+      else { var st=$("#ist-loc"); if(st) st.textContent="تعذر تحديد الحي"; } });
+}
+function locFind(){
+  var st=$("#ist-loc"); if(!st) return;
+  st.textContent="جارٍ تحديد الحي…";
+  if(!navigator.geolocation){ st.textContent="غير مدعوم في هذا المتصفح"; return; }
   navigator.geolocation.getCurrentPosition(function(pos){
-    fetch("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude="+pos.coords.latitude+"&longitude="+pos.coords.longitude+"&localityLanguage=ar")
-      .then(function(r){return r.json()})
-      .then(function(j){var hood=j.locality||j.city||j.principalSubdivision||"—";var city=(j.city&&j.city!==j.locality)?("، "+j.city):"";st.textContent="📍 "+hood+city;var l=$("#loc-lab");if(l)l.style.display="block";})
-      .catch(function(){st.textContent="تعذر تحديد الحي";});
-  },function(){st.textContent="الإذن مرفوض — فعّلا الموقع وأعيدا المحاولة";},{enableHighAccuracy:false,timeout:9000,maximumAge:120000});
-});
+    var la=pos.coords.latitude, lo=pos.coords.longitude;
+    fetch("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude="+la+"&longitude="+lo+"&localityLanguage=ar")
+      .then(function(r){return r.json()}).then(function(j){
+        var o=locParse(j);
+        var known = o.hood && (NAME_IDX[trKey(o.hood)] || isAr(o.hood));
+        if(known) locDone(o); else locOSM(la,lo,o);
+      }).catch(function(){ locOSM(la,lo,{}); });
+  },function(err){
+    st.textContent = (err&&err.code===1) ? "الإذن مرفوض — فعّلا الموقع وأعيدا المحاولة" : "تعذر تحديد الموقع — أعيدا المحاولة";
+  },{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+}
+(function(){
+  var host=$("#ist-loc");
+  if(host) host.addEventListener("click",function(ev){
+    var t=ev.target&&ev.target.closest?ev.target.closest("#locre,#locbtn"):null; if(t) locFind(); });
+  try{ var c=JSON.parse(localStorage.getItem(LOC_KEY)||"null");
+    if(c&&c.main&&(Date.now()-(c.ts||0))<6*3600*1000){
+      var st=$("#ist-loc");
+      st.innerHTML='<span class="locname">📍 '+c.main+(c.sub?' <em>· '+c.sub+'</em>':'')+'</span>'
+        +'<button id="locre" type="button" aria-label="تحديث الموقع" title="تحديث">↻</button>';
+      var l=$("#loc-lab"); if(l)l.style.display="block";
+        } }catch(e){}
+})();
 /* ── checklist counter ── */
 function ckcount(){var bs=$$("input[data-ck]"),done=0;bs.forEach(function(b){b.closest(".ck").classList.toggle("done",b.checked);if(b.checked)done++;});
   $("#ckcount").innerHTML=done+" of "+bs.length+" bookings done <span class='arl'>· أنجزت "+done+" من "+bs.length+" حجوزات</span>"+(done===bs.length?" ✦":"");}
@@ -2782,6 +2959,225 @@ var links=$$("nav a"),secs=links.map(function(l){return $(l.getAttribute("href")
 var tb=$("#topbtn");
 tb.addEventListener("click",function(){snapPause(1200);window.scrollTo({top:0,behavior:"smooth"});});
 window.addEventListener("scroll",function(){var y=window.scrollY+140,idx=0;secs.forEach(function(s,i){if(s&&s.offsetTop<=y)idx=i;});links.forEach(function(l,i){l.classList.toggle("active",i===idx);});tb.classList.toggle("show",window.scrollY>500);},{passive:true});
+/* ══════════ SPEND TRACKER — per activity, per day, and the trend across days ══════════ */
+var SPKEY={food:"food",cafe:"food",act:"act",must:"act",shop:"shop",move:"move"};
+var SPORDER=["food","act","shop","move"];
+var SPMETA={food:{ar:"مطاعم ومقاهي",c:"#c0392b"},act:{ar:"معالم وفعاليات",c:"#00795c"},
+            shop:{ar:"تسوق",c:"#a8801a"},move:{ar:"تنقّل",c:"#1f6fb8"}};
+var SP_FINE=["2026-09-26T19:00+03:00","2026-09-29T19:00+03:00"];      /* TURK · Neolokal */
+var SP_ROM =["2026-09-22T17:00+03:00","2026-09-26T14:30+03:00"];      /* اليخت · الحمّام */
+function spCat(c){ return SPKEY[c]||"act"; }
+function spRate(){ var r=fxRate(); return (r&&isFinite(r)&&r>0)?r:12.67; }   /* ١ ريال = كم ليرة */
+function spToSar(rec){ if(!rec)return 0; var v=Number(rec.v)||0; if(!v)return 0; return rec.c==="sar"?v:(v/spRate()); }
+function spN(n){ return Math.round(n||0).toLocaleString("en-US"); }
+function spSar(n){ return spN(n)+" ر.س"; }
+function spTry(n){ return spN(n)+" ₺"; }
+
+/* ── 1. a spend field inside every activity ── */
+function spMountSlots(){
+  $$(".slot").forEach(function(s){
+    var dt=s.dataset.dt; if(!dt) return;
+    var wh=$(".wh",s); if(!wh) return;
+    var old=$(".spendrow",s); if(old) old.parentNode.removeChild(old);
+    var rec=(state.spend||{})[dt]||{v:"",c:"try"};
+    var row=document.createElement("div"); row.className="spendrow";
+    row.innerHTML='<span class="sp-lab">المصروف</span>'
+      +'<span class="sp-in"><button type="button" class="sp-cur" aria-label="تبديل العملة">'+(rec.c==="sar"?"ر.س":"₺")+'</button>'
+      +'<input type="number" inputmode="decimal" min="0" step="1" data-sp="'+dt+'" placeholder="0" value="'+(rec.v===0?"":(rec.v||""))+'"></span>'
+      +'<span class="sp-eq"></span>';
+    wh.appendChild(row);
+    s.classList.toggle("spent", !!Number(rec.v));
+  });
+  spSlotEq();
+}
+function spSlotEq(){
+  $$(".slot").forEach(function(s){
+    var dt=s.dataset.dt; if(!dt)return; var eq=$(".sp-eq",s); if(!eq)return;
+    var rec=(state.spend||{})[dt];
+    if(!rec||!Number(rec.v)){ eq.textContent=""; return; }
+    eq.textContent = rec.c==="sar" ? ("≈ "+spTry(Number(rec.v)*spRate())) : ("≈ "+spSar(spToSar(rec)));
+  });
+}
+document.addEventListener("input",function(ev){
+  var i=ev.target; if(!i||!i.dataset||i.dataset.sp==null)return;
+  var dt=i.dataset.sp, slot=i.closest(".slot");
+  state.spend=state.spend||{};
+  var cur=(state.spend[dt]&&state.spend[dt].c)||"try";
+  var v=i.value===""?0:Math.max(0,Number(i.value)||0);
+  if(!v && cur==="try"){ delete state.spend[dt]; } else { state.spend[dt]={v:v,c:cur}; }
+  if(slot) slot.classList.toggle("spent", !!v);
+  spSlotEq(); spRenderAll(); autosave();
+});
+document.addEventListener("click",function(ev){
+  var b=ev.target.closest?ev.target.closest(".sp-cur"):null; if(!b)return;
+  var slot=b.closest(".slot"), inp=$("input[data-sp]",slot), dt=inp.dataset.sp;
+  state.spend=state.spend||{};
+  var rec=state.spend[dt]||{v:Number(inp.value)||0,c:"try"};
+  rec.c = rec.c==="sar" ? "try" : "sar";
+  b.textContent = rec.c==="sar" ? "ر.س" : "₺";
+  rec.v=Number(inp.value)||0;
+  if(!rec.v && rec.c==="try"){ delete state.spend[dt]; } else { state.spend[dt]=rec; }
+  spSlotEq(); spRenderAll(); autosave();
+});
+
+/* ── 2. the numbers ── */
+function spDays(){
+  return $$("article.day").map(function(d){
+    var by={food:0,act:0,shop:0,move:0}, tot=0;
+    $$(".slot",d).forEach(function(s){
+      var dt=s.dataset.dt; if(!dt)return;
+      var sar=spToSar((state.spend||{})[dt]); if(!sar)return;
+      by[spCat(s.dataset.cat)]+=sar; tot+=sar;
+    });
+    var n=$(".dnum",d);
+    return {el:d,id:d.id,num:(n?String(Number(n.textContent.replace(/[^0-9]/g,""))||n.textContent):""),
+            date:(d.dataset.day||"").slice(8),by:by,tot:tot};
+  });
+}
+function spTrend(days){
+  var ys=days.filter(function(d){return d.tot>0;}).map(function(d){return d.tot;});
+  var n=ys.length; if(n<2) return {v:"none",n:n};
+  var mx=(n-1)/2, my=ys.reduce(function(a,b){return a+b;},0)/n, num=0, den=0;
+  for(var i=0;i<n;i++){ num+=(i-mx)*(ys[i]-my); den+=(i-mx)*(i-mx); }
+  var slope=den?num/den:0, rel=my?slope/my*100:0;
+  return {v:(rel>8?"up":(rel<-8?"down":"flat")),rel:rel,slope:slope,avg:my,n:n};
+}
+
+/* ── 3. the day footer ── */
+function spRenderDays(days){
+  days.forEach(function(d,i){
+    var body=$(".day-body",d.el); if(!body)return;
+    var box=$(".daysum",body);
+    if(!box){ box=document.createElement("div"); box.className="daysum"; body.appendChild(box); }
+    box.classList.toggle("empty",!d.tot);
+    if(!d.tot){ box.innerHTML='<div class="ds-head"><b>صرف اليوم</b><span class="ds-tot">—</span></div>'
+      +'<div class="ds-trend">اكتب ما دفعتَه في خانة «المصروف» تحت كل فعالية، ويُجمع هنا تلقائياً.</div>'; return; }
+    var segs="",leg="";
+    SPORDER.forEach(function(k){ var v=d.by[k]; if(!v)return;
+      segs+='<i style="width:'+(v/d.tot*100).toFixed(2)+'%;background:'+SPMETA[k].c+'"></i>';
+      leg+='<span><i style="background:'+SPMETA[k].c+'"></i>'+SPMETA[k].ar+' <b>'+spN(v)+'</b></span>'; });
+    var prev=days.slice(0,i).filter(function(x){return x.tot>0;});
+    var tr="";
+    if(prev.length){
+      var avg=prev.reduce(function(a,b){return a+b.tot;},0)/prev.length;
+      var pct=avg?((d.tot-avg)/avg*100):0;
+      var cls=pct>8?"up":(pct<-8?"down":"flat");
+      var word=pct>8?("أعلى من متوسط الأيام السابقة بـ "+Math.round(Math.abs(pct))+"٪")
+             :(pct<-8?("أقل من متوسط الأيام السابقة بـ "+Math.round(Math.abs(pct))+"٪"):"على مستوى الأيام السابقة تقريباً");
+      tr='متوسط ما سبق <b>'+spSar(avg)+'</b> — <span class="'+cls+'">'+word+'</span>';
+    } else { tr='أول يوم فيه صرف — يصير أساس المقارنة لما بعده.'; }
+    box.innerHTML='<div class="ds-head"><b>صرف اليوم</b><span class="ds-try">≈ '+spTry(d.tot*spRate())+'</span>'
+      +'<span class="ds-tot">'+spSar(d.tot)+'</span></div>'
+      +'<div class="ds-bar">'+segs+'</div><div class="ds-leg">'+leg+'</div>'
+      +'<div class="ds-trend">'+tr+'</div>';
+  });
+}
+
+/* ── 4. the tracker panel inside Budget ── */
+function spPanel(days){
+  var host=$("#budget .wrap"); if(!host)return;
+  var p=$("#spendpanel");
+  if(!p){ p=document.createElement("div"); p.id="spendpanel"; host.appendChild(p); }
+  var spent=days.filter(function(d){return d.tot>0;});
+  var total=days.reduce(function(a,b){return a+b.tot;},0);
+  var cat={food:0,act:0,shop:0,move:0};
+  days.forEach(function(d){ SPORDER.forEach(function(k){ cat[k]+=d.by[k]; }); });
+  var avg=spent.length?total/spent.length:0;
+  var top=days.slice().sort(function(a,b){return b.tot-a.tot;})[0];
+  var max=top?top.tot:0;
+  var tr=spTrend(days);
+
+  var head='<h3>تتبّع الصرف الفعلي</h3><div class="sp-sub">يُحسب مباشرة مما تكتبه تحت كل فعالية — بالريال السعودي، وسعر اليوم ١ ريال = '+spRate().toFixed(2)+' ليرة.</div>';
+  if(!spent.length){
+    p.innerHTML=head+'<div class="sp-verdict flat">لا يوجد صرف مُسجَّل بعد. اكتب المبلغ في خانة «المصروف» تحت أي فعالية — بالليرة أو بالريال — ويظهر هنا إجمالي كل يوم، وتوزيعه على المطاعم والفعاليات والتسوق والتنقّل، واتجاه صرفك يوماً بعد يوم.</div>';
+    return;
+  }
+  var kpi='<div class="sp-kpi">'
+    +'<div class="sp-k"><b>'+spSar(total)+'</b><span>الإجمالي حتى الآن</span></div>'
+    +'<div class="sp-k"><b>'+spSar(avg)+'</b><span>متوسط اليوم ('+spent.length+' أيام)</span></div>'
+    +'<div class="sp-k"><b>'+spSar(max)+'</b><span>أعلى يوم — اليوم '+(top?top.num:"")+'</span></div>'
+    +'<div class="sp-k"><b>'+spTry(total*spRate())+'</b><span>ما يعادله بالليرة</span></div></div>';
+
+  var vtxt, vcls=tr.v;
+  if(tr.v==="none") vtxt='يوم واحد فقط فيه صرف — الاتجاه يظهر من اليوم الثاني.';
+  else if(tr.v==="up") vtxt='<b>صرفك تصاعدي.</b> كل يوم يزيد بنحو '+spSar(Math.abs(tr.slope))+' عن الذي قبله ('+Math.round(Math.abs(tr.rel))+'٪ من المتوسط). لو استمر على هذا المنحنى فبقية الأيام ستكلّف أكثر من أولها.';
+  else if(tr.v==="down") vtxt='<b>صرفك تنازلي.</b> كل يوم ينقص بنحو '+spSar(Math.abs(tr.slope))+' عن الذي قبله ('+Math.round(Math.abs(tr.rel))+'٪ من المتوسط).';
+  else vtxt='<b>صرفك ثابت.</b> الفروق بين الأيام داخل نطاق ±٨٪ من المتوسط — لا تصاعد ولا تنازل يُعتد به.';
+  var verdict='<div class="sp-verdict '+vcls+'">'+vtxt+'</div>';
+
+  var cols="";
+  days.forEach(function(d){
+    if(!d.tot){ cols+='<div class="spcol"><div class="spcol-val">—</div><div class="spcol-track"><div class="spcol-bar zero"></div></div><div class="spcol-lab">'+d.num+'</div></div>'; return; }
+    var h=max?(d.tot/max*100):0, segs="";
+    SPORDER.forEach(function(k){ var v=d.by[k]; if(!v)return;
+      segs+='<i style="height:'+(v/d.tot*100).toFixed(2)+'%;background:'+SPMETA[k].c
+        +'" data-tip="'+SPMETA[k].ar+' · '+spSar(v)+' — اليوم '+d.num+'"></i>'; });
+    cols+='<div class="spcol"><div class="spcol-val">'+spN(d.tot)+'</div>'
+      +'<div class="spcol-track"><div class="spcol-bar" style="height:'+h.toFixed(2)+'%">'+segs+'</div></div>'
+      +'<div class="spcol-lab">'+d.num+'</div></div>';
+  });
+  var avgLine = max? '<div class="spavgwrap"><div class="spavg" style="bottom:'+(avg/max*100).toFixed(2)+'%"></div></div>' : '';
+  var chart='<div class="spchart">'+cols+avgLine+'</div>'
+    +'<div class="spcap"><i></i>خط المتوسط — '+spSar(avg)+' في اليوم · الأعمدة بالريال السعودي</div>';
+
+  var leg='<div class="sp-leg">'+SPORDER.map(function(k){
+    return '<span><i style="background:'+SPMETA[k].c+'"></i>'+SPMETA[k].ar+' <b>'+spSar(cat[k])+'</b></span>'; }).join("")+'</div>';
+
+  var rows=days.filter(function(d){return d.tot>0;}).map(function(d){
+    return '<tr><td>اليوم '+d.num+'</td><td class="n">'+spN(d.by.food)+'</td><td class="n">'+spN(d.by.act)
+      +'</td><td class="n">'+spN(d.by.shop)+'</td><td class="n">'+spN(d.by.move)+'</td><td class="n"><b>'+spN(d.tot)+'</b></td></tr>'; }).join("");
+  var tbl='<details class="sp-tbl"><summary>عرض الأرقام كجدول</summary><table><tr><th>اليوم</th><th>مطاعم</th><th>فعاليات</th><th>تسوق</th><th>تنقّل</th><th>الإجمالي</th></tr>'
+    +rows+'<tr><td><b>الإجمالي</b></td><td class="n">'+spN(cat.food)+'</td><td class="n">'+spN(cat.act)+'</td><td class="n">'+spN(cat.shop)
+    +'</td><td class="n">'+spN(cat.move)+'</td><td class="n"><b>'+spN(total)+'</b></td></tr></table></details>';
+
+  var m=spBudgetMap(days);
+  var apply='<div class="sp-apply"><button type="button" id="spapply">انقل المتتبَّع إلى عمود «الفعلي»</button>'
+    +'<small>تذاكر '+spN(m.b1)+' · أكل يومي '+spN(m.b2)+' · العشاءان '+spN(m.b3)+' · لمسات '+spN(m.b4)+' · تنقلات '+spN(m.b5)
+    +(cat.shop?(' · تسوق '+spN(cat.shop)+' (خارج جدول الميزانية)'):'')+'</small></div>';
+
+  p.innerHTML=head+kpi+verdict+chart+leg+tbl+apply;
+  var ab=$("#spapply"); if(ab) ab.addEventListener("click",function(){
+    var mm=spBudgetMap(spDays());
+    ["b1","b2","b3","b4","b5"].forEach(function(k){ var i=$('input[data-b="'+k+'"]'); if(i){ i.value=Math.round(mm[k])||""; } });
+    btot(); autosave(); toast("نُقل المتتبَّع إلى عمود الفعلي <span class='arl'>· "+spSar(mm.b1+mm.b2+mm.b3+mm.b4+mm.b5)+"</span>");
+  });
+}
+function spBudgetMap(days){
+  var m={b1:0,b2:0,b3:0,b4:0,b5:0};
+  $$(".slot").forEach(function(s){
+    var dt=s.dataset.dt; if(!dt)return;
+    var sar=spToSar((state.spend||{})[dt]); if(!sar)return;
+    var k=spCat(s.dataset.cat);
+    if(SP_FINE.indexOf(dt)>=0) m.b3+=sar;
+    else if(SP_ROM.indexOf(dt)>=0) m.b4+=sar;
+    else if(k==="food") m.b2+=sar;
+    else if(k==="act") m.b1+=sar;
+    else if(k==="move") m.b5+=sar;
+  });
+  return m;
+}
+
+/* ── 5. one hover/tap tooltip for the chart segments ── */
+(function(){
+  var tip=null;
+  function show(e,t){ if(!tip){ tip=document.createElement("div"); tip.className="sptip"; document.body.appendChild(tip); }
+    tip.textContent=t; tip.classList.add("on");
+    var x=(e.clientX||0), y=(e.clientY||0);
+    tip.style.left=Math.max(8,Math.min(window.innerWidth-tip.offsetWidth-8,x-tip.offsetWidth/2))+"px";
+    tip.style.top=Math.max(8,y-tip.offsetHeight-12)+"px"; }
+  function hide(){ if(tip)tip.classList.remove("on"); }
+  document.addEventListener("pointerover",function(e){ var i=e.target.closest?e.target.closest(".spcol-bar i[data-tip]"):null;
+    if(i) show(e,i.dataset.tip); });
+  document.addEventListener("pointerout",function(e){ if(e.target.closest&&e.target.closest(".spcol-bar i[data-tip]")) hide(); });
+  document.addEventListener("click",function(e){ var i=e.target.closest?e.target.closest(".spcol-bar i[data-tip]"):null;
+    if(i){ show(e,i.dataset.tip); setTimeout(hide,2200); } });
+  window.addEventListener("scroll",hide,{passive:true});
+})();
+
+function spRenderAll(){ var d=spDays(); spRenderDays(d); spPanel(d); }
+function spendMount(){ spMountSlots(); spRenderAll(); }
+spendMount();
+
 /* ── self-save: download this same file with state embedded ── */
 function collect(){var st={checks:{},notes:{},budget:{},savedAt:null};
   $$("input[data-ck]").forEach(function(b){st.checks[b.dataset.ck]=b.checked;});
@@ -2789,7 +3185,7 @@ function collect(){var st={checks:{},notes:{},budget:{},savedAt:null};
   $$("input[data-b]").forEach(function(i){if(i.value!=="")st.budget[i.dataset.b]=i.value;});
   st.dayDone={};st.dayCollapsed={};
   $$("article.day").forEach(function(d){ if(d.classList.contains("dday-done"))st.dayDone[d.id]=true; st.dayCollapsed[d.id]=d.classList.contains("collapsed"); });
-  st.liked=state.liked||{}; st.swapped=state.swapped||{}; st.daySwap=state.daySwap||{}; st.actDone=state.actDone||{};
+  st.liked=state.liked||{}; st.swapped=state.swapped||{}; st.daySwap=state.daySwap||{}; st.actDone=state.actDone||{}; st.spend=state.spend||{};
   var n=istWall(new Date());st.savedAt=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0")+" "+fmtT(n)+" (Istanbul time)";
   st.ts=Date.now();
   return st;}
@@ -2799,8 +3195,10 @@ $("#savebtn").addEventListener("click",function(){
     var st=collect();
     var doc=document.documentElement.cloneNode(true);
     var holder=doc.querySelector("#savestate"); holder.textContent=JSON.stringify(st);
-    [].slice.call(doc.querySelectorAll(".dayctl, .daymap-btn, .daycard-btn, .tripcard-btn, #cardModal, #fxModal, #momInput, #chipModal, #placeModal, #daypickModal, #photoLB, #geoModal, #leafcss, #leafjs, .likedmark, .swapmark")).forEach(function(n){n.parentNode.removeChild(n);}); /* re-injected on load */
+    [].slice.call(doc.querySelectorAll(".spendrow, .daysum, #spendpanel, .sptip, .dayctl, .daymap-btn, .daycard-btn, .tripcard-btn, #cardModal, #fxModal, #momInput, #chipModal, #placeModal, #daypickModal, #photoLB, #geoModal, #leafcss, #leafjs, .likedmark, .swapmark")).forEach(function(n){n.parentNode.removeChild(n);}); /* re-injected on load */
     var adg=doc.querySelector("#adgrid"); if(adg)adg.innerHTML=""; /* alt-day cards re-render on load */
+    var lc=doc.querySelector("#ist-loc"); if(lc){ lc.innerHTML='<button id="locbtn" type="button">\u{1F4CD} Locate us \u00B7 \u062D\u062F\u062F \u0645\u0648\u0642\u0639\u0646\u0627</button>'; }
+    var ll=doc.querySelector("#loc-lab"); if(ll) ll.style.display="none"; /* area re-resolves on load */
     /* restore swapped DAYS to their original static HTML — day swaps re-apply from state on load */
     Object.keys(st.daySwap||{}).forEach(function(id){ var OD=DAYORIG[id]; if(!OD)return;
       var d=doc.querySelector("#"+id); if(!d)return;
