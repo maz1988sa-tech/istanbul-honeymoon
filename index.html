@@ -50,6 +50,12 @@ header.hero{position:relative;padding:24px 0 0;text-align:center;overflow:hidden
 .hero .scr{font-family:var(--script);font-size:clamp(34px,5.5vw,56px);color:var(--gold);margin-top:-6px;line-height:1.2}
 .hero .arh{font-family:var(--ar);direction:rtl;font-size:clamp(17px,2.6vw,22px);color:var(--soft);margin-top:8px}
 .hr-heart{display:flex;align-items:center;gap:14px;justify-content:center;margin:18px auto 6px;max-width:420px;color:var(--taupe)}
+.fxhero{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--page);
+  color:var(--gold);border-radius:99px;padding:8px 16px 8px 13px;cursor:pointer;font-family:var(--ar);
+  font-size:13.5px;font-weight:600;box-shadow:var(--shadow);transition:background .15s,border-color .15s}
+.fxhero svg{width:21px;height:21px;flex:none}
+.fxhero:hover{background:var(--sand);border-color:var(--gold)}
+.fxhero:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .hr-heart::before,.hr-heart::after{content:"";flex:1;height:1px;background:var(--line2)}
 .hero .tag{font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--soft)}
 .stamp{position:absolute;top:46px;left:max(18px,calc(50% - 470px));width:112px;height:112px;color:var(--olive);opacity:.92;transform:rotate(-12deg)}
@@ -232,6 +238,18 @@ header.hero{position:relative;padding:24px 0 0;text-align:center;overflow:hidden
 .fx-pad button{font-family:var(--sans);font-size:22px;font-weight:600;border-radius:14px;border:1px solid rgba(255,246,228,.4);background:rgba(255,246,228,.1);color:#fdf8ec;padding:0;min-height:44px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .fx-pad button:active{background:rgba(255,246,228,.35)}
 .fx-pad2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;direction:rtl;flex:none}
+.fx-pad2.has-add{grid-template-columns:1fr 1fr 1fr}
+.fx-pad2 .add{background:rgba(243,217,168,.24);border-color:rgba(243,217,168,.7);color:#f7e6c4;font-size:22px;gap:6px}
+.fx-pad2 .add:active{background:rgba(243,217,168,.45)}
+.fx-pad2 .add .addlab{font-size:13.5px;font-weight:700}
+.fx-terms{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 4px;direction:rtl;max-height:64px;overflow:auto}
+.fx-terms button{display:inline-flex;align-items:center;gap:6px;font-family:var(--sans);font-size:13px;font-weight:600;
+  border:1px solid rgba(255,246,228,.45);background:rgba(255,246,228,.12);color:#fdf8ec;border-radius:99px;
+  padding:3px 9px 3px 7px;cursor:pointer;line-height:1.7}
+.fx-terms button i{font-style:normal;opacity:.7;font-size:14px}
+.fx-terms button:hover{background:rgba(255,246,228,.26)}
+.fx-terms .sumline{font-family:var(--ar);font-size:12px;color:#f3d9a8;align-self:center;font-weight:600;
+  border:none;background:none;padding:0 4px;cursor:default}
 .fx-pad2 button{display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--ar);font-size:14.5px;font-weight:700;border-radius:14px;padding:11px 0;cursor:pointer;-webkit-tap-highlight-color:transparent;border:1px solid rgba(255,246,228,.4);color:#fdf8ec}
 .fx-pad2 button svg{width:20px;height:20px}
 .fx-pad2 .clr{background:rgba(214,69,69,.22);border-color:rgba(255,170,160,.55)}
@@ -239,6 +257,7 @@ header.hero{position:relative;padding:24px 0 0;text-align:center;overflow:hidden
 .fx-pad2 .del{background:rgba(255,246,228,.08)}
 .fx-pad2 .del:active{background:rgba(255,246,228,.3)}
 .fx-quick{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;flex:none}
+.fx-quick[hidden]{display:none}
 .fx-quick button{font-family:var(--sans);font-size:12px;font-weight:600;border-radius:99px;border:1px solid rgba(255,246,228,.4);background:rgba(255,246,228,.08);color:#f6eeda;padding:5px 12px;cursor:pointer}
 .fx-quick button:hover{background:rgba(255,246,228,.22)}
 @media(max-height:780px){#fxModal .fx-title small{display:none}#fxModal .fx-quick{display:none}.fx-in{padding:8px 12px}.fx-in input,.fx-in .fx-val{height:40px;line-height:40px;font-size:27px}.fx-swap{width:38px;height:38px}.fx-swap svg{width:19px;height:19px}.fx-rate{font-size:11.5px;margin-top:8px}.fx-pad{margin-top:8px;gap:7px}.fx-pad button{font-size:20px}.fx-pad2{margin-top:7px}.fx-pad2 button{padding:9px 0;font-size:13.5px}.fx-pad button{min-height:40px}}
@@ -753,7 +772,7 @@ body.modal-open{overflow:hidden}
 <div class="scr">Honeymoon Itinerary</div>
 <div class="couple"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 20s-7.5-4.6-9.3-9.3C1.5 7.5 3.6 4.5 6.8 4.5c2 0 3.6 1.1 4.4 2.7l.8 1.5.8-1.5c.8-1.6 2.4-2.7 4.4-2.7 3.2 0 5.3 3 4.1 6.2C19.5 15.4 12 20 12 20z"/></svg>Mohand &amp; Eman Couples<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 20s-7.5-4.6-9.3-9.3C1.5 7.5 3.6 4.5 6.8 4.5c2 0 3.6 1.1 4.4 2.7l.8 1.5.8-1.5c.8-1.6 2.4-2.7 4.4-2.7 3.2 0 5.3 3 4.1 6.2C19.5 15.4 12 20 12 20z"/></svg></div>
 <div class="arh">عشر ليالٍ بين القصور والبوسفور — من ٢٠ إلى ٣٠ سبتمبر ٢٠٢٦</div>
-<div class="hr-heart"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 20s-7.5-4.6-9.3-9.3C1.5 7.5 3.6 4.5 6.8 4.5c2 0 3.6 1.1 4.4 2.7l.8 1.5.8-1.5c.8-1.6 2.4-2.7 4.4-2.7 3.2 0 5.3 3 4.1 6.2C19.5 15.4 12 20 12 20z"/></svg></div>
+<div class="hr-heart"><button type="button" id="fxhero" class="fxhero" title="حاسبة الصرف والجمع" aria-label="حاسبة الصرف والجمع"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/><path d="M8.5 13h.01M12 13h.01M15.5 13h.01M8.5 16.5h.01M12 16.5h.01M15.5 16.5h.01"/></svg><span>الحاسبة</span></button></div>
 <div class="tag">PLAN IT · TRAVEL IT · TREASURE IT</div>
 
 <div class="infogrid">
@@ -2779,7 +2798,7 @@ function fxNow(){try{fetch("https://open.er-api.com/v6/latest/USD").then(functio
   fxRender();}}).catch(function(){});}catch(e){}}
 try{ var fxc=store?JSON.parse(store.getItem("ist-fx")||"null"):null; if(fxc&&fxc.t&&fxc.s){FX.try=fxc.t;FX.sar=fxc.s;FX.at=new Date(fxc.ts||Date.now());} }catch(e){}
 /* ── EXCHANGE CALCULATOR: SAR ⇄ TRY, numeric keypad, Arabic-Indic digits accepted ── */
-var FXC={dir:"sar",raw:""}; /* dir: which currency is being typed */
+var FXC={dir:"sar",raw:"",terms:[]}; /* dir: which currency is being typed */
 function fxNorm(s){ /* Arabic-Indic & Persian digits → ASCII, Arabic decimal separators → "." */
   return String(s||"").replace(/[٠-٩]/g,function(d){return "٠١٢٣٤٥٦٧٨٩".indexOf(d);}).replace(/[۰-۹]/g,function(d){return "۰۱۲۳۴۵۶۷۸۹".indexOf(d);})
     .replace(/[٫،,]/g,".").replace(/[^\d.]/g,"").replace(/^(\d*\.\d*).*$/,"$1").replace(/^0+(?=\d)/,""); }
@@ -2789,13 +2808,13 @@ function buildFxModal(){ if($("#fxModal"))return $("#fxModal");
   var m=document.createElement("div"); m.id="fxModal"; m.className="cmodal"; m.hidden=true;
   m.innerHTML='<div class="cm-backdrop"></div><div class="cm-glass fx-glass"><div class="mhead"><div class="fx-title">حاسبة الصرف<small class="fx-sub">ريال سعودي ⇄ ليرة تركية — بسعر اليوم</small></div><button class="cm-x" type="button">✕</button></div>'
     +'<div class="fx-body">'
-    +'<div class="fx-row"><div class="fx-in"><label class="fx-lab-in"></label><input class="fx-input" type="text" inputmode="decimal" autocomplete="off" placeholder="0" aria-label="المبلغ"><span class="fx-cur fx-cur-in"></span></div>'
+    +'<div class="fx-row"><div class="fx-in"><label class="fx-lab-in"></label><input class="fx-input" type="text" inputmode="decimal" autocomplete="off" placeholder="0" aria-label="المبلغ"><div class="fx-terms" hidden></div><span class="fx-cur fx-cur-in"></span></div>'
     +'<button type="button" class="fx-swap" title="تبديل الاتجاه"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/></svg></button>'
     +'<div class="fx-in out"><label class="fx-lab-out"></label><div class="fx-val">0</div><span class="fx-cur fx-cur-out"></span></div></div>'
     +'<div class="fx-rate"></div>'
     +'<div class="fx-quick"></div>'
     +'<div class="fx-pad"><button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="0">0</button><button type="button" data-k="00">00</button><button type="button" data-k="000">000</button></div>'
-    +'<div class="fx-pad2"><button type="button" class="op clr" data-k="C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>مسح الكل</button><button type="button" class="op del" data-k="B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 6H8l-5 6 5 6h13a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1z"/><path d="M12 9l6 6M18 9l-6 6"/></svg>حذف رقم</button></div>'
+    +'<div class="fx-pad2 has-add"><button type="button" class="op clr" data-k="C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>مسح الكل</button><button type="button" class="op add" data-k="+" title="أضف المبلغ إلى المجموع">+<span class="addlab">أضف</span></button><button type="button" class="op del" data-k="B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 6H8l-5 6 5 6h13a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1z"/><path d="M12 9l6 6M18 9l-6 6"/></svg>حذف رقم</button></div>'
     +'</div></div>';
   document.body.appendChild(m);
   function close(){ m.hidden=true; document.body.classList.remove("modal-open"); }
@@ -2806,7 +2825,10 @@ function buildFxModal(){ if($("#fxModal"))return $("#fxModal");
   inp.addEventListener("keydown",function(e){ if(e.key==="Enter")inp.blur(); });
   function padKey(e){ var b=e.target.closest?e.target.closest("button"):null; if(!b)return;
     var k=b.getAttribute("data-k");
-    if(k==="C")FXC.raw=""; else if(k==="B")FXC.raw=FXC.raw.slice(0,-1);
+    if(k==="C"){ FXC.raw=""; FXC.terms=[]; }
+    else if(k==="+"){ var av=parseFloat(FXC.raw||"0")||0; if(!av)return;
+      if(FXC.terms.length>=12)return; FXC.terms.push(av); FXC.raw=""; }
+    else if(k==="B"){ if(FXC.raw) FXC.raw=FXC.raw.slice(0,-1); else if(FXC.terms.length) FXC.terms.pop(); }
     else if(k===".") { if(FXC.raw.indexOf(".")<0)FXC.raw=(FXC.raw||"0")+"."; }
     else { var room=9-FXC.raw.replace(".","").length; if(room<=0)return; FXC.raw=fxNorm(FXC.raw+k.slice(0,room)); } /* 0 / 00 / 000 — trimmed to the 9-digit cap */
     inp.value=FXC.raw; fxRender(); }
@@ -2814,16 +2836,31 @@ function buildFxModal(){ if($("#fxModal"))return $("#fxModal");
   m.querySelector(".fx-pad2").addEventListener("click",padKey);
   m.querySelector(".fx-swap").addEventListener("click",function(){
     /* swap direction and carry the RESULT over as the new input, so the numbers stay consistent */
-    var n=parseFloat(FXC.raw||"0")||0, r=fxRate(), out=FXC.dir==="sar"?n*r:n/r;
-    FXC.dir=FXC.dir==="sar"?"try":"sar";
+    var n=fxSum(), r=fxRate(), out=FXC.dir==="sar"?n*r:n/r;
+    FXC.dir=FXC.dir==="sar"?"try":"sar"; FXC.terms=[];
     FXC.raw=n?String(+out.toFixed(2)):""; inp.value=FXC.raw; fxRender(); });
+  m.querySelector(".fx-terms").addEventListener("click",function(e){
+    var b=e.target.closest?e.target.closest("button[data-t]"):null; if(!b)return;
+    FXC.terms.splice(+b.getAttribute("data-t"),1); fxRender(); });
   m.querySelector(".fx-quick").addEventListener("click",function(e){ var b=e.target.closest?e.target.closest("button"):null; if(!b)return;
     FXC.raw=b.getAttribute("data-v"); inp.value=FXC.raw; fxRender(); });
   return m; }
+function fxSum(){ var t=(FXC.terms||[]).reduce(function(a,b){return a+b;},0);
+  return t+(parseFloat(FXC.raw||"0")||0); }
+function fxCount(n){ return n===1?"مبلغ واحد":(n===2?"مبلغين":(n<=10?(n+" مبالغ"):(n+" مبلغاً"))); }
 function fxRender(){ var m=$("#fxModal"); if(!m)return;
-  var sar=FXC.dir==="sar", r=fxRate(), n=parseFloat(FXC.raw||"0")||0, out=sar?n*r:n/r;
-  m.querySelector(".fx-lab-in").textContent=sar?"المبلغ بالريال السعودي":"المبلغ بالليرة التركية";
-  m.querySelector(".fx-lab-out").textContent=sar?"يساوي بالليرة التركية":"يساوي بالريال السعودي";
+  var sar=FXC.dir==="sar", r=fxRate(), n=fxSum(), out=sar?n*r:n/r;
+  var nT=(FXC.terms||[]).length;
+  m.querySelector(".fx-lab-in").textContent=(sar?"المبلغ بالريال السعودي":"المبلغ بالليرة التركية")
+    +(nT?(" · المجموع "+n.toLocaleString("en-US")):"");
+  m.querySelector(".fx-lab-out").textContent=(sar?"يساوي بالليرة التركية":"يساوي بالريال السعودي")
+    +(nT?(" · مجموع "+fxCount(nT+(FXC.raw?1:0))):"");
+  var ts=m.querySelector(".fx-terms");
+  ts.hidden=!nT;
+  ts.innerHTML=nT?((FXC.terms||[]).map(function(v,i){
+      return '<button type="button" data-t="'+i+'" title="احذف هذا المبلغ">'+v.toLocaleString("en-US")+' <i>✕</i></button>'; }).join("")
+      +'<span class="sumline">'+(FXC.raw?"+ "+(parseFloat(FXC.raw)||0).toLocaleString("en-US"):"أضف المبلغ التالي")+'</span>'):"";
+  m.querySelector(".fx-quick").hidden=!!nT;
   m.querySelector(".fx-cur-in").textContent=sar?"SAR · ريال":"TRY · ليرة";
   m.querySelector(".fx-cur-out").textContent=sar?"TRY · ليرة":"SAR · ريال";
   m.querySelector(".fx-row").classList.toggle("fxrev",!sar); /* riyal always on top, lira always at the bottom */
@@ -2834,8 +2871,9 @@ function fxRender(){ var m=$("#fxModal"); if(!m)return;
   m.querySelector(".fx-quick").innerHTML=q.map(function(v){return '<button type="button" data-v="'+v+'">'+v.toLocaleString("en-US")+(sar?" ر.س":" ₺")+"</button>";}).join(""); }
 function openFx(){ var m=buildFxModal(); m.hidden=false; document.body.classList.add("modal-open"); fxRender();
   var inp=m.querySelector(".fx-input"); inp.value=FXC.raw; setTimeout(function(){ try{inp.focus({preventScroll:true});}catch(e){} },120); }
-(function(){ var o=$("#fxopen"); if(!o)return; o.addEventListener("click",openFx);
-  o.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();openFx();} }); })();
+(function(){ ["#fxopen","#fxhero"].forEach(function(sel){ var o=$(sel); if(!o)return;
+    o.addEventListener("click",openFx);
+    o.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();openFx();} }); }); })();
 fxNow(); setInterval(fxNow,60*60000);
 /* ── where are we now — neighbourhood level, written in Arabic ── */
 var LOC_KEY="ist-loc-v1";
