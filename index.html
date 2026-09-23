@@ -434,6 +434,25 @@ a.act .arl{font-family:var(--ar);text-transform:none;letter-spacing:0;font-size:
 .day.dday-done .day-head h3{color:#7a7c58}
 .donechip{display:none;font-size:10px;font-weight:700;background:var(--olive);color:#fff;border-radius:99px;padding:3px 10px;letter-spacing:.08em}
 .day.dday-done .donechip{display:inline-block}
+.day.dday-done.collapsed{margin:7px 0;background:#f8f8f1;border-color:#ccd2b7;box-shadow:none}
+.day.dday-done.collapsed .day-head{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;
+  padding:8px 13px;border-bottom:none}
+.day.dday-done.collapsed .donechip{display:none}
+.day.dday-done.collapsed .day-head h3{display:none}
+.day.dday-done.collapsed .dnum{font-family:var(--sans);font-size:11.5px;font-weight:700;
+  letter-spacing:.12em;color:var(--soft);line-height:1;text-transform:uppercase}
+.day.dday-done.collapsed .date{margin-top:0;flex:1 1 auto;min-width:0;font-size:0;color:var(--soft);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.day.dday-done.collapsed .date .arl{font-size:12.5px;color:var(--soft)}
+.day.dday-done.collapsed .dayctl{position:static;margin:0;gap:6px;flex:none}
+.day.dday-done.collapsed .dayck-w{padding:3px 9px;font-size:9.5px;gap:5px}
+.day.dday-done.collapsed .dayck-w input{width:12px;height:12px}
+.day.dday-done.collapsed .dayck-w .arl{font-size:11px}
+.day.dday-done.collapsed .cbtn{width:25px;height:25px}
+.day.dday-done.collapsed .cbtn svg{width:12px;height:12px}
+.day.dday-done.collapsed .donechip{padding:2px 9px;font-size:9.5px}
+.day.dday-done.collapsed .actct,.day.dday-done.collapsed .tmreset,
+.day.dday-done.collapsed .daymap-btn,.day.dday-done.collapsed .daycard-btn{display:none}
 .daytools{display:flex;gap:8px;justify-content:center;align-items:center;margin:2px 0 8px;flex-wrap:wrap}
 .toolbtn{border:1px solid var(--line2);background:var(--page);color:var(--soft);border-radius:99px;padding:7px 16px;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.1em;cursor:pointer;text-transform:uppercase}
 .toolbtn .arl{font-family:var(--ar);letter-spacing:0;text-transform:none;font-size:12.5px}
@@ -3055,6 +3074,27 @@ document.addEventListener("click",function(e){
   snapPause(1200);
   t.scrollIntoView({behavior:"smooth",block:"start"});
 });
+/* ── "Days" jumps to TODAY's card, not day one ── */
+function todayDayEl(){
+  var w=istWall(new Date());
+  var key=w.getFullYear()+"-"+String(w.getMonth()+1).padStart(2,"0")+"-"+String(w.getDate()).padStart(2,"0");
+  var days=$$("article.day[data-day]");
+  if(!days.length)return null;
+  var exact=null; days.forEach(function(d){ if(d.dataset.day===key)exact=d; });
+  if(exact)return exact;
+  if(key<days[0].dataset.day)return days[0];                 /* before the trip */
+  return days[days.length-1];                                /* after it */
+}
+document.addEventListener("click",function(e){
+  var a=e.target.closest?e.target.closest('a[href="#days"]'):null; if(!a)return;
+  var d=todayDayEl(); if(!d)return;
+  e.preventDefault(); e.stopPropagation();
+  if(d.classList.contains("collapsed")&&!d.classList.contains("dday-done")){
+    d.classList.remove("collapsed"); autosave(); }
+  snapPause(1200);
+  d.scrollIntoView({behavior:"smooth",block:"start"});
+  history.replaceState(null,"","#"+d.id);
+},true);
 /* ── nav highlight ── */
 var links=$$("nav a"),secs=links.map(function(l){return $(l.getAttribute("href"));});
 var tb=$("#topbtn");
